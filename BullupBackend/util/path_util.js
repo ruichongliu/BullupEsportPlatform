@@ -2,17 +2,17 @@ exports.init = function(){
     //文件目录路径对象
     exports.directories = {};
     //存放数据库相关操作
-    exports.directories.daoDirectory = "./dao/";
+    exports.directories.daoDirectory = "../dao/";
     //存放一些独立的txt文件等
-    exports.directories.otherDirectory = "./other/";
+    exports.directories.otherDirectory = "../other/";
     //存放监听器层的文件
-    exports.directories.listenserDirectory = "./listenser/";
+    exports.directories.listenserDirectory = "../listenser/";
     //存放服务层的文件
-    exports.directories.serviceDirectory = "./service/";
+    exports.directories.serviceDirectory = "../service/";
     //存放工具类的文件
-    exports.directories.utilDirectory = "./util/";
+    exports.directories.utilDirectory = "../util/";
     //根目录
-    exports.directories.rootDirectory = "./";
+    exports.directories.rootDirectory = "../";
 
     //文件路径对象
     exports.paths = {};
@@ -21,7 +21,7 @@ exports.init = function(){
     exports.paths.utilPaths = {};
     exports.paths.listenerPaths = {};
     exports.paths.utilPaths = {};
-    exports.otherPaths = {};
+    exports.paths.otherPaths = {};
     //Dao路径
     exports.paths.daoPaths.baseInfoDaoPath = exports.directories.daoDirectory + "base_info_dao.js";
     exports.paths.daoPaths.wealthInfoDaoPath = exports.directories.daoDirectory + "wealth_info_dao.js";

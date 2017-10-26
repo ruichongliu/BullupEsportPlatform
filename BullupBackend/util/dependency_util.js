@@ -1,4 +1,4 @@
-var pathUtil = require("./util/path_util.js");
+var pathUtil = require("./path_util.js");
 
 exports.init = function(){
     pathUtil.init();
