@@ -1,18 +1,18 @@
-exports.init = function(){
+exports.init = function(rootPath){
     //文件目录路径对象
     exports.directories = {};
     //存放数据库相关操作
-    exports.directories.daoDirectory = "../dao/";
+    exports.directories.daoDirectory = rootPath + "/dao/";
     //存放一些独立的txt文件等
-    exports.directories.otherDirectory = "../other/";
+    exports.directories.otherDirectory = rootPath + "/other/";
     //存放监听器层的文件
-    exports.directories.listenserDirectory = "../listenser/";
+    exports.directories.listenserDirectory = rootPath + "/listener/";
     //存放服务层的文件
-    exports.directories.serviceDirectory = "../service/";
+    exports.directories.serviceDirectory = rootPath + "/service/";
     //存放工具类的文件
-    exports.directories.utilDirectory = "../util/";
+    exports.directories.utilDirectory = rootPath + "/util/";
     //根目录
-    exports.directories.rootDirectory = "../";
+    exports.directories.rootDirectory = rootPath;
 
     //文件路径对象
     exports.paths = {};
@@ -49,7 +49,7 @@ exports.init = function(){
     exports.paths.utilPaths.lolUtilPath = exports.directories.utilDirectory + "lol_util.js";
     //listener路径
     //主监听器
-    exports.paths.listenerPaths.connectionListenerPath = exports.directories.listenerDirectory + "connection_listener.js";
+    exports.paths.listenerPaths.connectionListenerPath = exports.directories.listenserDirectory + "connection_listener.js";
     //具体服务的监听器
     exports.paths.listenerPaths.userListenerPath = exports.directories.listenserDirectory + "user_listener.js";
     exports.paths.listenerPaths.battleListenerPath = exports.directories.listenserDirectory + "battle_listener.js";

@@ -1,5 +1,5 @@
 var fs = require('fs');
-var dependencyUtil = require("./util/dependency_util.js");
+var dependencyUtil = require("../util/dependency_util.js");
 
 var logUtil = dependencyUtil.global.utils.logUtil;
 

@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 var app = express();
 var fs = require("fs");
 
-var dependencyUtil = require("./util/dependency_util.js");
+var dependencyUtil = require("../util/dependency_util.js");
 
 var dbUtil = dependencyUtil.global.utils.databaseUtil;
 var socketService = dependencyUtil.global.service.socketService;

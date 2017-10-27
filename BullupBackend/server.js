@@ -1,20 +1,22 @@
 var dependencyUtil = require("./util/dependency_util.js");
-dependencyUtil.init();
+
+dependencyUtil.init(__dirname.toString().replace(/\\/g, "/"));
 
 var io = require('socket.io')();
 var logUtil = dependencyUtil.global.utils.logUtil;
 var dbUtil = dependencyUtil.global.utils.databaseUtil;
 
+
 // 代理
-var userService = dependencyUtil.Service.userService;
-var teamService = dependencyUtil.Service.teamService;
-var socketService = dependencyUtil.Service.socketService;
-var battleService = dependencyUtil.Service.battleService;
-var paymentService = dependencyUtil.Service.paymentService;
-var chatService = dependencyUtil.Service.chatService;
-var adminService = dependencyUtil.Service.administratorService;
-var stripeService = dependencyUtil.Service.stripeService;
-var lolKeyService = dependencyUtil.Service.lolkeyService;
+var userService = dependencyUtil.global.service.userService;
+var teamService = dependencyUtil.global.service.teamService;
+var socketService = dependencyUtil.global.service.socketService;
+var battleService = dependencyUtil.global.service.battleService;
+var paymentService = dependencyUtil.global.service.paymentService;
+var chatService = dependencyUtil.global.service.chatService;
+var adminService = dependencyUtil.global.service.administratorService;
+var stripeService = dependencyUtil.global.service.stripeService;
+var lolKeyService = dependencyUtil.global.service.lolKeyService;
 
 
 // 初始化Service, 所有需要保存数据结构的对象都需要初始化, 只能初始化一次
@@ -138,7 +140,7 @@ setInterval(function(){
     dbUtil.updateRankList();
 },24 * 3600 * 1000);
 
-io.handle(3000);
+io.listen(3000);
 
 
 process.on('uncaughtException', function (err) {

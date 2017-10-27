@@ -1,4 +1,4 @@
-var dependencyUtil = require("./util/dependency_util.js");
+var dependencyUtil = require("../util/dependency_util.js");
 
 var teamService = dependencyUtil.global.service.teamService;
 var socketService = dependencyUtil.global.service.socketService;

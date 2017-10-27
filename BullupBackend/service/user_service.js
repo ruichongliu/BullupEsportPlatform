@@ -1,10 +1,10 @@
 var async = require("async");
-var dependencyUtil = require("./util/dependency_util.js");
+var dependencyUtil = require("../util/dependency_util.js");
 
-var dbUtil = dependencyUtil.utils.databaseUtil;
-var logUtil = dependencyUtil.utils.logUtil;
-var socketService = dependencyUtil.service.socketService;
-var teamService = dependencyUtil.service.teamService;
+var dbUtil = dependencyUtil.global.utils.databaseUtil;
+var logUtil = dependencyUtil.global.utils.logUtil;
+var socketService = dependencyUtil.global.service.socketService;
+var teamService = dependencyUtil.global.service.teamService;
 
 exports.init = function () {
     this.users = {};

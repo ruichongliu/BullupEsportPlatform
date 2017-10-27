@@ -1,6 +1,6 @@
 var stripe = require("stripe")( "sk_test_ud0FTgDIp5a5SLWZMMOGvVF9");
 
-var dependencyUtil = require("./util/dependency_util.js");
+var dependencyUtil = require("../util/dependency_util.js");
 
 var logUtil = dependencyUtil.global.utils.logUtil;
 var socketService = dependencyUtil.global.service.socketService;

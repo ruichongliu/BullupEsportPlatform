@@ -1,7 +1,7 @@
 var pathUtil = require("./path_util.js");
 
-exports.init = function(){
-    pathUtil.init();
+exports.init = function(rootPath){
+    pathUtil.init(rootPath);
     exports.global = {};
     exports.global.service = {};
     exports.global.utils = {};
@@ -16,22 +16,22 @@ exports.init = function(){
 
     exports.global.service.userService = require(pathUtil.paths.servicePaths.userServicePath);
     exports.global.service.battleService = require(pathUtil.paths.servicePaths.battleServicePath);
-    exports.global.service.chatService = require(pathUtil.paths.servicePaths.chatServicePath);
+    exports.global.service.chatService = require( pathUtil.paths.servicePaths.chatServicePath);
     exports.global.service.administratorService = require(pathUtil.paths.servicePaths.administratorServicePath);
     exports.global.service.competitonService = require(pathUtil.paths.servicePaths.competitonServicePath);
     exports.global.service.feedbackService = require(pathUtil.paths.servicePaths.feedbackServicePath);
     exports.global.service.lolKeyService = require(pathUtil.paths.servicePaths.lolKeyServicePath);
-    exports.global.service.matchService = require(pathUtil.paths.servicePaths.matchServicePath);
+    exports.global.service.matchService = require( pathUtil.paths.servicePaths.matchServicePath);
     exports.global.service.paymentService = require(pathUtil.paths.servicePaths.paymentServicePath);
     exports.global.service.socketService = require(pathUtil.paths.servicePaths.socketServicePath);
     exports.global.service.stripeService = require(pathUtil.paths.servicePaths.stripeServicePath);
     exports.global.service.teamService = require(pathUtil.paths.servicePaths.teamServicePath);
 
-    exports.global.utils.databaseUtil = require(pathUtil.paths.servicePaths.databaseUtilPath);
+    exports.global.utils.databaseUtil = require(pathUtil.paths.utilPaths.databaseUtilPath);
     exports.global.utils.pathUtil = pathUtil;
-    exports.global.utils.dependencyUtil = require(pathUtil.paths.servicePaths.dependencyUtilPath);
-    exports.global.utils.logUtil = require(pathUtil.paths.servicePaths.logUtilPath);
-    exports.global.utils.lolUtil = require(pathUtil.paths.servicePaths.lolUtilPath);
+    exports.global.utils.dependencyUtil = require(pathUtil.paths.utilPaths.dependencyUtilPath);
+    exports.global.utils.logUtil = require(pathUtil.paths.utilPaths.logUtilPath);
+    exports.global.utils.lolUtil = require(pathUtil.paths.utilPaths.lolUtilPath);
 
     exports.global.listener.connectionListener = require(pathUtil.paths.listenerPaths.connectionListenerPath);
     exports.global.listener.userListener = require(pathUtil.paths.listenerPaths.userListenerPath);
