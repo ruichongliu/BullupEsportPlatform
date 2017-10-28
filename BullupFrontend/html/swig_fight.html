@@ -1,0 +1,56 @@
+<div class="row">
+	<div class="col s12 m4">
+		<ul class="collapsible" id="my_collapsible" data-collapsible="expandable">
+			{% if blueSide %}
+				{% for player in blueSide.participants %}
+					<li>
+					<div class="collapsible-header left-align">
+						<img src="./media/user_icon/{{ player.avatarId }}.png" class="candi-img"> {{ player.name }}
+					</div>
+					<div class="collapsible-body">
+					<span>
+						<a style="color:#FFC125;" >战力 {{ player.strength.score }}</a>
+						<a style="color:#E0FFFF;" >KDA {{ player.strength.kda }}</a>
+						<a style="color:#FFC125;" >伤害 {{ player.strength.averageDamage }}</a>
+						<a style="color:#E0FFFF;" >承受伤害 {{ player.strength.averageDamageTaken }}</a>
+						<a style="color:#FFC125;" >金钱 {{ player.strength.averageGoldEarned }}</a>
+						<a style="color:#E0FFFF;" >推塔 {{ player.strength.averageTurretsKilled }}</a>
+					</span>
+					</div>
+				</li>
+				{% endfor %}
+			{% endif %}
+		</ul>
+	</div>
+
+	<div class="col s12 m4 center-info">
+		<div class="countdown-name"></div>
+		<div class="countdown-clock"></div>
+		
+		<canvas id="teams-radar-chart"></canvas>
+	</div>
+	
+	<div class="col s12 m4">
+		<ul class="collapsible" id="component_collapsible" data-collapsible="expandable">
+		{% if redSide %}
+			{% for player in redSide.participants %}
+					<li>
+					<div class="collapsible-header left-align">
+						<img src="./media/user_icon/{{ player.avatarId }}.png" class="candi-img"> {{ player.name }}
+					</div>
+					<div class="collapsible-body">
+					<span>
+						 <a style="color:#FFC125;" >战力:{{ player.strength.score }}</a>
+						 <a style="color:#E0FFFF;" >KDA {{ player.strength.kda }}</a>
+						 <a style="color:#FFC125;" >伤害 {{ player.strength.averageDamage }}</a>
+						 <a style="color:#E0FFFF;" >承受伤害 {{ player.strength.averageDamageTaken }}</a>
+						 <a style="color:#FFC125;" >金钱 {{ player.strength.averageGoldEarned }}</a>
+						 <a style="color:#E0FFFF;" >推塔 {{ player.strength.averageTurretsKilled }}</a>
+					</span>
+					</div>
+				</li>
+				{% endfor %}
+			{% endif %}
+		</ul>
+	</div>
+</div>
