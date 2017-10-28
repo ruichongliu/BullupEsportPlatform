@@ -1,11 +1,8 @@
 var dependencyUtil = require("./util/dependency_util.js");
-
 dependencyUtil.init(__dirname.toString().replace(/\\/g, "/"));
 
 var io = require('socket.io')();
 var logUtil = dependencyUtil.global.utils.logUtil;
-var dbUtil = dependencyUtil.global.utils.databaseUtil;
-
 
 // 代理
 var userService = dependencyUtil.global.service.userService;
@@ -18,6 +15,7 @@ var adminService = dependencyUtil.global.service.administratorService;
 var stripeService = dependencyUtil.global.service.stripeService;
 var lolKeyService = dependencyUtil.global.service.lolKeyService;
 
+var rankInfoDao = dependencyUtil.global.dao.rankInfoDao;
 
 // 初始化Service, 所有需要保存数据结构的对象都需要初始化, 只能初始化一次
 userService.init();
@@ -137,7 +135,7 @@ stripeService.recharge();
 //一天更新一次排行榜
 setInterval(function(){
     console.log('update rank');
-    dbUtil.updateRankList();
+    rankInfoDao.updateRankList();
 },24 * 3600 * 1000);
 
 io.listen(3000);

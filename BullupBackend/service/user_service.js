@@ -1,10 +1,17 @@
 var async = require("async");
 var dependencyUtil = require("../util/dependency_util.js");
+dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service".length).replace(/\\/g, "/"));
 
-var dbUtil = dependencyUtil.global.utils.databaseUtil;
 var logUtil = dependencyUtil.global.utils.logUtil;
 var socketService = dependencyUtil.global.service.socketService;
 var teamService = dependencyUtil.global.service.teamService;
+
+var baseInfoDao = dependencyUtil.global.dao.baseInfoDao;
+var strengthInfoDao = dependencyUtil.global.dao.strengthInfoDao;
+var wealthInfoDao = dependencyUtil.global.dao.wealthInfoDao;
+var lolInfoDao = dependencyUtil.global.dao.lolInfoDao;
+var battleRecordDao = dependencyUtil.global.dao.battleRecordDao;
+var rankInfoDao = dependencyUtil.global.dao.rankInfoDao;
 
 exports.init = function () {
     this.users = {};
@@ -23,9 +30,9 @@ exports.addUser = function (user) {
  */
 exports.handleLogin = function (socket) {
     socket.on('login', function (data) {
-        logUtil.handleerLog('login');
+        logUtil.listenerLog('login');
 
-        dbUtil.findUserByAccount(data.userName, function (user) {
+        baseInfoDao.findUserByAccount(data.userName, function (user) {
             if (!user || user.user_password != data.password) {
                 // 登录失败
                 socketService.stableSocketEmit(socket, 'feedback', {
@@ -39,7 +46,7 @@ exports.handleLogin = function (socket) {
                 socketService.add(user.user_id, socket);
                 async.waterfall([
                     function(callback){
-                        dbUtil.findUserIconById(user.user_id, function(iconId){
+                        baseInfoDao.findUserIconById(user.user_id, function(iconId){
                             var userInfo = {};
                             userInfo.userId = user.user_id;
                             userInfo.userNickname = user.user_nickname;
@@ -48,7 +55,7 @@ exports.handleLogin = function (socket) {
                         });
                     },
                     function(userInfo, callback){
-                        dbUtil.findFriendListByUserId(userInfo.userId, function (friendList) {
+                        baseInfoDao.findFriendListByUserId(userInfo.userId, function (friendList) {
                             //定义一个空数组，用来保存根据状态排序后的信息
                             var arr = new Array();
                             for(obj in friendList){
@@ -63,33 +70,33 @@ exports.handleLogin = function (socket) {
                         });
                     },
                     function(userInfo, callback){
-                        dbUtil.findStrengthInfoByUserId(userInfo.userId, function (strengthInfo) {
+                        strengthInfoDao.findStrengthInfoByUserId(userInfo.userId, function (strengthInfo) {
                             userInfo.strengthInfo = strengthInfo;
                             callback(null, userInfo);
                         });
                     },
                     function(userInfo, callback){
-                        dbUtil.findUserWealthByUserId(userInfo.userId, function (wealthInfo) {
+                        wealthInfoDao.findUserWealthByUserId(userInfo.userId, function (wealthInfo) {
                             userInfo.wealth = wealthInfo.bullup_currency_amount;
                             callback(null, userInfo);
                         });
                     },
                     function(userInfo, callback){
-                        dbUtil.findUserLOLAccountInfo(userInfo.userId, function(lolAccountInfo){
+                        lolInfoDao.findUserLOLAccountInfo(userInfo.userId, function(lolAccountInfo){
                             userInfo.lolAccountInfo = lolAccountInfo;
                             callback(null, userInfo);
                         });
                     },
                     //检查是否是第一次登录
                     function(userInfo,callback){
-                        dbUtil.checkLastLoginTime(userInfo.userId,function(lastLoginTime){
+                        baseInfoDao.checkLastLoginTime(userInfo.userId,function(lastLoginTime){
                             userInfo.lastLoginTime = lastLoginTime;
                             callback(null,userInfo);
                         });
                     },
                     //查找用户约战次数
                     function(userInfo,callback){
-                        dbUtil.findUserBattleCount(userInfo.userId,function(count){
+                        battleRecordDao.findUserBattleCount(userInfo.userId,function(count){
                             userInfo.battleCount = count[0].battleCount;
                             //console.log(userInfo.battleCount);
                             callback(null,userInfo);
@@ -154,7 +161,7 @@ exports.handleLogin = function (socket) {
 exports.handleRegister = function (socket) {
     socket.on('register', function (userInfo) {
         logUtil.handleerLog('register');
-        dbUtil.findUserByAccount(userInfo.userAccount, function (user) {
+        baseInfoDao.findUserByAccount(userInfo.userAccount, function (user) {
             if (user) {
                 // 如果该用户存在
                 socketService.stableSocketEmit(socket, 'feedback', {
@@ -164,7 +171,7 @@ exports.handleRegister = function (socket) {
                     extension: null
                 });
             } else {
-                dbUtil.findUserByPhone(userInfo.userPhoneNumber, function (user) {
+                baseInfoDao.findUserByPhone(userInfo.userPhoneNumber, function (user) {
                     if(user){
                         socketService.stableSocketEmit(socket, 'feedback', {
                             errorCode: 1,
@@ -173,7 +180,7 @@ exports.handleRegister = function (socket) {
                             extension: null
                         });
                     }else{
-                        dbUtil.findUserByNickname(userInfo.userNickname, function (user) {
+                        baseInfoDao.findUserByNickname(userInfo.userNickname, function (user) {
                             if(user){
                                 socketService.stableSocketEmit(socket, 'feedback', {
                                     errorCode: 1,
@@ -182,7 +189,7 @@ exports.handleRegister = function (socket) {
                                     extension: null
                                 });
                             }else{
-                                //dbUtil.findUserByCode(userInfo.userEmail, function (user) {
+                                //baseInfoDao.findUserByCode(userInfo.userEmail, function (user) {
                                     // if(user){
                                     //     socketService.stableSocketEmit(socket, 'feedback', {
                                     //         errorCode: 1,
@@ -191,7 +198,7 @@ exports.handleRegister = function (socket) {
                                     //         extension: null
                                     //     });
                                     // }else{
-                                        dbUtil.addUser(userInfo, function (userAddRes) {
+                                        baseInfoDao.addUser(userInfo, function (userAddRes) {
                                             socketService.stableSocketEmit(socket, 'feedback', {
                                                 errorCode: 0,
                                                 text: '注册成功',
@@ -240,7 +247,7 @@ exports.handleInviteFriend = function (socket) {
 
 exports.handleIconIdUpdate = function (socket) {
     socket.on('iconIdUpdate', function (iconData) {
-        dbUtil.updateUserIconIdByUserId(iconData.userId, iconData.newIconId);
+        baseInfoDao.updateUserIconIdByUserId(iconData.userId, iconData.newIconId);
         socketService.stableSocketEmit(socket, 'feedback', {
             'errorCode': 0,
             'type': 'ICONUPDATERESULT',
@@ -254,7 +261,7 @@ exports.handleIconIdUpdate = function (socket) {
 exports.handleGetBalance = function (socket){
     socket.on('getBalance', function(data){
         //console.log('2134');
-        dbUtil.getBalance(data,function(balance){
+        wealthInfoDao.getBalance(data,function(balance){
             var tempBalance = balance.bullup_currency_amount;
             socketService.stableSocketEmit(socket,'feedback', {
                 errorCode: 0,
@@ -272,7 +279,7 @@ exports.handleGetBalance = function (socket){
 exports.handleUserUpdateInfo = function(socket){
     socket.on('updateInfo',function(data){
         console.log(data);
-        dbUtil.updateUserInfo(data,function(res){
+        baseInfoDao.updateUserInfo(data,function(res){
             if(!res){
                 socketService.stableSocketEmit(socket,'feedback', {
                     errorCode: 1,
@@ -296,7 +303,7 @@ exports.handleUserUpdateInfo = function(socket){
 exports.handlelastLoginTime = function (socket){
     socket.on('loginTime', function(data){
         console.log(data);
-        dbUtil.insertLastLoginTime(data,function(res){
+        baseInfoDao.insertLastLoginTime(data,function(res){
             // var tempBalance = balance.bullup_currency_amount;
             // socket.emit('feedback', {
             //     errorCode: 0,
@@ -352,8 +359,8 @@ exports.changeUserStatus = function (userId, status) {
 exports.handleRankRequest = function (socket){
     socket.on('rankRequest', function(request){
         var userId = socketService.mapSocketToUserId(socket.id);
-        dbUtil.getStrengthScoreRank(userId,function(strengthRankList){
-            dbUtil.getWealthRank(userId,function(wealthRankList){
+        rankInfoDao.getStrengthScoreRank(userId,function(strengthRankList){
+            rankInfoDao.getWealthRank(userId,function(wealthRankList){
                 socketService.stableSocketEmit(socket, 'feedback', {
                     errorCode: 0,
                     text: '获取排名成功',
@@ -382,7 +389,7 @@ exports.handleLOLBind = function(socket){
 
         async.waterfall([
             function(callback){
-                dbUtil.validateBindInfo(userId, lolAccount, lolArea, function(bindValidityResult){
+                lolInfoDao.validateBindInfo(userId, lolAccount, lolArea, function(bindValidityResult){
                     //如果该用户在该大区已绑定了账号  或者该大区的账号已被绑定  则拒绝绑定
                     var feedback = {};
                     if(bindValidityResult.value != 'true'){
@@ -409,7 +416,7 @@ exports.handleLOLBind = function(socket){
                 });   
             },
             function(blankData, callback){
-                dbUtil.insertBindInfo(userId, lolAccount, lolNickname, lolArea, function(bindResult){
+                lolInfoDao.insertBindInfo(userId, lolAccount, lolNickname, lolArea, function(bindResult){
                     if(bindResult.errorCode == 0){
                         var feedback = {
                             errorCode: 0,
@@ -442,7 +449,7 @@ exports.handleLOLBind = function(socket){
                 //更新用户战力表
                 var bindInfo = feedback.extension;
                 bindInfo.oriStrengthScore = oriScore;
-                dbUtil.updateStrengthInfo(bindInfo, function(result){
+                strengthInfoDao.updateStrengthInfo(bindInfo, function(result){
                     console.log("result" + result);
                 });
             }
@@ -454,8 +461,8 @@ exports.handleLOLBind = function(socket){
 exports.handlePersonalCenterRequest = function(socket){
     socket.on('pesonalCenterRequest', function(request){
         console.log('result:'+JSON.stringify(request));
-        //dbUtil.getPersonalCenterInfoByUserId();
-        dbUtil.getPersonalCenterInfoByUserId(request.userId,function(queryResult){
+        //baseInfoDao.getPersonalCenterInfoByUserId();
+        baseInfoDao.getPersonalCenterInfoByUserId(request.userId,function(queryResult){
             console.log("queryResult"+JSON.stringify(queryResult));
             var feedback = {};
             if(queryResult != null && queryResult != undefined){
@@ -564,7 +571,7 @@ exports.handleAddFriendResult = function(socket){
                 }
             });
 
-            dbUtil.addFriendRelationship(userInfo.userId, invitedUserInfo.userId);
+            baseInfoDao.addFriendRelationship(userInfo.userId, invitedUserInfo.userId);
             
         }else{
             socketService.stableSocketEmit(socket1, 'feedback', {
@@ -611,7 +618,7 @@ exports.insertFeedbackMessage=function(socket){
     socket.on('feedbackMessage',function(result){
         console.log('result:'+JSON.stringify(result)); 
         logUtil.handleerLog('feedbackMessage');
-        dbUtil.insertFeedback(result,function(res){
+        baseInfoDao.insertFeedback(result,function(res){
             if(!res){
                 socketService.stableSocketEmit(socket, 'feedback',{
                 //console.log('result:'+JSON.stringify(result)); 
@@ -637,7 +644,7 @@ exports.insertFeedbackMessage=function(socket){
     socket.on('feedbackMessage',function(result){
         console.log('result:'+JSON.stringify(result)); 
         logUtil.handleerLog('feedbackMessage');
-        dbUtil.insertFeedback(result,function(res){
+        baseInfoDao.insertFeedback(result,function(res){
             if(!res){
                 socketService.stableSocketEmit(socket, 'feedback',{
                 //console.log('result:'+JSON.stringify(result)); 

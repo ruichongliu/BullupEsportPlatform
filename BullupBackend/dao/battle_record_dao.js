@@ -1,0 +1,176 @@
+var async = require('async');
+var dependencyUtil = require("../util/dependency_util.js");
+dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/dao".length).replace(/\\/g, "/"));
+
+var dbUtil = dependencyUtil.global.utils.databaseUtil;
+
+
+//--------------查询全部约战记录-----------------------------
+exports.findAllBattleRecord = function(callback){
+    dbUtil.query('select * from bullup_battle_record', [], function (err, results){
+        if (err) throw err;
+        callback(results);
+    });
+}
+
+//---------------修改约战记录相关的数据----------------------
+exports.aboutBattleRecord = function(data,callback){
+    var blueUserArr = (data.blueSide).split(',');
+    var redUserArr = (data.redSide).split(',');
+    var tempInfo = new Array();
+    tempInfo[0] = new Array();//蓝方队员userId
+    tempInfo[1] = new Array();//红方队员userId
+    async.waterfall([
+        function(callback){
+            dbUtil.query('update bullup_battle_record set bullup_battle_result=? where bullup_battle_id=?',[data.result,data.battleId],function(err,res){
+                if (err) throw err;
+                callback(null,tempInfo);
+            });
+        },
+        function(tempInfo,callback){//---------------获取user_id
+            dbUtil.query('select user_id,user_account from user_base', [], function(err,res2){
+                if (err) throw err;
+                for(var i=0;i<res2.length;i++){
+                    for(var j=0;j<blueUserArr.length;j++){
+                        if(blueUserArr[j]==res2[i].user_account){
+                            tempInfo[0].push(res2[i].user_id); 
+                        }
+                    }
+                    for(var k=0;k<redUserArr.length;k++){
+                        if(redUserArr[k]==res2[i].user_account){
+                            tempInfo[1].push(res2[i].user_id);
+                        }
+                    }
+                }
+                callback(null,tempInfo);
+            });
+        },function(tempInfo,callback){//--------------更改财富表的金额
+            if(data.result=='蓝方赢'){
+                for(var x=0;x<tempInfo[0].length;x++){
+                    dbUtil.query('update bullup_wealth set bullup_currency_amount=bullup_currency_amount+? where user_id=?',[(data.bet)*2,tempInfo[0][x]],function(err,res3){
+                        if (err) throw err;
+                    });
+                }
+                for(var y=0;y<tempInfo[1].length;y++){
+                    dbUtil.query('update bullup_wealth set bullup_currency_amount=bullup_currency_amount-? where user_id=?',[(data.bet)*2,tempInfo[1][y]],function(err,res4){
+                        if (err) throw err;
+                    });
+                }
+            }else{
+                for(var x=0;x<tempInfo[1].length;x++){
+                    dbUtil.query('update bullup_wealth set bullup_currency_amount=bullup_currency_amount+? where user_id=?',[(data.bet)*2,tempInfo[1][x]],function(err,res3){
+                        if (err) throw err;
+                    });
+                }
+                for(var y=0;y<tempInfo[0].length;y++){
+                    dbUtil.query('update bullup_wealth set bullup_currency_amount=bullup_currency_amount-? where user_id=?',[(data.bet)*2,tempInfo[0][y]],function(err,res4){
+                        if (err) throw err;
+                    });
+                }
+            }
+            callback(null,tempInfo);
+        },function(tempInfo,callback){//--------------更改战力表的胜场数
+            if(data.result=='蓝方赢'){
+                for(var x=0;x<tempInfo[0].length;x++){
+                    dbUtil.query('update bullup_strength set bullup_strength_wins=bullup_strength_wins+1 where user_id=?',[tempInfo[0][x]],function(err,res5){
+                        if (err) throw err;
+                    });
+                }
+                for(var y=0;y<tempInfo[1].length;y++){
+                    dbUtil.query('update bullup_strength set bullup_strength_wins=bullup_strength_wins-1 where user_id=?',[tempInfo[1][y]],function(err,res6){
+                        if (err) throw err;
+                    });
+                }
+            }else{
+                for(var x=0;x<tempInfo[1].length;x++){
+                    dbUtil.query('update bullup_strength set bullup_strength_wins=bullup_strength_wins+1 where user_id=?',[tempInfo[1][x]],function(err,res7){
+                        if (err) throw err;
+                    });
+                }
+                for(var y=0;y<tempInfo[0].length;y++){
+                    dbUtil.query('update bullup_strength set bullup_strength_wins=bullup_strength_wins-1 where user_id=?',[tempInfo[0][y]],function(err,res8){
+                        if (err) throw err;
+                    });
+                }
+            }
+            callback(null,tempInfo);
+        }
+    ],function(err,res){
+        if (err) throw err;
+        callback(res);
+    });
+}
+
+
+//用户约战次数
+exports.findUserBattleCount = function(userId,callback){
+    async.waterfall([
+        function(callback){
+            dbUtil.query('select user_nickname from user_base where user_id=?',[userId],function(err,res1){
+                if (err) throw err;
+                //console.log(res1);
+                callback(null,res1);
+            });
+        },function(res1,callback){
+            dbUtil.query('select count(*) as battleCount from bullup_battle_record where bullup_battle_paticipants_red like ? or bullup_battle_paticipants_blue like ?',['%'+res1[0].user_nickname+'%','%'+res1[0].user_nickname+'%'],function(err,res2){
+                if (err) throw err;
+                //console.log(res2);
+                callback(null,res2);
+            });
+        }
+    ],function(err,res){
+        if (err) throw err;
+        callback(res);
+    });
+}
+
+
+
+
+exports.writeBattleRecord = function(battle){
+    
+    var competitionType = battle.blueSide.gameMode;
+    var competitionId = 0;
+    var battleName = battle.battleName;
+    var battleMap = battle.blueSide.mapSelection;
+    var battleBet = battle.blueSide.rewardAmount;
+    var teamNum = battle.blueSide.paticipants.length;
+    var redNames = "";
+    var blueNames = "";
+    var time = new Date().format("yyyy-MM-dd HH:mm:ss"); 
+    var duration = 0;
+    var result = "";
+    if(battle.blueWin){
+        result = "蓝方赢";
+    }else{
+        result = "红方赢";
+    }
+    for(var index in battle.blueSide.paticipants){
+        blueNames += ",";
+        blueNames += battle.blueSide.paticipants[index].name;
+    }
+    blueNames = blueNames.substr(1);
+
+    for(var index in battle.redSide.paticipants){
+        redNames += ",";
+        redNames += battle.redSide.paticipants[index].name;
+    }
+    redNames = redNames.substr(1);
+
+    
+}
+
+exports.updateStrengthAndWealth = function(userId, newStrengthScore, wealthChangedValue){
+    if(newStrengthScore < 0){
+        newStrengthScore = 0;
+    }
+    dbUtil.query('select bullup_currency_amount from bullup_wealth where user_id = ?', [userId], (err, res) => {
+        if(err)throw err;
+        dbUtil.query('update bullup_wealth set bullup_currency_amount = ? where user_id = ?', [parseInt(res[0].bullup_currency_amount) + parseInt(wealthChangedValue), userId], (err, res)=>{
+            if(err)throw err;
+        });
+    });
+    dbUtil.query('update bullup_strength set bullup_strength_score = ? where user_id = ?', [newStrengthScore, userId], (err, res) => {
+        if(err)throw err;
+    });
+}

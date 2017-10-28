@@ -1,9 +1,10 @@
 var dependencyUtil = require("../util/dependency_util.js");
-
+dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service".length).replace(/\\/g, "/"));
 var teamService = dependencyUtil.global.service.teamService;
 var socketService = dependencyUtil.global.service.socketService;
 var logUtil = dependencyUtil.global.utils.logUtil;
-var dbUtil = dependencyUtil.global.utils.databaseUtil;
+
+var battleRecordDao = dependencyUtil.global.dao.battleRecordDao;
 
 var matchLevel1MinCount = 2;
 var matchLevel2MinCount = 2;
@@ -301,14 +302,14 @@ exports.handleBattleResult = function (io, socket){
                 //扣钱
                 for(var index in winTeam){
                     var player = winTeam[index];
-                    dbUtil.updateStrengthAndWealth(player.userId, player.strength.score + winScoreUpdateValue, resultPacket.rewardAmount);
+                    battleRecordDao.updateStrengthAndWealth(player.userId, player.strength.score + winScoreUpdateValue, resultPacket.rewardAmount);
                 }
                 for(var index in loseTeam){
                     var player = loseTeam[index];
-                    dbUtil.updateStrengthAndWealth(player.userId, player.strength.score + loseScoreUpdateValue, -1 * resultPacket.rewardAmount);
+                    battleRecordDao.updateStrengthAndWealth(player.userId, player.strength.score + loseScoreUpdateValue, -1 * resultPacket.rewardAmount);
                 }
                 //写记录
-                // dbUtil.writeBattleRecord(finishedBattle);
+                // battleRecordDao.writeBattleRecord(finishedBattle);
 
                 //广播结果数据包
                 socketService.stableSocketsEmit(io.sockets.in(finishedBattle.battleName), finishedBattle.battleName, 'battleResult', resultPacket);
@@ -392,14 +393,14 @@ exports.handleBattleResult = function (io, socket){
                 //扣钱
                 for(var index in winTeam){
                     var player = winTeam[index];
-                    dbUtil.updateStrengthAndWealth(player.userId, player.strength.score + winScoreUpdateValue, resultPacket.rewardAmount);
+                    battleRecordDao.updateStrengthAndWealth(player.userId, player.strength.score + winScoreUpdateValue, resultPacket.rewardAmount);
                 }
                 for(var index in loseTeam){
                     var player = loseTeam[index];
-                    dbUtil.updateStrengthAndWealth(player.userId, player.strength.score + loseScoreUpdateValue, -1 * resultPacket.rewardAmount);
+                    battleRecordDao.updateStrengthAndWealth(player.userId, player.strength.score + loseScoreUpdateValue, -1 * resultPacket.rewardAmount);
                 }
                 //写记录
-                // dbUtil.writeBattleRecord(finishedBattle);
+                // battleRecordDao.writeBattleRecord(finishedBattle);
                 
                 //广播结果数据包
                 socketService.stableSocketsEmit(io.sockets.in(finishedBattle.battleName), finishedBattle.battleName, 'battleResult', resultPacket);

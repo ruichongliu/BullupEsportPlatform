@@ -1,8 +1,13 @@
 var dependencyUtil = require("../util/dependency_util.js");
+dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service".length).replace(/\\/g, "/"));
 
 var logUtil = dependencyUtil.global.utils.logUtil;
 var socketService = dependencyUtil.global.service.socketService;
-var dbUtil = dependencyUtil.global.utils.databaseUtil;
+
+var baseInfoDao = dependencyUtil.global.dao.baseInfoDao;
+var wealthInfoDao = dependencyUtil.global.dao.wealthInfoDao;
+var battleRecordDao = dependencyUtil.global.dao.battleRecordDao;
+var administratorDao = dependencyUtil.global.dao.administratorDao;
 
 exports.init = function () {
 
@@ -17,7 +22,7 @@ exports.handleWithdraw = function (socket) {
     socket.on('getWithdrawInfo', function () {
         // console.log('bankInfo:'+bank.firstname);
         // logUtil.listenerLog('changeInfo');
-        dbUtil.findAllWithdrawInfo(function(res){
+        wealthInfoDao.findAllWithdrawInfo(function(res){
             //console.log("resResult"+JSON.stringify(res));
             if (!res) {
                 socket.emit('feedback', {
@@ -48,7 +53,7 @@ exports.handleWithdrawAgree = function (socket) {
     socket.on('agree', function (data) {
         console.log(':'+data.payId);
         // logUtil.listenerLog('changeInfo');
-        dbUtil.setStatusTrue(data,function(res){
+        wealthInfoDao.setStatusTrue(data,function(res){
             //console.log("resResult"+JSON.stringify(res));
             if (!res) {
                 socket.emit('feedback', {
@@ -76,7 +81,7 @@ exports.handleWithdrawDisagree = function (socket) {
     socket.on('disagree', function (data) {
         // console.log('bankInfo:'+bank.firstname);
         // logUtil.listenerLog('changeInfo');
-        dbUtil.setStatusFalse(data,function(res){
+        wealthInfoDao.setStatusFalse(data,function(res){
             //console.log("resResult"+JSON.stringify(res));
             if (!res) {
                 socket.emit('feedback', {
@@ -106,7 +111,7 @@ exports.handleSearchBattleRecord = function (socket) {
     socket.on('getBattleRecord', function () {
         // console.log('bankInfo:'+bank.firstname);
         // logUtil.listenerLog('changeInfo');
-        dbUtil.findAllBattleRecord(function(res){
+        battleRecordDao.findAllBattleRecord(function(res){
             //console.log("resResult"+JSON.stringify(res));
             //console.log(res);
             if (!res) {
@@ -137,7 +142,7 @@ exports.handleChangeBattleResult = function (socket) {
     socket.on('changeResult', function (data) {
         //console.log(data.result);
         // logUtil.listenerLog('changeInfo');
-        dbUtil.aboutBattleRecord(data,function(res){
+        battleRecordDao.aboutBattleRecord(data,function(res){
             // console.log("resResult"+JSON.stringify(res));
             console.log(res);
             if (!res) {
@@ -168,7 +173,7 @@ exports.handleAllAccount = function (socket) {
     socket.on('getAccountInfo', function () {
         // console.log('bankInfo:'+bank.firstname);
         // logUtil.listenerLog('changeInfo');
-        dbUtil.findAllAccount(function(res){
+        administratorDao.findAllAccount(function(res){
             console.log("resResult"+JSON.stringify(res));
             //console.log(res);
             if (!res) {
@@ -200,7 +205,7 @@ exports.handleSuspendAccount = function (socket) {
     socket.on('suspend', function (data) {
         // console.log('bankInfo:'+bank.firstname);
         // logUtil.listenerLog('changeInfo');
-        dbUtil.suspendAccount(data,function(res){
+        administratorDao.suspendAccount(data,function(res){
             console.log("resResult"+JSON.stringify(res));
             //console.log(res);
             if (!res) {
@@ -227,7 +232,7 @@ exports.handleSuspendAccount = function (socket) {
 */
 exports.handleUnblockAccount = function (socket) {
     socket.on('unblock', function (data) {
-        dbUtil.unblockAccount(data,function(res){
+        administratorDao.unblockAccount(data,function(res){
             //console.log("resResult"+JSON.stringify(res));
             if (!res) {
                 socket.emit('feedback', {
@@ -255,7 +260,7 @@ exports.handleUnblockAccount = function (socket) {
 */
 exports.searchAllRechargeInfo = function (socket) {
     socket.on('getRechargeInfo', function () {
-        dbUtil.findAllRechargeInfo(function(res){
+        administratorDao.findAllRechargeInfo(function(res){
             console.log("resResult"+JSON.stringify(res));
             if (!res) {
                 socket.emit('feedback', {
@@ -287,7 +292,7 @@ exports.handleSearchFeedback = function (socket) {
     socket.on('getFeedbackInfo',function () {
         // console.log('bankInfo:'+bank.firstname);
         // logUtil.listenerLog('changeInfo');
-        dbUtil.findAllFeedback(function(res){
+        administratorDao.findAllFeedback(function(res){
             console.log("resResult"+JSON.stringify(res));
             //console.log(res);
             if (!res) {
@@ -318,7 +323,7 @@ exports.handleFeedback = function (socket) {
     socket.on('handleFeedback',function (data) {
         // console.log('bankInfo:'+bank.firstname);
         // logUtil.listenerLog('changeInfo');
-        dbUtil.handleFeedback(data,function(res){
+        administratorDao.handleFeedback(data,function(res){
             console.log("resResult"+JSON.stringify(res));
             //console.log(res);
             if (!res) {
@@ -349,7 +354,7 @@ exports.handleAnalysis = function (socket) {
     socket.on('getAnalysisData',function () {
         // console.log('bankInfo:'+bank.firstname);
         // logUtil.listenerLog('changeInfo');
-        dbUtil.findAnalysisData(function(res){
+        administratorDao.findAnalysisData(function(res){
             console.log("resResult"+JSON.stringify(res));
             //console.log(res);
             if (!res) {
@@ -379,7 +384,7 @@ exports.handleAnalysis = function (socket) {
 */
 exports.handleInvitedCode = function (socket) {
     socket.on('getInvitedCodeData',function () {
-        dbUtil.getInvitedInfo(function(res){
+        baseInfoDao.getInvitedInfo(function(res){
             console.log("resResult"+JSON.stringify(res));
             if (!res) {
                 socketService.stableSocketEmit(socket,'feedback', {

@@ -5,9 +5,11 @@ var app = express();
 var fs = require("fs");
 
 var dependencyUtil = require("../util/dependency_util.js");
+dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service".length).replace(/\\/g, "/"));
 
-var dbUtil = dependencyUtil.global.utils.databaseUtil;
 var socketService = dependencyUtil.global.service.socketService;
+
+var wealthInfoDao = dependencyUtil.global.dao.wealthInfoDao;
 
 exports.recharge = function(){
     app.set('view engine','hbs');
@@ -45,7 +47,7 @@ exports.recharge = function(){
         data.userId = Number.parseInt(userId);
         data.money = Number.parseInt(chargeAmount) / 100;
         data.currency = 'dolla';
-        dbUtil.userRecharge(data, function(results){
+        wealthInfoDao.userRecharge(data, function(results){
             var socket = socketService.mapUserIdToSocket(data.userId);
             if(results != null){
                 socketService.stableSocketEmit(socket, "rechargeResult", {'text': '充值成功！'});

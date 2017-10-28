@@ -1,5 +1,5 @@
 var dependencyUtil = require("../util/dependency_util.js");
-
+dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service".length).replace(/\\/g, "/"));
 var logUtil = dependencyUtil.global.utils.logUtil;
 
 exports.init = function () {

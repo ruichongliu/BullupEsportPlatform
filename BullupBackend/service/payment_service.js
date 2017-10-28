@@ -1,11 +1,13 @@
 var stripe = require("stripe")( "sk_test_ud0FTgDIp5a5SLWZMMOGvVF9");
 
 var dependencyUtil = require("../util/dependency_util.js");
-
+dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service".length).replace(/\\/g, "/"));
 var logUtil = dependencyUtil.global.utils.logUtil;
 var socketService = dependencyUtil.global.service.socketService;
-var dbUtil = dependencyUtil.global.utils.dbUtil;
-var logUtil = dependencyUtil.global.utils.logUtil;
+
+
+var wealthInfoDao = dependencyUtil.global.dao.wealthInfoDao;
+
 
 exports.init = function () {
    
@@ -34,7 +36,7 @@ exports.handlePayment = function (socket) {
                     extension: null
                 });
             } else {
-                dbUtil.userRecharge(data,function(err){
+                wealthInfoDao.userRecharge(data,function(err){
                     if (err) {
                         socket.emit('feedback', {
                             errorCode: 1,
@@ -68,7 +70,7 @@ exports.handleBankInfo = function (socket) {
     socket.on('bankInfo', function (bank) {
         console.log('bankInfo:'+bank.firstname);
         logUtil.listenerLog('changeInfo');
-        dbUtil.insertBankInfo(bank,function(err){
+        wealthInfoDao.insertBankInfo(bank,function(err){
             if (err) {
                 socketService.stableSocketEmit(socket, 'feedback', {
                     errorCode: 1,
@@ -101,7 +103,7 @@ exports.handleBankInfo = function (socket) {
 exports.handleSearchCashFlow = function (socket) {
     socket.on('cashFlow', function (data) {
         logUtil.listenerLog('cashFlow');
-        dbUtil.searchCashFlow(data,function(res){
+        wealthInfoDao.searchCashFlow(data,function(res){
             //console.log("resResult"+JSON.stringify(res));
             if (!res) {
                 socket.emit('feedback', {
