@@ -1,3 +1,4 @@
+var async = require('async');
 var dependencyUtil = require("../util/dependency_util.js");
 dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/dao".length).replace(/\\/g, "/"));
 
@@ -7,7 +8,7 @@ var dbUtil = dependencyUtil.global.utils.databaseUtil;
 exports.getStrengthScoreRank = function(userId, callback) {
     async.waterfall([
         function(callback){
-            connection.query('select * from bullup_rank where user_id = ?', [userId], function(err, row) {
+            dbUtil.query('select * from bullup_rank where user_id = ?', [userId], function(err, row) {
                 if (err){ 
                     throw err;
                 }
@@ -17,7 +18,7 @@ exports.getStrengthScoreRank = function(userId, callback) {
             });
         },
         function(data, callback){
-            connection.query('select user_id, user_nickname, bullup_strength_score, bullup_strength_rank, user_icon_id from bullup_rank order by bullup_strength_score desc limit 100', function(err, row) {
+            dbUtil.query('select user_id, user_nickname, bullup_strength_score, bullup_strength_rank, user_icon_id from bullup_rank order by bullup_strength_score desc limit 100', [], function(err, row) {
                 if (err){ 
                     throw err;
                 }
@@ -33,7 +34,7 @@ exports.getStrengthScoreRank = function(userId, callback) {
 exports.getWealthRank = function(userId, callback) {
     async.waterfall([
         function(callback){
-            connection.query('select * from bullup_rank where user_id = ?', [userId], function(err, row) {
+            dbUtil.query('select * from bullup_rank where user_id = ?', [userId], function(err, row) {
                 if (err){ 
                     throw err;
                 }
@@ -43,7 +44,7 @@ exports.getWealthRank = function(userId, callback) {
             });
         },
         function(data, callback){
-            connection.query('select user_id, user_nickname, bullup_wealth_sum, bullup_wealth_rank, user_icon_id from bullup_rank order by bullup_wealth_sum desc limit 100', function(err, row) {
+            dbUtil.query('select user_id, user_nickname, bullup_wealth_sum, bullup_wealth_rank, user_icon_id from bullup_rank order by bullup_wealth_sum desc limit 100', [], function(err, row) {
                 if (err){ 
                     throw err;
                 }
@@ -59,7 +60,7 @@ exports.getWealthRank = function(userId, callback) {
 exports.updateRankList = function(){
     async.waterfall([
         function(callback){
-            connection.query('select user_id,bullup_currency_amount from bullup_wealth order by bullup_currency_amount desc', function(err, row) {
+            dbUtil.query('select user_id,bullup_currency_amount from bullup_wealth order by bullup_currency_amount desc', [], function(err, row) {
                 if (err){ 
                     throw err;
                 }
@@ -69,7 +70,7 @@ exports.updateRankList = function(){
         function(usersWealthInfo, callback){
             var usersInfo = {};
             async.eachSeries(usersWealthInfo, function(wealthInfo, errCb){
-                connection.query('select user_nickname from user_base where user_id = ?', [wealthInfo.user_id], function(err, row) {
+                dbUtil.query('select user_nickname from user_base where user_id = ?', [wealthInfo.user_id], function(err, row) {
                     if (err){ 
                         throw err;
                     }
@@ -85,7 +86,7 @@ exports.updateRankList = function(){
         }, function(usersWealthInfo, callback){
             var res = usersWealthInfo;
             async.eachSeries(usersWealthInfo, function(wealthInfo, errCb){
-                connection.query('select icon_id from bullup_profile where user_id = ?', [wealthInfo.user_id], function(err, row) {
+                dbUtil.query('select icon_id from bullup_profile where user_id = ?', [wealthInfo.user_id], function(err, row) {
                     if (err){ 
                         throw err;
                     }
@@ -107,7 +108,7 @@ exports.updateRankList = function(){
         });
         for(var index = 0; index < wealthArray.length; index++){
             var userRankInfo = wealthArray[index];
-            connection.query('update bullup_rank set bullup_wealth_sum=?,bullup_wealth_rank=?,user_icon_id=?,user_nickname=? where user_id=?', [userRankInfo.user_wealth, index+1, userRankInfo.icon_id, userRankInfo.user_nickname, userRankInfo.user_id], function(err, res){
+            dbUtil.query('update bullup_rank set bullup_wealth_sum=?,bullup_wealth_rank=?,user_icon_id=?,user_nickname=? where user_id=?', [userRankInfo.user_wealth, index+1, userRankInfo.icon_id, userRankInfo.user_nickname, userRankInfo.user_id], function(err, res){
                 if(err){
                     throw err;
                 }
@@ -116,7 +117,7 @@ exports.updateRankList = function(){
     });
     async.waterfall([
         function(callback){
-            connection.query('select user_id,bullup_strength_score from bullup_strength order by bullup_strength_score desc', function(err, row) {
+            dbUtil.query('select user_id,bullup_strength_score from bullup_strength order by bullup_strength_score desc', [], function(err, row) {
                 if (err){ 
                     throw err;
                 }
@@ -126,7 +127,7 @@ exports.updateRankList = function(){
         function(usersStrengthInfo, callback){
             var usersInfo = {};
             async.eachSeries(usersStrengthInfo, function(strengthInfo, errCb){
-                connection.query('select user_nickname from user_base where user_id = ?', [strengthInfo.user_id], function(err, row) {
+                dbUtil.query('select user_nickname from user_base where user_id = ?', [strengthInfo.user_id], function(err, row) {
                     if (err){ 
                         throw err;
                     }
@@ -142,7 +143,7 @@ exports.updateRankList = function(){
         }, function(usersStrengthInfo, callback){
             var res = usersStrengthInfo;
             async.eachSeries(usersStrengthInfo, function(strengthInfo, errCb){
-                connection.query('select icon_id from bullup_profile where user_id = ?', [strengthInfo.user_id], function(err, row) {
+                dbUtil.query('select icon_id from bullup_profile where user_id = ?', [strengthInfo.user_id], function(err, row) {
                     if (err){ 
                         throw err;
                     }
@@ -164,7 +165,7 @@ exports.updateRankList = function(){
         });
         for(var index = 0; index < strengthArray.length; index++){
             var userRankInfo = strengthArray[index];
-            connection.query('update bullup_rank set bullup_strength_score=?,bullup_strength_rank=?,user_icon_id=?,user_nickname=? where user_id=?', [userRankInfo.user_strength, index+1, userRankInfo.icon_id, userRankInfo.user_nickname, userRankInfo.user_id], function(err, res){
+            dbUtil.query('update bullup_rank set bullup_strength_score=?,bullup_strength_rank=?,user_icon_id=?,user_nickname=? where user_id=?', [userRankInfo.user_strength, index+1, userRankInfo.icon_id, userRankInfo.user_nickname, userRankInfo.user_id], function(err, res){
                 if(err){
                     throw err;
                 }
@@ -174,17 +175,3 @@ exports.updateRankList = function(){
 }
 
 
-exports.updateStrengthAndWealth = function(userId, newStrengthScore, wealthChangedValue){
-    if(newStrengthScore < 0){
-        newStrengthScore = 0;
-    }
-    connection.query('select bullup_currency_amount from bullup_wealth where user_id = ?', [userId], (err, res) => {
-        if(err)throw err;
-        connection.query('update bullup_wealth set bullup_currency_amount = ? where user_id = ?', [parseInt(res[0].bullup_currency_amount) + parseInt(wealthChangedValue), userId], (err, res)=>{
-            if(err)throw err;
-        });
-    });
-    connection.query('update bullup_strength set bullup_strength_score = ? where user_id = ?', [newStrengthScore, userId], (err, res) => {
-        if(err)throw err;
-    });
-}
