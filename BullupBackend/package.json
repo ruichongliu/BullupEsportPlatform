@@ -1,5 +1,5 @@
 {
-  "name": "BullupEsportBackend",
+  "name": "bullup_esport_backend",
   "version": "0.0.1",
   "description": "BullUp",
   "dependencies": {
@@ -8,7 +8,9 @@
     "moment": "~2.18.1",
     "mysql": "^2.13.0",
     "request": "~2.81.0",
-    "socket.io": "^2.0.3"
+    "socket.io": "^2.0.3",
+    "express": "~4.16.2",
+    "stripe": "~5.2.0"
   },
   "main": "index.html"
 }
