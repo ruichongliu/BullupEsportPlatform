@@ -28,6 +28,8 @@ exports.init = function(rootPath){
     exports.paths.daoPaths.rankInfoDaoPath = exports.directories.daoDirectory + "rank_info_dao.js";
     exports.paths.daoPaths.battleRecordDaoPath = exports.directories.daoDirectory + "battle_record_dao.js";
     exports.paths.daoPaths.lolInfoDaoPath = exports.directories.daoDirectory + "lol_info_dao.js";
+    exports.paths.daoPaths.strengthInfoDaoPath = exports.directories.daoDirectory + "strength_info_dao.js";
+    exports.paths.daoPaths.administratorDaoPath = exports.directories.daoDirectory + "administrator_dao.js";
     //Service路径
     exports.paths.servicePaths.userServicePath = exports.directories.serviceDirectory + "user_service.js";
     exports.paths.servicePaths.battleServicePath = exports.directories.serviceDirectory + "battle_service.js";
