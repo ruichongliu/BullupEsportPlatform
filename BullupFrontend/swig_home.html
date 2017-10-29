@@ -743,157 +743,25 @@
 		<script src="./js/validate_sign.js"></script>
 		<script src="./js/close_modal.js"></script>
 		<script src="./js/router.js"></script>
-
-		<!-- Other files -->
-
-		<!-- ------------------------------------------- -->
+		<script src="./js/home_init.js"></script>
+		<script src="./js/city_init.js"></script>
+		<script src="./js/chat.js"></script>
+		<script src="./js/change_icon.js"></script>
+		<script src="./js/create_room.js"></script>
+		<script src="./js/bind_lol.js"></script>
 		<script src="./js/login.js"></script>
 		<script src="./js/game_history_query.js"></script>
 		<script src="./js/request_rank_list.js"></script>
-		
-		
-		<script src="./js/bind_lol.js"></script>
-		<script src="./js/create_room.js"></script>
 		<script src="./js/message_center.js"></script>
 		<script src="./js/personal_center.js"></script>
-		<script src="./js/test_page.js"></script>
-		
-
-		
 		<script src="./js/recharge.js"></script>
 		<script src="./js/feedback_message.js"></script>
 		<script src="./js/turn_to_room.js"></script>
 		<script src="./js/add_friend.js"></script>
-		<script src="./js/bullup_message_box.js"></script>
-		
-		<script src="./js/change_icon.js"></script>
+		<script src="./js/bank_input.js"></script>
 
-		<script src="./js/testData.js"></script>
-		<!-- router -->
-		
-		<!-- 银行格式js -->
-		<script src="./js/bankInput.js"></script>
-		<!-- 聊天室js -->
-		
-		<script src="./js/chat.js"></script>
+		<!-- Other files -->
+		<script src="./js/test_page.js"></script>
 
-		
-		<!-- --------------------js files-------------------- -->
-
-		<script>
-			$().ready(function () {
-				var temp = bullup.loadSwigView("./swig_menu.html", null);
-				$('#system_menu').html(temp);
-			});
-
-			$().ready(function () {
-				// the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
-				$('.modal').modal();
-			});
-			// 有效期时间组件
-			$('.datepicker').pickadate({
-				selectMonths: true, // Creates a dropdown to control month
-				selectYears: 15 // Creates a dropdown of 15 years to control year
-			});
-			// 价格$
-			$('.credit').click(function () {
-				var iox = $(this).index();
-				var clasvlue = $('.credit').eq(iox).text();
-				$("#money").val(clasvlue);
-				$('.ois').addClass('active');
-				$('.credit').eq(iox).addClass("selected").siblings().removeClass('selected');
-			})
-			// //银行卡号输入js配置
-			// $(document).ready(function () {
-			// 	$('.account').bankInput();
-			// 	$('.account').bankInput({ min: 4, max: 25, deimiter: '   ' });
-			// 	$('.account').bankList();
-			// });
-			//弹出popo
-			$('.waves-light').click(function () {
-				$('#modalpopo').modal('close');
-			});
-			$(function () {
-				$('#beginTime').date();
-				$('#endTime').date({ theme: "datetime" });
-				$('#endTime2').date({ theme: "datetime" });
-			});
-			$(document).ready(function () {
-				$('input#input_text, textarea#textarea1').characterCounter();
-
-				//地图替换
-				$('.dropdown-content li').on("click",function () {
-				//$('.map-selection-item').on("click",function () {
-					var map = $(this).index();
-					var html=$(this).html();
-					if(html.indexOf('召唤师峡谷')!= -1){
-						$('.room_map').attr('src','./media/imgs/rift_map.jpg');
-					}else if(html.indexOf('嚎哭深渊')!= -1){
-						$('.room_map').attr('src','./media/imgs/hhsy_map.jpg');
-					}
-				});
-			});
-			//引导页
-			</script>
-
-			
-			<script type="text/javascript">
-			// 全球城市地区初始化（不可外链）
-				var areaObj = [];
-				function initLocation(e){
-					var a = 0;
-					for (var m in e) {
-						areaObj[a] = e[m];
-						a++;
-					}
-				};
-			</script>
-			<!-- 全球主要城市数据 -->
-			<script src="./js/location_chs.js"></script>
-			<script type="text/javascript">
-			// 全球城市地区配置（不可外链）
-				var country = '';
-				for (var a=0;a<=_areaList.length-1;a++) {
-					var objContry = _areaList[a];
-					country += '<option value="'+objContry+'" a="'+(a+1)+'">'+objContry+'</option>';
-				}
-				$("#country").html(country).chosen({search_contains: true}).change(function(){
-					var a = $("#country").find("option[value='"+$("#country").val()+"']").attr("a");
-					var _province = areaObj[a];
-					var province = '';
-					for (var b in _province) {
-						var objProvince = _province[b];
-						if (objProvince.n) {
-							province += '<option value="'+objProvince.n+'" b="'+b+'">'+objProvince.n+'</option>';
-						}
-					}
-					if (!province) {
-						province = '<option value="" b="0">--</option>';
-					}
-					$("#province").html(province).chosen({search_contains: true}).change(function(){
-						var b = $("#province").find("option[value='"+$("#province").val()+"']").attr("b");
-						var _city = areaObj[a][b];
-						var city = '';
-						for (var c in _city) {
-							var objCity = _city[c];
-							if (objCity.n) {
-								city += '<option value="'+objCity.n+'">'+objCity.n+'</option>';
-							}
-						}
-						if (!city) {
-							var city = '<option value="">--</option>';
-						}
-						$("#city").html(city).chosen({search_contains: true}).change();
-						$(".dept_select").trigger("chosen:updated");
-					});
-					$("#province").change();
-					$(".dept_select").trigger("chosen:updated");
-				});
-				$("#country").change();
-				//监听取值
-				$("#register_btn").click(function(){
-					console.log($("#country").val()+'-'+$("#province").val()+'-'+$("#city").val());
-				});
-			</script>
 	</body>
 </html>

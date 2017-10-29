@@ -1,4 +1,4 @@
-var lolapi = require('./js/lolutil.js');
+var lolapi = require('./js/util/lol_util.js');
 
 
 process.on('uncaughtException', function(err) {
