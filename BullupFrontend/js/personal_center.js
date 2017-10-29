@@ -2,7 +2,7 @@ $(document).ready(function(){
     //#id  换成实际的那个个人中心 a标签的ID
     $('#home').on('click',function(){
         //这里发送消息
-        // userInfo 是客户端维护的全局变量  在socket_util.js中维护  当登录成功后userInfo里面有值 
+        // userInfo 是客户端维护的全局变量  client.js中维护  当登录成功后userInfo里面有值 
         //var userInfo={};
         if(userInfo==null){
             bullup.alert("您没有登录，请登录!");

@@ -14,27 +14,52 @@ $().ready(function(){
 		e.preventDefault();
 		socket.emit("LOLKeyRequest");
 		
-		// var dataquery = bullup.loadSwigView('swig_dataquery.html', {});
-		// $('.content').html(dataquery);
-		// $('.datepicker').pickadate({
-		// 	selectMonths: true, // Creates a dropdown to control month
-		// 	selectYears: 15, // Creates a dropdown of 15 years to control year,
-		// 	today: 'Today',
-		// 	clear: 'Clear',
-		// 	close: 'Ok',
-		// 	closeOnSelect: true // Close upon selecting a date,
-		// });
-		// $.getScript('/js/game_history_query.js');
 	});
 
 	$('#router_tournament').on('click', function(e){
 		bullup.alert("程序猿正在玩命开发中ε=ε=ε=ε=ε=ε=┌(￣◇￣)┘");
-		//e.preventDefault();
-		// var tournaments_data = [];
-		// bullup.loadTemplateIntoTarget('swig_tournament.html', tournaments_data, 'main-view');
 	});
 
-	
+	$('#router_personal_center').on('click', function(e){
+        e.preventDefault();
+        if(userInfo == null){
+            bullup.alert('请先登录！');
+        }else{
+            var $role = userInfo.userRole;
+            //alert($role);
+            if($role==1){
+                bullup.loadTemplateIntoTarget('swig_admin.html', {}, 'main-view');
+                $.getScript('/js/zymly.js');
+                
+            }else{
+                bullup.loadTemplateIntoTarget('swig_index.html', {}, 'main-view');
+                $.getScript('/js/zymly.js');
+                var $userId = userInfo.userId;
+                socket.emit('getBalance',{
+                    userId:$userId
+                });            
+            }
+        }
+	});
+
+	$('#router_chat').on('click', function(e){
+        e.preventDefault();
+        if(!userInfo){
+                bullup.alert('请登录后查看');
+        }else{
+                bullup.loadTemplateIntoTarget('swig_chatroom.html', {}, 'main-view');
+                $.getScript('./js/chat.js');
+        }   
+	});
+   
+	$('#return').on('click', function(e){
+		e.preventDefault();
+		bullup.loadTemplateIntoTarget('swig_index.html', {}, 'main-view');
+		$.getScript('/js/zymly.js');
+		$.getScript('/js/Withdraw.js');
+	});  
+
+   
 });
 
 function loadStarter(){

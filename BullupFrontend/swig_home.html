@@ -57,7 +57,7 @@
 						<li><a id="router_dataquery">数据查询</a></li>
 						<li><a id="router_rank">排行榜</a></li>
 
-						<li><a id="router_index">个人中心</a></li>
+						<li><a id="router_personal_center">个人中心</a></li>
 						<li><a id="router_chat">聊天室</a></li>
 
 						
@@ -711,41 +711,57 @@
 			</div>
 		  </div>
 		<div id="datePlugin"></div>
+		
+		<!-- --------------------js files-------------------- -->
+		<!-- Third part js files -->
 		<script src="./js/jquery-2.2.4.js"></script>
 		<script src="./js/materialize.min.js"></script>
-		<script src="./js/socket_util.js"></script>
-		<script src="./js/global.js"></script>
+		<script src="./js/Chart.bundle.js"></script>
+		<script src="./flipclock/flipclock.js"></script>
 		<script src="./js/jquery.validate.min.js"></script>
+		<script src="https://js.stripe.com/v3/"></script>
+		<script src="./js/date.js"></script>
+		<script src="./js/jquery.pagewalkthrough.js"></script>
+
+		<!-- Global util js files -->
+		<script src="./js/util/alert_util.js"></script>
+		<script src="./js/util/chart_util.js"></script>
+		<script src="./js/util/path_util.js"></script>
+		<script src="./js/util/swig_util.js"></script>
+
+		<!-- client.js -->
+		<script src="./js/client.js"></script>
+
+		<!-- Action effect js files -->
+
+	
+		<!-- Interacter js files-->
+		<script src="./js/interacter/view_obj_init.js"></script>
 		<script src="./js/validate_sign.js"></script>
-		<script src="./js/global.js"></script>
-		<!-- <script src="./js/spa.js"></script> -->
+		<script src="./js/close_modal.js"></script>
+		<script src="./js/rooter.js"></script>
+		
+
+		<!-- ------------------------------------------- -->
 		<script src="./js/login.js"></script>
 		<script src="./js/game_history_query.js"></script>
-		<script src="./js/swig.js"></script>
 		<script src="./js/request_rank_list.js"></script>
-		<script src="./js/Chart.bundle.js"></script>
-		<script src="./js/generate_radar.js"></script>
-		<script src="./js/close_modal.js"></script>
+		
+		
 		<script src="./js/bind_lol.js"></script>
 		<script src="./js/create_room.js"></script>
 		<script src="./js/message_center.js"></script>
 		<script src="./js/personal_center.js"></script>
 		<script src="./js/test_page.js"></script>
-		<script src="./flipclock/flipclock.js"></script>
-		<script src="./js/date.js"></script>
-		<script src="./js/gerenly.js"></script>
-		<script src="./js/cjdwly.js"></script>
 		
-		<!-- <script src="./js/chat.js"></script> -->
-		<script src="https://js.stripe.com/v3/"></script>
 
+		
 		<script src="./js/recharge.js"></script>
 		<script src="./js/feedback_message.js"></script>
 		<script src="./js/turn_to_room.js"></script>
 		<script src="./js/add_friend.js"></script>
 		<script src="./js/bullup_message_box.js"></script>
-		<script src="./js/jquery.pagewalkthrough.js"></script>
-		<script type="text/javascript" src="./js/time_js.js"></script>
+		
 		<script src="./js/change_icon.js"></script>
 
 		<script src="./js/testData.js"></script>
@@ -760,7 +776,7 @@
 		<script src="./js/chosen.jquery.min.js"></script>
 		<script src="./js/area_chs.js"></script> 
 		
-		
+		<!-- --------------------js files-------------------- -->
 
 		<script>
 			$().ready(function () {
@@ -844,7 +860,7 @@
 
                             }
                         }, {
-                            wrapper: '#router_index',
+                            wrapper: '#router_personal_center',
                             popup: {
                                 content: '#walkthrough-4',
                                 type: 'tooltip',
