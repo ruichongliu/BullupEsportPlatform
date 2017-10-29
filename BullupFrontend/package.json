@@ -1,7 +1,7 @@
 {
-  "name": "bullup_esport_frontend",
+  "name": "BullupEsport",
   "version": "0.0.1",
-  "main": "./html/swig_home.html",
+  "main": "swig_home.html",
   "window": {
     "title": "Bull Fight",
     "toolbar": true,
