@@ -317,3 +317,12 @@
 	margin-right: 50px;
 	margin-bottom: 10px;
 }
+.video-img{
+	background: url(/media/imgs/Video1.png) 0 0 no-repeat!important;
+}
+.video-img:nth-child(2){
+	background: url(/media/imgs/Video3.png) 0 0 no-repeat!important;
+}
+.video-img:nth-child(3){
+	background: url(/media/imgs/Video4.png) 0 0 no-repeat!important;
+}

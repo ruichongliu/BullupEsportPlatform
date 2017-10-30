@@ -18,7 +18,7 @@ $("#invite_friend_btn").click(function(){
                     //alert($("#friend_" + (i+1) + "_check_box").val());//打印选中的值
                     //发送请求
                     //console.log("room : " + JSON.stringify(roomInfo));
-                    var friend = userInfo.friendList[$("#friend_" + (i+1) + "_check_box").val()];
+                    var friend = userInfo.friendList[i];
                     socket.emit('message', {
                         name: friend.name,
                         userId: friend.userId,

@@ -1,5 +1,5 @@
 var io = require('socket.io-client');
-var socket = io.connect('http://127.0.0.1:3000');
+var socket = io.connect('http://192.168.2.142:3000');
 //var socket = io.connect('http://127.0.0.1:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
@@ -309,7 +309,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             userInfo.creatingRoom = false;
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
-            bullup.alert('请在规定时间内创建房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password);
+            bullup.alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password);
         
             //////////////////////////////////////
             var labelArray = ['战力', '击杀', '死亡', '助攻', '造成伤害', '承受伤害'];
@@ -340,7 +340,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         //bullup.alert('请等待');
         if(userInfo.creatingRoom){
             lol_process.grabLOLData('room', socket);
-            bullup.alert('房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password);
+            bullup.alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password);
             
             //////////////////////////////////////
             var labelArray = ['战力', '击杀', '死亡', '助攻', '造成伤害', '承受伤害'];
