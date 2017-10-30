@@ -123,8 +123,8 @@ exports.userRecharge = function(data, callback) {
 exports.insertBankInfo = function(bankInfo, callback) {
     async.parallel([
         function(done){
-            dbUtil.query('insert into bullup_bankcard_info(user_id,bullup_bank_cardnumber,bullup_bank_firstname,bullup_bank_lastname,bullup_bank_areacode,bullup_bank_phone,bullup_bank_money,bullup_bank_email,bullup_bank_streetaddress,bullup_bank_apt_suite_bldg,bullup_bank_zipcode,bullup_bank_cvc) values (?,?,?,?,?,?,?,?,?,?,?,?)',
-            [bankInfo.userId,bankInfo.cardnumber,bankInfo.firstname,bankInfo.lastname,bankInfo.areacode,bankInfo.phone,bankInfo.money,bankInfo.email,bankInfo.streetaddress,bankInfo.apt_suite_bldg,bankInfo.zipcode,bankInfo.cvc], function (err, results){
+            dbUtil.query('insert into bullup_bankcard_info(user_id,bullup_bank_cardnumber,bullup_bank_firstname,bullup_bank_lastname,bullup_bank_areacode,bullup_bank_phone,bullup_bank_money,bullup_bank_email,bullup_bank_streetaddress,bullup_bank_apt_suite_bldg,bullup_bank_zipcode) values (?,?,?,?,?,?,?,?,?,?,?)',
+            [bankInfo.userId,bankInfo.cardnumber,bankInfo.firstname,bankInfo.lastname,bankInfo.areacode,bankInfo.phone,bankInfo.money,bankInfo.email,bankInfo.streetaddress,bankInfo.apt_suite_bldg,bankInfo.zipcode], function (err, results){
                if (err) throw err;                                                                                                                                                                                                                             
                done(err,results);
            });
