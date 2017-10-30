@@ -71,15 +71,10 @@ exports.findFriendListByUserId = function(userId, callback) {
 
 
 //用户修改信息
-exports.updateUserInfo = function(data,callback){
+exports.updateNickname= function(data,callback){
     async.parallel([
         function(done){
             dbUtil.query('update user_base set user_nickname=? where user_id=?',[data.nickname,data.userId],function(err,res){
-                if (err) throw err;
-                done(null,res);
-            });
-        },function(done){
-            dbUtil.query('update user_info set user_phone=? where user_id=?',[data.phone,data.userId],function(err,res){
                 if (err) throw err;
                 done(null,res);
             });
@@ -94,7 +89,13 @@ exports.updateUserInfo = function(data,callback){
         callback(res);
     });
 }
+exports.updatePhone = function(data,callback){
+    dbUtil.query('update user_info set user_phone=? where user_id=?',[data.phone,data.userId],function(err,res){
+        if (err) throw err;
+        callback(res);
+    });
 
+}
 //---------------------------------------添加好友关系-------------------------------------//
 exports.addFriendRelationship = function(userId1, userId2){
     dbUtil.query('insert into `bullup_friend` values (?, ?)', [userId1, userId2], function (err, results){
@@ -106,8 +107,9 @@ exports.addFriendRelationship = function(userId1, userId2){
 }
 
 exports.findUserByNickname = function(nickname, callback) {
-    dbUtil.query('select * from `user_base` where user_nickname=?', [nickname], function (err, results){
+    dbUtil.query('select * from `user_base` where binary user_nickname like ?', [nickname], function (err, results){
         if (err) throw err;
+        console.log(results[0]);
         callback(results[0]);
     });
 }
