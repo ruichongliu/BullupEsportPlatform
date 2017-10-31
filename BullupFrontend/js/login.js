@@ -97,20 +97,19 @@ $().ready(function () {
 		} 
 		//alert($email);
 
-		// function telephoneCheck(str) {
-		// 	// 美国手机号
-		// 	var reg = /^(1\s?)?(\(\d{3}\)|\d{3})[\s\-]?\d{3}[\s\-]?\d{4}$/g;
-		// 	return reg.test(str);
+		function telephoneCheck(str) {
+			// 美国手机号
+			var reg = /^(1\s?)?(\(\d{3}\)|\d{3})[\s\-]?\d{3}[\s\-]?\d{4}$/g;
+			return reg.test(str);
 
-		// }
+		}
 		// // telephoneCheck("555-555-5555");
 
 		if(verifyemail($userAccount)==true){
-			if(verifyHandset($tel)==true){
+			if(verifyHandset($tel)==true||telephoneCheck($tel)==true){
 				if(verifyPassword($userPassword)==true){
-					if ($userPassword == $confirmedPwd) {
+					if ($userPassword == $confirmedPwd){
 						if(agreeRules = true){
-							if($email != ""){
 								if($userNickname!=''&&$userNickname.length<=15){
 									//对选择国家的校验
 									if($country != ""){
@@ -118,16 +117,16 @@ $().ready(function () {
 										if($city != ""){
 											//对选择省会的校验
 											if($province != ""){
-									socket.emit('register', {
-										userAccount: $userAccount,
-										userPassword: $userPassword,
-										userNickname: $userNickname,
-										userPhoneNumber: $tel,
-										userEmail: $email,
-										userCountry:$country,
-										userCity:$city,
-										userProvince:$province
-									});
+											socket.emit('register', {
+												userAccount: $userAccount,
+												userPassword: $userPassword,
+												userNickname: $userNickname,
+												userPhoneNumber: $tel,
+												userEmail: $email,
+												userCountry:$country,
+												userCity:$city,
+												userProvince:$province
+											});
 									}else{
 										alert("请选择省会！");
 									}
@@ -142,9 +141,6 @@ $().ready(function () {
 								}else{
 									alert("昵称不能为空且小于15字");
 								}
-							}else{
-								alert("请输入邀请码！");
-							}
 						}else{
 							alert("请仔细阅读并同意用户协议！");
 						}
