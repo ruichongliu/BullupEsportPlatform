@@ -229,7 +229,7 @@ exports.handleRegister = function (socket) {
  */
 exports.handleInviteFriend = function (socket) {
     socket.on('message', function (inviteMessage) {
-        logUtil.listenerLogLog('message');
+        logUtil.listenerLog('message');
         if (socketService.isUserOnline(inviteMessage.userId)) {
             var dstSocket = socketService.mapUserIdToSocket(inviteMessage.userId);
             inviteMessage.messageToken = 'message' + inviteMessage.userId + (new Date()).getTime();
@@ -368,7 +368,7 @@ exports.handlelastLoginTime = function (socket){
  */
 exports.handleUserInviteResult = function (io, socket) {
     socket.on('inviteResult', function (feedback) {
-        logUtil.listenerLogLog('inviteResult');
+        logUtil.listenerLog('inviteResult');
 
         //用户接受邀请
         if (feedback.errorCode == 0) {
@@ -661,12 +661,12 @@ exports.originStrengthScoreCalculation = function(lastSesonRank, currentSeasonRa
 exports.insertFeedbackMessage=function(socket){
     socket.on('feedbackMessage',function(result){
         console.log('result:'+JSON.stringify(result)); 
-        logUtil.listenerLogLog('feedbackMessage');
+        logUtil.listenerLog('feedbackMessage');
         baseInfoDao.insertFeedback(result,function(res){
             if(!res){
                 socketService.stableSocketEmit(socket, 'feedback',{
                 //console.log('result:'+JSON.stringify(result)); 
-                //logUtil.listenerLogLog('feedbackMessage');
+                //logUtil.listenerLog('feedbackMessage');
                     errorCode:1,
                     text:'反馈失败,请稍后重试',
                     type:'FEEDBACKMESSAGE',
@@ -687,12 +687,12 @@ exports.insertFeedbackMessage=function(socket){
 exports.insertFeedbackMessage=function(socket){
     socket.on('feedbackMessage',function(result){
         console.log('result:'+JSON.stringify(result)); 
-        logUtil.listenerLogLog('feedbackMessage');
+        logUtil.listenerLog('feedbackMessage');
         baseInfoDao.insertFeedback(result,function(res){
             if(!res){
                 socketService.stableSocketEmit(socket, 'feedback',{
                 //console.log('result:'+JSON.stringify(result)); 
-                //logUtil.listenerLogLog('feedbackMessage');
+                //logUtil.listenerLog('feedbackMessage');
                     errorCode:1,
                     text:'反馈失败,请稍后重试',
                     type:'FEEDBACKMESSAGE',
