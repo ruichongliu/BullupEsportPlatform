@@ -22,8 +22,9 @@ $(document).ready(function(){
 			//return ;
 		}else{
 			var room = {
+			
 				battleDesc : $("#battle_desc").val(),
-				mapSelection : "map-selection-1",
+				mapSelection :$('#map-selection option:selected').val(),
 				winningCondition : "push-crystal",
 				gameMode : $("#game_mode").val(),
 				rewardType : $("#reward_type").val(),
@@ -63,6 +64,7 @@ $(document).ready(function(){
 				winningCondition: room.winningCondition
 			});
 		}
+		console.log(room)
 	});
 
 });
