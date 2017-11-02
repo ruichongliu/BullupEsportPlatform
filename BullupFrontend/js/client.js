@@ -819,11 +819,27 @@ function handleTeamEstablishResult(feedback){
             ///////////untest
             $('#invite-battle-btn').unbind();
             $('#invite-battle-btn').click(function(){
-                var battleInfo = {};
-                battleInfo.hostTeamName = $('#team_details_team_name').html();
-                battleInfo.challengerTeamName = teamInfo.roomName;
-                battleInfo.userId = userInfo.userId;
-                socket.emit('battleInvite', battleInfo);
+                if (formedTeams[team].mapSelection == roomInfo.mapSelection) {
+                    if (formedTeams[team].teamParticipantsNum == roomInfo.teamParticipantsNum) {
+                        if (formedTeams[team].rewardAmount == roomInfo.rewardAmount) {
+                            var battleInfo = {};
+                            battleInfo.hostTeamName = $('#team_details_team_name').html();
+                            battleInfo.challengerTeamName = teamInfo.roomName;
+                            battleInfo.userId = userInfo.userId;
+                            socket.emit('battleInvite', battleInfo);
+                        } else {
+                            $("#invite-battle-btn").attr('href', 'javascript:void(0)');
+                            alert("您选择的队伍积分不符合");
+                        }
+
+                    } else {
+                        $("#invite-battle-btn").attr('href', 'javascript:void(0)');
+                        alert("您选择的队伍人数不符合");
+                    }
+                } else {
+                    $("#invite-battle-btn").attr('href', 'javascript:void(0)');
+                    alert("您选择的队伍地图不符合");
+                }
             });
             //////////
         });
@@ -875,11 +891,27 @@ function handleRefreshFormedBattleRoomResult(feedback){
             ///////////untest
             $('#invite-battle-btn').unbind();
             $('#invite-battle-btn').click(function(){
-                var battleInfo = {};
-                battleInfo.hostTeamName = $('#team_details_team_name').html();
-                battleInfo.challengerTeamName = teamInfo.roomName;
-                battleInfo.userId = userInfo.userId;
-                socket.emit('battleInvite', battleInfo);
+                if (formedTeams[team].mapSelection == roomInfo.mapSelection) {
+                    if (formedTeams[team].teamParticipantsNum == roomInfo.teamParticipantsNum) {
+                        if (formedTeams[team].rewardAmount == roomInfo.rewardAmount) {
+                            var battleInfo = {};
+                            battleInfo.hostTeamName = $('#team_details_team_name').html();
+                            battleInfo.challengerTeamName = teamInfo.roomName;
+                            battleInfo.userId = userInfo.userId;
+                            socket.emit('battleInvite', battleInfo);
+                        } else {
+                            $("#invite-battle-btn").attr('href', 'javascript:void(0)');
+                            alert("您选择的队伍积分不符合");
+                        }
+
+                    } else {
+                        $("#invite-battle-btn").attr('href', 'javascript:void(0)');
+                        alert("您选择的队伍人数不符合");
+                    }
+                } else {
+                    $("#invite-battle-btn").attr('href', 'javascript:void(0)');
+                    alert("您选择的队伍地图不符合");
+                }
             });
             //////////
         });
