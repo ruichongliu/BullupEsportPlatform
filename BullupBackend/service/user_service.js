@@ -229,7 +229,7 @@ exports.handleRegister = function (socket) {
  */
 exports.handleInviteFriend = function (socket) {
     socket.on('message', function (inviteMessage) {
-        logUtil.listenerLogLog('message');
+        //logUtil.listenerLogLog('message');xj
         if (socketService.isUserOnline(inviteMessage.userId)) {
             var dstSocket = socketService.mapUserIdToSocket(inviteMessage.userId);
             inviteMessage.messageToken = 'message' + inviteMessage.userId + (new Date()).getTime();
@@ -368,7 +368,7 @@ exports.handlelastLoginTime = function (socket){
  */
 exports.handleUserInviteResult = function (io, socket) {
     socket.on('inviteResult', function (feedback) {
-        logUtil.listenerLogLog('inviteResult');
+       // logUtil.listenerLogLog('inviteResult');cxj
 
         //用户接受邀请
         if (feedback.errorCode == 0) {
@@ -661,7 +661,7 @@ exports.originStrengthScoreCalculation = function(lastSesonRank, currentSeasonRa
 exports.insertFeedbackMessage=function(socket){
     socket.on('feedbackMessage',function(result){
         console.log('result:'+JSON.stringify(result)); 
-        logUtil.listenerLogLog('feedbackMessage');
+        //logUtil.listenerLogLog('feedbackMessage');
         baseInfoDao.insertFeedback(result,function(res){
             if(!res){
                 socketService.stableSocketEmit(socket, 'feedback',{
@@ -687,7 +687,7 @@ exports.insertFeedbackMessage=function(socket){
 exports.insertFeedbackMessage=function(socket){
     socket.on('feedbackMessage',function(result){
         console.log('result:'+JSON.stringify(result)); 
-        logUtil.listenerLogLog('feedbackMessage');
+        //logUtil.listenerLogLog('feedbackMessage');
         baseInfoDao.insertFeedback(result,function(res){
             if(!res){
                 socketService.stableSocketEmit(socket, 'feedback',{
