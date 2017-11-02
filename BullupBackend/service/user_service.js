@@ -229,7 +229,11 @@ exports.handleRegister = function (socket) {
  */
 exports.handleInviteFriend = function (socket) {
     socket.on('message', function (inviteMessage) {
+<<<<<<< HEAD
         //logUtil.listenerLogLog('message');xj
+=======
+        logUtil.listenerLog('message');
+>>>>>>> 8b9dc20ff3df03f299b330ca8347541e6ea0754f
         if (socketService.isUserOnline(inviteMessage.userId)) {
             var dstSocket = socketService.mapUserIdToSocket(inviteMessage.userId);
             inviteMessage.messageToken = 'message' + inviteMessage.userId + (new Date()).getTime();
@@ -368,7 +372,11 @@ exports.handlelastLoginTime = function (socket){
  */
 exports.handleUserInviteResult = function (io, socket) {
     socket.on('inviteResult', function (feedback) {
+<<<<<<< HEAD
        // logUtil.listenerLogLog('inviteResult');cxj
+=======
+        logUtil.listenerLog('inviteResult');
+>>>>>>> 8b9dc20ff3df03f299b330ca8347541e6ea0754f
 
         //用户接受邀请
         if (feedback.errorCode == 0) {
@@ -661,12 +669,16 @@ exports.originStrengthScoreCalculation = function(lastSesonRank, currentSeasonRa
 exports.insertFeedbackMessage=function(socket){
     socket.on('feedbackMessage',function(result){
         console.log('result:'+JSON.stringify(result)); 
+<<<<<<< HEAD
         //logUtil.listenerLogLog('feedbackMessage');
+=======
+        logUtil.listenerLog('feedbackMessage');
+>>>>>>> 8b9dc20ff3df03f299b330ca8347541e6ea0754f
         baseInfoDao.insertFeedback(result,function(res){
             if(!res){
                 socketService.stableSocketEmit(socket, 'feedback',{
                 //console.log('result:'+JSON.stringify(result)); 
-                //logUtil.listenerLogLog('feedbackMessage');
+                //logUtil.listenerLog('feedbackMessage');
                     errorCode:1,
                     text:'反馈失败,请稍后重试',
                     type:'FEEDBACKMESSAGE',
@@ -687,12 +699,16 @@ exports.insertFeedbackMessage=function(socket){
 exports.insertFeedbackMessage=function(socket){
     socket.on('feedbackMessage',function(result){
         console.log('result:'+JSON.stringify(result)); 
+<<<<<<< HEAD
         //logUtil.listenerLogLog('feedbackMessage');
+=======
+        logUtil.listenerLog('feedbackMessage');
+>>>>>>> 8b9dc20ff3df03f299b330ca8347541e6ea0754f
         baseInfoDao.insertFeedback(result,function(res){
             if(!res){
                 socketService.stableSocketEmit(socket, 'feedback',{
                 //console.log('result:'+JSON.stringify(result)); 
-                //logUtil.listenerLogLog('feedbackMessage');
+                //logUtil.listenerLog('feedbackMessage');
                     errorCode:1,
                     text:'反馈失败,请稍后重试',
                     type:'FEEDBACKMESSAGE',
