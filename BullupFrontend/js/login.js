@@ -27,47 +27,7 @@ $().ready(function () {
 		var $country = $('#country').val();
 		var $city =$('#city').val();
 		var $province=$('#province').val();
-		// if(agreeRules != true){
-		// 	bullup.alert("请仔细阅读并同意用户协议！");
-		// 	return;
-		// }
-		// if($userAccount == ""){
-		// 	bullup.alert("请输入邮箱！");
-		// 	return;
-		// }
-		// if($userPassword == ""){
-		// 	bullup.alert("请输入密码！");
-		// 	return;
-		// }
-		// if($confirmedPwd == ""){
-		// 	bullup.alert("请再次输入密码！");
-		// 	return;
-		// }
-		// if($userNickname == ""){
-		// 	bullup.alert("请输入用户昵称！");
-		// 	return;
-		// }
-		// if($tel== ""){
-		// 	bullup.alert("请输入手机号！");
-		// 	return;
-		// }
-		// if($email == ""){
-		// 	bullup.alert("请输入邀请码！");
-		// 	return;
-		// }
-		// if ($userPassword == $confirmedPwd) {
-		// 	socket.emit('register', {
-		// 		userAccount: $userAccount,
-		// 		userPassword: $userPassword,
-		// 		userNickname: $userNickname,
-		// 		userPhoneNumber: $tel,
-		// 		userEmail: $email
-		// 	});
-		// 	$("#sign_modal").modal("close");
-		// 	$('.modal-overlay').remove();
-		// } else {
-		// 	bullup.alert("两次密码输入不一致!");
-		// }
+
 		function verifyemail(str){  
 			var reg=/\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;  
 			if( reg.test(str) ){  
@@ -129,34 +89,30 @@ $().ready(function () {
 											});
 									}else{
 										alert("请选择省会！");
-									}
-										
+									}	
 								}else{
 									alert("请选择城市！");
 								}
-								
 							}else{
-							alert("请选择国家！");
+								alert("请选择国家！");
 							}
-								}else{
-									alert("昵称不能为空且小于15字");
-								}
 						}else{
-							alert("请仔细阅读并同意用户协议！");
+							alert("昵称不能为空且小于15字");
 						}
-					} else {
-						alert("两次密码输入不一致!");
+					}else{
+						alert("请仔细阅读并同意用户协议！");
 					}
-				}else{
-					alert('请输入6到16位的字母或者数字的密码');
+				} else {
+					alert("两次密码输入不一致!");
 				}
 			}else{
-				alert('请输入正确的手机号码')
+				alert('请输入6到16位的字母或者数字的密码');
 			}
 		}else{
-			alert('请输入正确的邮箱格式');
+			alert('请输入正确的手机号码')
 		}
-
-		
+	}else{
+		alert('请输入正确的邮箱格式');
+	}	
   });
 });
