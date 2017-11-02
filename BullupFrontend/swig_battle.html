@@ -11,9 +11,10 @@
 
 	{% if loop.index % 3 == 1 %}
 	  <div class="row">
-    {% endif %}
+		{% endif %}
+
     <div class="col s12 m6 l4" >
-			<a href="#team-detail-modal" id="{{ team.roomName }}_team_detail_btn" class="team_detail_btn">
+		
       <div class="card battle-card grey darken-2" >
         <div class="card-content white-text" style="padding:15px;">
           <div class="row">
@@ -36,7 +37,7 @@
         </div>
 
         <div class="card-action" style="padding: 16px 15px;">
-					<a class="team_detail_btn"  href="#team-detail-modal">发起挑战</a>
+					<a class="team_detail_btn" href="#team-detail-modal" id="{{ team.roomName }}_team_detail_btn" >发起挑战</a>
 					<!-- <a id="battle_team_details_btn">详情</a> -->
           <a href="#">收藏</a>
 
@@ -48,8 +49,9 @@
           </div>
         </div>
 			</div>
-		</a>
-    </div>
+		
+		</div>
+
     {% if loop.index % 3 == 0 %}
 	  </div>
 	{% endif %}

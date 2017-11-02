@@ -229,7 +229,7 @@ exports.handleRegister = function (socket) {
  */
 exports.handleInviteFriend = function (socket) {
     socket.on('message', function (inviteMessage) {
-        logUtil.listenerLogLog('message');
+        logUtil.listenerLog('message');
         if (socketService.isUserOnline(inviteMessage.userId)) {
             var dstSocket = socketService.mapUserIdToSocket(inviteMessage.userId);
             inviteMessage.messageToken = 'message' + inviteMessage.userId + (new Date()).getTime();
@@ -279,24 +279,68 @@ exports.handleGetBalance = function (socket){
 exports.handleUserUpdateInfo = function(socket){
     socket.on('updateInfo',function(data){
         console.log(data);
-        baseInfoDao.updateUserInfo(data,function(res){
-            if(!res){
-                socketService.stableSocketEmit(socket,'feedback', {
-                    errorCode: 1,
-                    text: '修改失败,请稍后重试',
-                    type: 'UPDATEINFORESULT',
-                    extension: null
-                });
-            }else{
-                socketService.stableSocketEmit(socket,'feedback', {
-                    errorCode: 0,
-                    text: '信息修改成功',
-                    type: 'UPDATEINFORESULT',
-                    extension: null
-                });
-            } 
-        });
-    })
+        if(data.type=="nickname"){
+            baseInfoDao.findUserByNickname(data.nickname, function (user) {
+                if(user){
+                    socketService.stableSocketEmit(socket,'feedback', {
+                        errorCode: 1,
+                        text: '该昵称已被占用',
+                        type: 'UPDATEINFORESULT',
+                        extension: null
+                    });
+                }else{
+                    baseInfoDao.updateNickname(data,function(res){
+                        if(!res){
+                            socketService.stableSocketEmit(socket,'feedback', {
+                                errorCode: 1,
+                                text: '修改失败,请稍后重试',
+                                type: 'UPDATEINFORESULT',
+                                extension: null
+                            });
+                        }else{
+                            socketService.stableSocketEmit(socket,'feedback', {
+                                errorCode: 0,
+                                text: '信息修改成功',
+                                type: 'UPDATEINFORESULT',
+                                extension: null
+                            });
+                        } 
+                    });
+                }
+            }); 
+        }else{
+            //data.type=="phone"
+            baseInfoDao.findUserByPhone(data.phone, function (user) {
+                if(user){
+                    socketService.stableSocketEmit(socket,'feedback', {
+                        errorCode: 1,
+                        text: '该手机号已被使用',
+                        type: 'UPDATEINFORESULT',
+                        extension: null
+                    });
+                }else{
+                    baseInfoDao.updatePhone(data,function(res){
+                        if(!res){
+                            socketService.stableSocketEmit(socket,'feedback', {
+                                errorCode: 1,
+                                text: '修改失败,请稍后重试',
+                                type: 'UPDATEINFORESULT',
+                                extension: null
+                            });
+                        }else{
+                            socketService.stableSocketEmit(socket,'feedback', {
+                                errorCode: 0,
+                                text: '信息修改成功',
+                                type: 'UPDATEINFORESULT',
+                                extension: null
+                            });
+                        } 
+                    });
+                }
+            });
+        }
+         
+    });
 }
 
 //用户最近登陆时间
@@ -324,7 +368,7 @@ exports.handlelastLoginTime = function (socket){
  */
 exports.handleUserInviteResult = function (io, socket) {
     socket.on('inviteResult', function (feedback) {
-        logUtil.listenerLogLog('inviteResult');
+        logUtil.listenerLog('inviteResult');
 
         //用户接受邀请
         if (feedback.errorCode == 0) {
@@ -617,12 +661,12 @@ exports.originStrengthScoreCalculation = function(lastSesonRank, currentSeasonRa
 exports.insertFeedbackMessage=function(socket){
     socket.on('feedbackMessage',function(result){
         console.log('result:'+JSON.stringify(result)); 
-        logUtil.listenerLogLog('feedbackMessage');
+        logUtil.listenerLog('feedbackMessage');
         baseInfoDao.insertFeedback(result,function(res){
             if(!res){
                 socketService.stableSocketEmit(socket, 'feedback',{
                 //console.log('result:'+JSON.stringify(result)); 
-                //logUtil.listenerLogLog('feedbackMessage');
+                //logUtil.listenerLog('feedbackMessage');
                     errorCode:1,
                     text:'反馈失败,请稍后重试',
                     type:'FEEDBACKMESSAGE',
@@ -643,12 +687,12 @@ exports.insertFeedbackMessage=function(socket){
 exports.insertFeedbackMessage=function(socket){
     socket.on('feedbackMessage',function(result){
         console.log('result:'+JSON.stringify(result)); 
-        logUtil.listenerLogLog('feedbackMessage');
+        logUtil.listenerLog('feedbackMessage');
         baseInfoDao.insertFeedback(result,function(res){
             if(!res){
                 socketService.stableSocketEmit(socket, 'feedback',{
                 //console.log('result:'+JSON.stringify(result)); 
-                //logUtil.listenerLogLog('feedbackMessage');
+                //logUtil.listenerLog('feedbackMessage');
                     errorCode:1,
                     text:'反馈失败,请稍后重试',
                     type:'FEEDBACKMESSAGE',
