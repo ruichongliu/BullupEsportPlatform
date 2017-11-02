@@ -6,7 +6,6 @@
 				var $balance = Number($('#balance').text());
 				//alert(typeof($balance));
 				var $bank_cardnumber = $('#bank_cardnumber').val();
-				var $bank_cvc = $('#bank_cvc').val();
 				
 				var $userId = userInfo.userId;
 				var $battleCount = Number(userInfo.battleCount);
@@ -77,7 +76,6 @@
 				
 				if($battleCount>=10){
 					if($bank_money!=null&&$bank_money!=0){
-						if(verifyCVC($bank_cvc)==true){
 							if(verifyName($name)==true){
 								if(telephoneCheck($bank_phone)==true||verifyHandset($bank_phone)==true){
 									if(verifyemail($bank_email)){
@@ -85,8 +83,6 @@
 											socket.emit('bankInfo', {
 												userId : $userId,
 												cardnumber:$bank_cardnumber,
-												cvc : $bank_cvc,
-												//country  : $bank_country,
 												money:$bank_money,
 												firstname  : $bank_firstname,
 												lastname  : $bank_lastname,
@@ -115,9 +111,6 @@
 							}else{
 								alert('请填写真实姓名');
 							}
-						}else{
-							alert('CVC无效');
-						}
 					}else{
 						alert('请填写提现金额');
 					}
