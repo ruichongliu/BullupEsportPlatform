@@ -112,7 +112,7 @@ exports.findUserBattleCount = function(userId,callback){
                 callback(null,res1);
             });
         },function(res1,callback){
-            dbUtil.query('select count(*) as battleCount from bullup_battle_record where bullup_battle_paticipants_red like ? or bullup_battle_paticipants_blue like ?',['%'+res1[0].user_nickname+'%','%'+res1[0].user_nickname+'%'],function(err,res2){
+            dbUtil.query('select count(*) as battleCount from bullup_battle_record where bullup_battle_participants_red like ? or bullup_battle_participants_blue like ?',['%'+res1[0].user_nickname+'%','%'+res1[0].user_nickname+'%'],function(err,res2){
                 if (err) throw err;
                 //console.log(res2);
                 callback(null,res2);
@@ -133,11 +133,11 @@ exports.writeBattleRecord = function(battle){
     var competitionId = 0;
     var battleName = battle.battleName;
     var battleMap = battle.blueSide.mapSelection;
-    var battleBet = battle.blueSide.rewardAmount;
-    var teamNum = battle.blueSide.paticipants.length;
+    var battleBet = battle.blueSide.rewardAmount;    
+    var teamNum = battle.blueSide.participants.length;
     var redNames = "";
     var blueNames = "";
-    var time = new Date().format("yyyy-MM-dd HH:mm:ss"); 
+    var time = new Date().format("yyyy-MM-dd hh:mm:ss"); 
     var duration = 0;
     var result = "";
     if(battle.blueWin){
@@ -145,19 +145,22 @@ exports.writeBattleRecord = function(battle){
     }else{
         result = "红方赢";
     }
-    for(var index in battle.blueSide.paticipants){
+    for(var index in battle.blueSide.participants){
         blueNames += ",";
-        blueNames += battle.blueSide.paticipants[index].name;
+        blueNames += battle.blueSide.participants[index].name;
     }
     blueNames = blueNames.substr(1);
 
-    for(var index in battle.redSide.paticipants){
+    for(var index in battle.redSide.participants){
         redNames += ",";
-        redNames += battle.redSide.paticipants[index].name;
+        redNames += battle.redSide.participants[index].name;
     }
     redNames = redNames.substr(1);
 
-    
+    dbUtil.query('insert into bullup_battle_record (bullup_battle_compitetion_type, bullup_compitetion_id, bullup_battle_name, bullup_battle_map_type, bullup_battle_bet, bullup_battle_teamnumber, bullup_battle_participants_red, bullup_battle_participants_blue, bullup_battle_time, bullup_battle_duration, bullup_battle_result) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+        [competitionType, competitionId, battleName, battleMap, battleBet, teamNum, redNames, blueNames, time, duration, result],function(err,res){
+        if (err) throw err;
+    });
 }
 
 exports.updateStrengthAndWealth = function(userId, newStrengthScore, wealthChangedValue){
