@@ -9,7 +9,7 @@ var logUtil = dependencyUtil.global.utils.logUtil;
 var socketService = dependencyUtil.global.service.socketService;
 
 var mysqlServerConfig = {
-    host:'18.220.130.245',
+    host:'13.59.161.201',
     user: 'root',
     password: '1234',
     database: 'bullup',
