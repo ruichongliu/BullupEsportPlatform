@@ -309,7 +309,7 @@ exports.handleBattleResult = function (io, socket){
                     battleRecordDao.updateStrengthAndWealth(player.userId, player.strength.score + loseScoreUpdateValue, -1 * resultPacket.rewardAmount);
                 }
                 //写记录
-                // battleRecordDao.writeBattleRecord(finishedBattle);
+                battleRecordDao.writeBattleRecord(finishedBattle);
 
                 //广播结果数据包
                 socketService.stableSocketsEmit(io.sockets.in(finishedBattle.battleName), finishedBattle.battleName, 'battleResult', resultPacket);
