@@ -11,7 +11,7 @@ $(document).ready(function(){
         }else if(value < 5){
             bullup.alert("最低充值金额为$5");
         }else{
-            request.post('http://18.220.130.245:3001', {form:{rechargeAccount: value, userId: userInfo.userId}}, function(error, response, body){
+            request.post('http://13.59.161.201:3001', {form:{rechargeAccount: value, userId: userInfo.userId}}, function(error, response, body){
                 if(body == undefined){
                     bullup.alert('订单生产失败，请联系客服！');
                     return;
