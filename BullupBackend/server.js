@@ -25,7 +25,7 @@ battleService.init();
 paymentService.init();
 chatService.init();
 adminService.init();
-lolKeyService.init();
+lolKeyService.init(); 
 
 io.on('connection', function(socket) {
     logUtil.levelMsgLog(0, 'User ' + socket.id + ' connected!');
