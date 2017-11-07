@@ -13,6 +13,7 @@ $().ready(function(){
         $('.update_personal_info').on('click', function(e){
             e.preventDefault();
             bullup.loadTemplateIntoTarget('swig_form_component.html', {}, 'main-view');
+            $.getScript('/js/updateInfo.js');
             $('.button-collapse').sideNav('hide');           
         });
     
