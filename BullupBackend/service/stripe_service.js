@@ -17,18 +17,21 @@ exports.recharge = function(){
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended:false}));
     
+    var path1 = 'C:/Users/Administrator/Desktop/BullupEsportPlatform/BullupBackend/other/';
+
+    var path2 = 'F:/NodeWorkspace/BullupEsport/BullupBackend/other/';
     app.post('/',function(req,res){
         //var str = req.url.substr(req.url.indexOf('?'), req.url.indexOf('=') - req.url.indexOf('?'));
         var rechargeValue = req.body.rechargeAccount;
         var userId = req.body.userId;
-        var data = fs.readFileSync('C:/Users/Administrator/Desktop/BullupEsportPlatform/BullupBackend/other/index.hbs').toString();
+        var data = fs.readFileSync(path2 + 'index.hbs').toString();
         data = data.replace("chargeAmountValue", String(Number.parseInt(rechargeValue) * 100));
         data = data.replace("chargeAmountValueHidden", String(Number.parseInt(rechargeValue) * 100));
         data = data.replace("userNameValue", String(userId));
-        fs.writeFileSync('C:/Users/Administrator/Desktop/BullupEsportPlatform/BullupBackend/other/temp.hbs', data);
+        fs.writeFileSync(path2 + 'temp.hbs', data);
         //每次合并代码应将此路径改为自己的
-        res.sendFile('C:/Users/Administrator/Desktop/BullupEsportPlatform/BullupBackend/other/temp.hbs');
-        //res.sendFile('C:/Users/JM.Guo/Desktop/Stripe/views/index.hbs');
+        res.sendFile(path2 + 'temp.hbs');
+        
     });
     
     
