@@ -539,7 +539,17 @@ function handleLOLBindResult(feedback){
 
 //用户修改信息
 function handleUpdateInfoResult(feedback){
-    bullup.alert(feedback.text);
+    if(feedback.text=='密码修改成功'){
+        alert('密码修改成功，请重新登录');
+        userInfo = null;
+        var temp = bullup.loadSwigView("./swig_menu.html", null);
+        // 打开
+        $("#log_modal").css("display", "block");
+        $('#system_menu').html(temp);
+        $('#router_starter').click();
+    }else{
+        alert(feedback.text);
+    }
 }
 
 //处理提现申请及信息入库
@@ -789,69 +799,7 @@ function handleTeamEstablishResult(feedback){
         teamInfo = feedback.extension.teamInfo;
         formedTeams = feedback.extension.formedTeams;
         delete formedTeams[teamInfo.roomName];
-       
-        var battle_teams = bullup.loadSwigView('swig_battle.html', {
-			teams: formedTeams
-		});
-        //页面跳转到对战大厅
-        $('.content').html(battle_teams);
-		$('#team-detail-modal').modal();
-		$('#waiting-modal').modal();
-        $.getScript('./js/close_modal.js');
-        $.getScript('./js/refresh_formed_room.js');
-        $(".team_detail_btn").unbind();
-        $(".team_detail_btn").click(function(){
-            var btnId = $(this).attr('id');
-            var roomName = btnId.substring(0, btnId.indexOf('_'));
-            var room = null;
-            for(var team in formedTeams){
-                if(formedTeams[team].roomName == roomName){
-                    room = formedTeams[team];
-                    break;
-                }
-            }
-            //room在队伍详情页
-            var teamDetailsHtml = bullup.loadSwigView('swig_team_detail.html', {
-                team: room
-            });
-            $('#team_detail_container').html(teamDetailsHtml);
-            location.hash = "#team-detail-modal";
-            ///////////untest
-            $('#invite-battle-btn').unbind();
-            $('#invite-battle-btn').click(function(){
-                if (formedTeams[team].mapSelection == roomInfo.mapSelection) {
-                    if (formedTeams[team].teamParticipantsNum == roomInfo.teamParticipantsNum) {
-                        if (formedTeams[team].rewardAmount == roomInfo.rewardAmount) {
-                            var battleInfo = {};
-                            battleInfo.hostTeamName = $('#team_details_team_name').html();
-                            battleInfo.challengerTeamName = teamInfo.roomName;
-                            battleInfo.userId = userInfo.userId;
-                            socket.emit('battleInvite', battleInfo);
-                        } else {
-                            $("#invite-battle-btn").attr('href', 'javascript:void(0)');
-                            alert("您选择的队伍积分不符合");
-                        }
-
-                    } else {
-                        $("#invite-battle-btn").attr('href', 'javascript:void(0)');
-                        alert("您选择的队伍人数不符合");
-                    }
-                } else {
-                    $("#invite-battle-btn").attr('href', 'javascript:void(0)');
-                    alert("您选择的队伍地图不符合");
-                }
-            });
-            //////////
-        });
-		var pages = {
-            totalPage: 10,
-             pageNumbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-             currentPage: 1
-        };
-		//
-		var pagination = bullup.loadSwigView('swig_pagination.html', pages);
-		//		console.log(pagination);
-		$('#pagination-holder').html(pagination);
+        page(formedTeams,1);//此函数在initial_pagination.js
     }else{
         bullup.alert(feedback.text);
     }
@@ -859,71 +807,9 @@ function handleTeamEstablishResult(feedback){
 
 function handleRefreshFormedBattleRoomResult(feedback){
     if(feedback.errorCode == 0){
-        //bullup.alert(feedback.text);
         formedTeams = feedback.extension.formedTeams;
         delete formedTeams[teamInfo.roomName];
-      
-        var battle_teams = bullup.loadSwigView('swig_battle.html', {
-			teams: formedTeams
-		});
-        //页面跳转到对战大厅
-        $('.content').html(battle_teams);
-		$('#team-detail-modal').modal();
-		$('#waiting-modal').modal();
-        $.getScript('./js/close_modal.js');
-        $.getScript('./js/refresh_formed_room.js');
-        $(".team_detail_btn").unbind();
-        $(".team_detail_btn").click(function(){
-            var btnId = $(this).attr('id');
-            var roomName = btnId.substring(0, btnId.indexOf('_'));
-            var room = null;
-            for(var team in formedTeams){
-                if(formedTeams[team].roomName == roomName){
-                    room = formedTeams[team];
-                    break;
-                }
-            }
-            var teamDetailsHtml = bullup.loadSwigView('swig_team_detail.html', {
-                team: room
-            });
-            $('#team_detail_container').html(teamDetailsHtml);
-            location.hash = "#team-detail-modal";
-            ///////////untest
-            $('#invite-battle-btn').unbind();
-            $('#invite-battle-btn').click(function(){
-                if (formedTeams[team].mapSelection == roomInfo.mapSelection) {
-                    if (formedTeams[team].teamParticipantsNum == roomInfo.teamParticipantsNum) {
-                        if (formedTeams[team].rewardAmount == roomInfo.rewardAmount) {
-                            var battleInfo = {};
-                            battleInfo.hostTeamName = $('#team_details_team_name').html();
-                            battleInfo.challengerTeamName = teamInfo.roomName;
-                            battleInfo.userId = userInfo.userId;
-                            socket.emit('battleInvite', battleInfo);
-                        } else {
-                            $("#invite-battle-btn").attr('href', 'javascript:void(0)');
-                            alert("您选择的队伍积分不符合");
-                        }
-
-                    } else {
-                        $("#invite-battle-btn").attr('href', 'javascript:void(0)');
-                        alert("您选择的队伍人数不符合");
-                    }
-                } else {
-                    $("#invite-battle-btn").attr('href', 'javascript:void(0)');
-                    alert("您选择的队伍地图不符合");
-                }
-            });
-            //////////
-        });
-		var pages = {
-			totalPage: 10,
-	 		pageNumbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-	 		currentPage: 1
-		};
-		//
-		var pagination = bullup.loadSwigView('swig_pagination.html', pages);
-		//		console.log(pagination);
-		$('#pagination-holder').html(pagination);
+        page(formedTeams,1);//此函数在initial_pagination.js
     }else{
         bullup.alert(feedback.text);
     }   

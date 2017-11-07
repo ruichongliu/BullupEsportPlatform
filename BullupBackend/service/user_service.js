@@ -279,65 +279,86 @@ exports.handleGetBalance = function (socket){
 exports.handleUserUpdateInfo = function(socket){
     socket.on('updateInfo',function(data){
         console.log(data);
-        if(data.type=="nickname"){
-            baseInfoDao.findUserByNickname(data.nickname, function (user) {
-                if(user){
-                    socketService.stableSocketEmit(socket,'feedback', {
-                        errorCode: 1,
-                        text: '该昵称已被占用',
-                        type: 'UPDATEINFORESULT',
-                        extension: null
-                    });
-                }else{
-                    baseInfoDao.updateNickname(data,function(res){
-                        if(!res){
-                            socketService.stableSocketEmit(socket,'feedback', {
-                                errorCode: 1,
-                                text: '修改失败,请稍后重试',
-                                type: 'UPDATEINFORESULT',
-                                extension: null
-                            });
-                        }else{
-                            socketService.stableSocketEmit(socket,'feedback', {
-                                errorCode: 0,
-                                text: '信息修改成功',
-                                type: 'UPDATEINFORESULT',
-                                extension: null
-                            });
-                        } 
-                    });
-                }
-            }); 
-        }else{
-            //data.type=="phone"
-            baseInfoDao.findUserByPhone(data.phone, function (user) {
-                if(user){
-                    socketService.stableSocketEmit(socket,'feedback', {
-                        errorCode: 1,
-                        text: '该手机号已被使用',
-                        type: 'UPDATEINFORESULT',
-                        extension: null
-                    });
-                }else{
-                    baseInfoDao.updatePhone(data,function(res){
-                        if(!res){
-                            socketService.stableSocketEmit(socket,'feedback', {
-                                errorCode: 1,
-                                text: '修改失败,请稍后重试',
-                                type: 'UPDATEINFORESULT',
-                                extension: null
-                            });
-                        }else{
-                            socketService.stableSocketEmit(socket,'feedback', {
-                                errorCode: 0,
-                                text: '信息修改成功',
-                                type: 'UPDATEINFORESULT',
-                                extension: null
-                            });
-                        } 
-                    });
-                }
-            });
+        switch(data.type){
+            case "nickname":
+                baseInfoDao.findUserByNickname(data.nickname, function (user) {
+                    if(user){
+                        socketService.stableSocketEmit(socket,'feedback', {
+                            errorCode: 1,
+                            text: '该昵称已被占用',
+                            type: 'UPDATEINFORESULT',
+                            extension: null
+                        });
+                    }else{
+                        baseInfoDao.updateNickname(data,function(res){
+                            if(!res){
+                                socketService.stableSocketEmit(socket,'feedback', {
+                                    errorCode: 1,
+                                    text: '修改失败,请稍后重试',
+                                    type: 'UPDATEINFORESULT',
+                                    extension: null
+                                });
+                            }else{
+                                socketService.stableSocketEmit(socket,'feedback', {
+                                    errorCode: 0,
+                                    text: '昵称修改成功',
+                                    type: 'UPDATEINFORESULT',
+                                    extension: null
+                                });
+                            } 
+                        });
+                    }
+                });
+                break;
+            case "phone":
+                baseInfoDao.findUserByPhone(data.phone, function (user) {
+                    if(user){
+                        socketService.stableSocketEmit(socket,'feedback', {
+                            errorCode: 1,
+                            text: '该手机号已被使用',
+                            type: 'UPDATEINFORESULT',
+                            extension: null
+                        });
+                    }else{
+                        baseInfoDao.updatePhone(data,function(res){
+                            if(!res){
+                                socketService.stableSocketEmit(socket,'feedback', {
+                                    errorCode: 1,
+                                    text: '修改失败,请稍后重试',
+                                    type: 'UPDATEINFORESULT',
+                                    extension: null
+                                });
+                            }else{
+                                socketService.stableSocketEmit(socket,'feedback', {
+                                    errorCode: 0,
+                                    text: '号码修改成功',
+                                    type: 'UPDATEINFORESULT',
+                                    extension: null
+                                });
+                            } 
+                        });
+                    }
+                });
+                break;
+            case "password":
+                baseInfoDao.updatePassword(data,function(res){
+                    if(!res){
+                        socketService.stableSocketEmit(socket,'feedback', {
+                            errorCode: 1,
+                            text: '修改失败,请稍后重试',
+                            type: 'UPDATEINFORESULT',
+                            extension: null
+                        });
+                    }else{
+                        socketService.stableSocketEmit(socket,'feedback', {
+                            errorCode: 0,
+                            text: '密码修改成功',
+                            type: 'UPDATEINFORESULT',
+                            extension: null
+                        });
+                    } 
+                });
+                break;
         }
          
     });
