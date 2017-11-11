@@ -10,8 +10,8 @@ function page(formedTeams,curPage){
 	//console.log('abcd:'+JSON.stringify(teamArray));
 	var startIndex = curPage*9-9;
 	var endIndex = curPage*9;
-	var sliceArray = teamArray.slice(startIndex,endIndex);
-
+	var sliceArray = teamArray.reverse().slice(startIndex,endIndex);
+	//console.log(JSON.stringify(sliceArray));
 	var battle_teams = bullup.loadSwigView('swig_battle.html', {
 		teams: sliceArray
 	});
