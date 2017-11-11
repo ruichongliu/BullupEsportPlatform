@@ -69,6 +69,7 @@ $().ready(function () {
 			var reg = /^[A-Za-z0-9\u4e00-\u9fa5]+$/;
 			return reg.test(str);
 		}
+
 		//alert(specialCheck("$zyz"));
 		if(verifyemail($userAccount)==true){
 			if(verifyHandset($tel)==true||telephoneCheck($tel)==true){
