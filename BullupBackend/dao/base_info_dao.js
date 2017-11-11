@@ -96,6 +96,13 @@ exports.updatePhone = function(data,callback){
     });
 
 }
+exports.updatePassword = function(data,callback){
+    dbUtil.query('update user_base set user_password=? where user_id=?',[data.password,data.userId],function(err,res){
+        if (err) throw err;
+        callback(res);
+    });
+
+}
 //---------------------------------------添加好友关系-------------------------------------//
 exports.addFriendRelationship = function(userId1, userId2){
     dbUtil.query('insert into `bullup_friend` values (?, ?)', [userId1, userId2], function (err, results){
