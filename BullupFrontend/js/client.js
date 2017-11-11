@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://127.0.0.1:3000');
+var socket = io.connect('http://192.168.2.163:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/lolutil.js');
@@ -412,19 +412,53 @@ socket.on('battleResult', function(resultPacket){
             break;
         }
     }
+   
     if(flag){
-    //赢了        
+    //赢了     
+     for( key in resultPacket.winTeam ){
+            for ( key1 in resultPacket.participants){
+                if( resultPacket.winTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId ){
+                  resultPacket.winTeam[key].stats = resultPacket.participants[key1].stats; 
+                }
+            }
+        }
+        for( key in resultPacket.loseTeam ){
+            for ( key1 in resultPacket.participants){
+                if( resultPacket.loseTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId){
+                    resultPacket.loseTeam[key].stats = resultPacket.participants[key1].stats;
+                }
+            }
+        }  
         battleResultData.own_team = resultPacket.winTeam;
         battleResultData.win = 1;
         battleResultData.rival_team = resultPacket.loseTeam;
+       
     }else{
     //输了
+    
+        for( key in resultPacket.winTeam ){
+                    for ( key1 in resultPacket.participants){
+                        if(resultPacket.winTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId){
+                            resultPacket.winTeam[key].stats = resultPacket.participants[key1].stats;
+                          
+                        }
+                    }
+                }
+         for( key in resultPacket.loseTeam){
+            for ( key1 in resultPacket.participants){
+                if(resultPacket.loseTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId ){
+                  resultPacket.loseTeam[key].stats = resultPacket.participants[key1].stats;
+                  
+                }
+            }
+        } 
         battleResultData.own_team = resultPacket.loseTeam;
         battleResultData.win = 0;
         battleResultData.rival_team = resultPacket.winTeam;
+       
     }
     battleResultData.wealth_change = resultPacket.rewardAmount;
-    //console.log(JSON.stringify(battleResultData));
+    // console.log(JSON.stringify(battleResultData));
     
     var battleResHtml = bullup.loadSwigView('./swig_battleres.html', {
         battle_res: battleResultData
