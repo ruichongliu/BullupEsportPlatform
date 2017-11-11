@@ -1,6 +1,7 @@
 var io = require('socket.io-client');
 
 var socket = io.connect('http://192.168.2.163:3000');
+
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/lolutil.js');
@@ -310,11 +311,29 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
             bullup.alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password);
-        
-            //////////////////////////////////////
-            var labelArray = ['战力', '击杀', '死亡', '助攻', '造成伤害', '承受伤害'];
-            var dataArray1 = [50,50,50,50,50,50];
-            var dataArray2 = [30,70,50,40,20,90];
+            
+            var bluePts = battleInfo.blueSide.participants;
+            var redPts = battleInfo.redSide.participants;
+            var own;
+            var enemy;
+            for(key in bluePts){
+                if(bluePts[key].name==userInfo.nickname){
+                    own = bluePts;
+                    enemy = redPts;
+                }else{
+                    own = redPts;
+                    enemy = bluePts;
+                }
+            }
+            var o = getRadarData(own);
+            var e = getRadarData(enemy);
+            console.log('this is radarData:',o,e);
+            
+            var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
+            var dataArray1 = e;
+            var dataArray2 = o;
+            console.log('this is battleInfo:',JSON.stringify(battleInfo));
+            //-------------------我方---------敌方------
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
             var clock = $('.countdown-clock').FlipClock(60, {
                 // ... your options here
@@ -342,10 +361,27 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             lol_process.grabLOLData('room', socket);
             bullup.alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password);
             
-            //////////////////////////////////////
-            var labelArray = ['战力', '击杀', '死亡', '助攻', '造成伤害', '承受伤害'];
-            var dataArray1 = [50,50,50,50,50,50];
-            var dataArray2 = [30,70,50,40,20,90];
+            var bluePts = battleInfo.blueSide.participants;
+            var redPts = battleInfo.redSide.participants;
+            var own;
+            var enemy;
+            for(key in bluePts){
+                if(bluePts[key].name==userInfo.nickname){
+                    own = bluePts;
+                    enemy = redPts;
+                }else{
+                    own = redPts;
+                    enemy = bluePts;
+                }
+            }
+            var o = getRadarData(own);
+            var e = getRadarData(enemy);
+            console.log('this is radarData:',o,e);
+
+            var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
+            var dataArray1 = o;
+            var dataArray2 = e;
+            console.log('this is battleInfo:',JSON.stringify(battleInfo));
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
             var clock = $('.countdown-clock').FlipClock(60, {
                 // ... your options here
@@ -806,7 +842,7 @@ function handleRoomEstablishmentResult(feedback){
             bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                 'participants': roomInfo.participants
             }, 'main-view');
-            var labelArray = ['战力', '击杀', '死亡', '助攻', '造成伤害', '承受伤害'];
+            var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
             var dataArray1 = [50,50,50,50,50,50];
             bullup.generateRadar(dataArray1, null, labelArray, "我方战力", "team-detail-chart");
         }
