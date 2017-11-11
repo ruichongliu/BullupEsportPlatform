@@ -3,14 +3,14 @@ var log = require("./logutil.js")
 var fs = require("fs");
 
 exports.grabLOLData = function(type, socket){
-    //log.logToFile("D://temp_log.txt", "append", "grabbing");
+    //log.logToFile("C:/Users/Public/Bullup/temp_log.txt", "append", "grabbing");
     switch (type){
         case "login": {
             syncLogin(function(jsonStr){
                 jsonStr = JSON.parse(jsonStr);
                 if(jsonStr.UserInfo != undefined){
                     var packet = processLoginPacket(jsonStr);
-                    //log.logToFile("D://temp_log.txt", "append", "grabbing data is " + JSON.parse(packet));
+                    //log.logToFile("C:/Users/Public/Bullup/temp_log.txt", "append", "grabbing data is " + JSON.parse(packet));
                     socket.emit('lolLoginResult', packet);
                 }
             });
@@ -21,7 +21,7 @@ exports.grabLOLData = function(type, socket){
                 jsonStr = JSON.parse(jsonStr);
                 if(jsonStr.actions != undefined){
                     var packet = processRoomPacket(jsonStr);
-                    //log.logToFile("D://temp_log.txt", "append", "grabbing data is " + JSON.parse(packet));
+                    //log.logToFile("C:/Users/Public/Bullup/temp_log.txt", "append", "grabbing data is " + JSON.parse(packet));
                     socket.emit('lolRoomEstablished', packet);
                 }
             });
@@ -32,7 +32,7 @@ exports.grabLOLData = function(type, socket){
                 jsonStr = JSON.parse(jsonStr);
                 if(jsonStr.gameMode != undefined){
                     var packet = processResultPacket(jsonStr);
-                    //log.logToFile("D://temp_log.txt", "append", "grabbing data is " + JSON.parse(packet));
+                    //log.logToFile("C:/Users/Public/Bullup/temp_log.txt", "append", "grabbing data is " + JSON.parse(packet));
                     socket.emit('lolBattleResult', packet);
                 }
             });
@@ -56,13 +56,13 @@ function syncLogin(callback){
             throw error;
         }
         readJsonStr('C:/Users/Public/Bullup/log.txt', function(jsonStr){
-            log.logToFile("D://login_log.txt", "append",jsonStr);
+            log.logToFile("C:/login_log.txt", "append",jsonStr);
             callback(jsonStr);
         });
     });
     // process.execSync('C:/Users/Public/Bullup/auto_program/BullupServiceNew UserInfo');
     // readJsonStr('C:/Users/Public/Bullup/log.txt', function(jsonStr){
-    //     log.logToFile("D://temp_log.txt", "append",jsonStr);
+    //     log.logToFile("C:/Users/Public/Bullup/temp_log.txt", "append",jsonStr);
     //     callback(jsonStr);
     // });
 }
@@ -73,14 +73,14 @@ function syncRoom(callback){
             throw error;
         }
         readJsonStr('C:/Users/Public/Bullup/log.txt', function(jsonStr){
-            log.logToFile("D://room_log.txt", "append",jsonStr);
+            log.logToFile("C:/Users/Public/Bullup/room_log.txt", "append",jsonStr);
             callback(jsonStr);
         });
     });
     
     // process.execSync('C:/Users/Public/Bullup/auto_program/BullupServiceOld actions');
     // readJsonStr('C:/Users/Public/Bullup/log.txt', function(jsonStr){
-    //     log.logToFile("D://temp_log.txt", "append",jsonStr);
+    //     log.logToFile("C:/Users/Public/Bullup/temp_log.txt", "append",jsonStr);
     //     callback(jsonStr);
     // });
 }
@@ -91,13 +91,13 @@ function syncResult(callback){
             throw error;
         }
         readJsonStr('C:/Users/Public/Bullup/log.txt', function(jsonStr){
-            log.logToFile("D://result_log.txt", "append",jsonStr);
+            log.logToFile("C:/Users/Public/Bullup/result_log.txt", "append",jsonStr);
             callback(jsonStr);
         });
     });
     // process.execSync('C:/Users/Public/Bullup/auto_program/BullupServiceOld gameMode');
     // readJsonStr('C:/Users/Public/Bullup/log.txt', function(jsonStr){
-    //     log.logToFile("D://temp_log.txt", "append",jsonStr);
+    //     log.logToFile("C:/Users/Public/Bullup/temp_log.txt", "append",jsonStr);
     //     callback(jsonStr);
     // });
 }
