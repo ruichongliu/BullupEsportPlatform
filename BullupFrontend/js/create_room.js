@@ -64,7 +64,7 @@ $(document).ready(function(){
 				winningCondition: room.winningCondition
 			});
 		}
-		console.log(room)
+		//console.log(room)
 	});
 
 });
