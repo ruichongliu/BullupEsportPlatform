@@ -245,8 +245,10 @@ socket.on('teamInfoUpdate', function (data) {
                 bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                     'participants': roomInfo.participants
                 }, 'main-view');
-                var labelArray = ['战力', '击杀', '死亡', '助攻', '造成伤害', '承受伤害'];
-                var dataArray1 = [50,50,50,50,50,50];
+                var data = getRadarData(roomInfo.participants);
+                console.log(data);
+                var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
+                var dataArray1 = data;
                 bullup.generateRadar(dataArray1, null, labelArray, "我方战力", "team-detail-chart");
             }
 
@@ -327,12 +329,12 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             }
             var o = getRadarData(own);
             var e = getRadarData(enemy);
-            console.log('this is radarData:',o,e);
+            //console.log('this is radarData:',o,e);
             
             var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
             var dataArray1 = e;
             var dataArray2 = o;
-            console.log('this is battleInfo:',JSON.stringify(battleInfo));
+            //console.log('this is battleInfo:',JSON.stringify(battleInfo));
             //-------------------我方---------敌方------
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
             var clock = $('.countdown-clock').FlipClock(60, {
@@ -376,12 +378,12 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             }
             var o = getRadarData(own);
             var e = getRadarData(enemy);
-            console.log('this is radarData:',o,e);
+            //console.log('this is radarData:',o,e);
 
             var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
             var dataArray1 = o;
             var dataArray2 = e;
-            console.log('this is battleInfo:',JSON.stringify(battleInfo));
+            //console.log('this is battleInfo:',JSON.stringify(battleInfo));
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
             var clock = $('.countdown-clock').FlipClock(60, {
                 // ... your options here
@@ -842,8 +844,11 @@ function handleRoomEstablishmentResult(feedback){
             bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                 'participants': roomInfo.participants
             }, 'main-view');
+            console.log('go to the hell:',JSON.stringify(roomInfo.participants));
+            var data = getRadarData(roomInfo.participants);
+            console.log(data);
             var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
-            var dataArray1 = [50,50,50,50,50,50];
+            var dataArray1 = data;
             bullup.generateRadar(dataArray1, null, labelArray, "我方战力", "team-detail-chart");
         }
         
