@@ -48,6 +48,6 @@ function getRadarData(team){
         json.name5,
         json.name6
     ];
-    console.log(radarArr);
+    //console.log(radarArr);
     return radarArr;
 }

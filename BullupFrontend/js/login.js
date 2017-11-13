@@ -65,6 +65,12 @@ $().ready(function () {
 		}
 		// // telephoneCheck("555-555-5555");
 
+		function specialCheck(str){
+			var reg = /^[A-Za-z0-9\u4e00-\u9fa5]+$/;
+			return reg.test(str);
+		}
+
+		//alert(specialCheck("$zyz"));
 		if(verifyemail($userAccount)==true){
 			if(verifyHandset($tel)==true||telephoneCheck($tel)==true){
 				if(verifyPassword($userPassword)==true){
@@ -77,16 +83,20 @@ $().ready(function () {
 										if($city != ""){
 											//对选择省会的校验
 											if($province != ""){
-											socket.emit('register', {
-												userAccount: $userAccount,
-												userPassword: $userPassword,
-												userNickname: $userNickname,
-												userPhoneNumber: $tel,
-												userEmail: $email,
-												userCountry:$country,
-												userCity:$city,
-												userProvince:$province
-											});
+												if(specialCheck($userNickname)==true){
+													socket.emit('register', {
+														userAccount: $userAccount,
+														userPassword: $userPassword,
+														userNickname: $userNickname,
+														userPhoneNumber: $tel,
+														userEmail: $email,
+														userCountry:$country,
+														userCity:$city,
+														userProvince:$province
+													});
+												}else{
+													alert("昵称不允许包含特殊字符！");
+												}
 									}else{
 										alert("请选择省会！");
 									}	
