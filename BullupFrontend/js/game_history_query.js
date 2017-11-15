@@ -8,6 +8,7 @@ process.on('uncaughtException', function(err) {
 
 $().ready(function () {
     $('#query_btn').on('click', function (e) {
+        alert("123")
         e.preventDefault();
         var summonerName = $('#query_summoner_name').val();
         if(summonerName == ""){

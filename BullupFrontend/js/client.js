@@ -1,10 +1,10 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://192.168.2.163:3000');
+var socket = io.connect('http://18.221.98.48:3000');
 
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
-var lolUtil = require('./js/lolutil.js');
+var lolUtil = require('./js/util/lol_util.js');
 
 var userInfo = null;
 var teamInfo = null;
