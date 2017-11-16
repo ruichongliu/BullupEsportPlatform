@@ -1,7 +1,8 @@
 var request = require('request');
 var async = require('async');
 
-var apiKey =  "RGAPI-7ff17f0a-ea84-473e-ae8a-f1ca75052c6e";
+//var apiKey =  "RGAPI-7ff17f0a-ea84-473e-ae8a-f1ca75052c6e";
+var apiKey =  "";
 
 function getItemsStaticData(callback){
     var options = {
