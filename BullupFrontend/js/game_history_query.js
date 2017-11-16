@@ -1,4 +1,4 @@
-var lolapi = require('./js/util/lol_util.js');
+var lolUtil = require('./js/util/lol_util.js');
 
 $().ready(function () {
     $('#query_btn').on('click', function (e) {
