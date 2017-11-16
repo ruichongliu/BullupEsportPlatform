@@ -273,9 +273,9 @@ exports.getMatchDetailsBySummonerName = function(name,startTime,endTime,callback
 
 //--------------------------------------test--------------------------------------------/
 
-exports.getMatchDetailsBySummonerName('Who is 55Kai', '2017/11/29', '2017/11/30', function(matchDetails){
-    console.log(matchDetails)
-});
+// exports.getMatchDetailsBySummonerName('Who is 55Kai', '2017/11/29', '2017/11/30', function(matchDetails){
+//     console.log(matchDetails)
+// });
 
 
 // getSummonerByName("JMGuo", function(info){
