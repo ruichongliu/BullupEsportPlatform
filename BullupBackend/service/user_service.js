@@ -133,6 +133,9 @@ exports.handleLogin = function (socket) {
                         var kda = ((userStrength.bullup_strength_k + userStrength.bullup_strength_a) / (userStrength.bullup_strength_d + 1.2)).toFixed(1);
                         feedback.extension.strength = {
                             kda: kda,
+                            k:userStrength.bullup_strength_k ,
+                            d:userStrength.bullup_strength_d,
+                            a:userStrength.bullup_strength_a,
                             averageGoldEarned: userStrength.bullup_strength_gold,
                             averageTurretsKilled: userStrength.bullup_strength_tower,
                             averageDamage: userStrength.bullup_strength_damage,

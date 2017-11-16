@@ -10,8 +10,8 @@ function page(formedTeams,curPage){
 	//console.log('abcd:'+JSON.stringify(teamArray));
 	var startIndex = curPage*9-9;
 	var endIndex = curPage*9;
-	var sliceArray = teamArray.slice(startIndex,endIndex);
-
+	var sliceArray = teamArray.reverse().slice(startIndex,endIndex);
+	//console.log(JSON.stringify(sliceArray));
 	var battle_teams = bullup.loadSwigView('swig_battle.html', {
 		teams: sliceArray
 	});
@@ -45,11 +45,16 @@ function page(formedTeams,curPage){
 			if (formedTeams[team].mapSelection == roomInfo.mapSelection) {
 				if (formedTeams[team].teamParticipantsNum == roomInfo.teamParticipantsNum) {
 					if (formedTeams[team].rewardAmount == roomInfo.rewardAmount) {
-						var battleInfo = {};
-						battleInfo.hostTeamName = $('#team_details_team_name').html();
-						battleInfo.challengerTeamName = teamInfo.roomName;
-						battleInfo.userId = userInfo.userId;
-						socket.emit('battleInvite', battleInfo);
+						if (formedTeams[team].captain.name != roomInfo.captain.name) {
+                                var battleInfo = {};
+                                battleInfo.hostTeamName = $('#team_details_team_name').html();
+                                battleInfo.challengerTeamName = teamInfo.roomName;
+                                battleInfo.userId = userInfo.userId;
+                                socket.emit('battleInvite', battleInfo);
+                            }else{
+                                $("#invite-battle-btn").attr('href', 'javascript:void(0)');
+                                alert("您不能邀请您自己的队伍");
+                            }
 					} else {
 						$("#invite-battle-btn").attr('href', 'javascript:void(0)');
 						alert("您选择的队伍积分不符合");

@@ -40,10 +40,9 @@
 				</a>
 			  </div>
 
-			  <span class="title">{{ member.name }}</span>
-				<div>{{ member.k }}/{{ member.d }}/{{ member.a }}</div>
+				<span class="title">{{ member.name }}</span>
+				<div>{{ member.stats.kill }}/{{ member.stats.death}}/{{ member.stats.assists}}</div>
 			</li>
-			
 		  {% endfor %}
 		</ul>
 	  </div>
@@ -122,7 +121,9 @@
 				</div>
 
 				<span class="title">{{ member.name }}</span>
-				<div>{{ member.k }}/{{ member.d }}/{{ member.a }}</div>
+		
+				<div>{{ member.stats.kill }}/{{ member.stats.death}}/{{ member.stats.assists}}</div>
+		
 			</li>
 			
 			{% endfor %}
