@@ -1,15 +1,8 @@
 var lolapi = require('./js/util/lol_util.js');
 
-
-process.on('uncaughtException', function(err) {
-    //alert("召唤师不存在或设置的时间段过长！");
-    console.log(String(err));
-});
-
 $().ready(function () {
     $('#query_btn').on('click', function (e) {
-        alert("123")
-        e.preventDefault();
+        //e.preventDefault();
         var summonerName = $('#query_summoner_name').val();
         if(summonerName == ""){
             bullup.alert("请输入召唤师的名字");
@@ -67,9 +60,14 @@ $().ready(function () {
             default: month="1"; break;
         }
         endDate = year + "/" + month + "/" + day;
-        lolapi.getMatchDetailsBySummonerName(summonerName, startDate, endDate, function(matchDetails){
+        startDate = startDate.replace(/\s+/g, '');
+        endDate = endDate.replace(/\s+/g, '');
+        lolUtil.getMatchDetailsBySummonerName(summonerName, startDate, endDate, function(matchDetails){
             if(matchDetails == null || matchDetails == undefined){
-                bullup.alert("召唤师不存在或设置的时间段过长！");
+                bullup.alert(" 召唤师不存在或设置的时间段超过一周！");
+                return;
+            }else if(matchDetails.errorTitle == 'no data'){
+                bullup.alert(" 该段时间内无游戏记录！ ");
                 return;
             }else{
                 var frame = bullup.loadSwigView("swig_queryres.html", {});

@@ -2,8 +2,12 @@ var request = require('request');
 var async = require('async');
 var lolcfg = require('./lol_cfg.js');
 var logUtil = require('./log_util.js');
+var fs = require('fs');
 
-exports.apiKey = "";
+
+exports.apiKey = "RGAPI-010be30f-ea24-4132-949d-ee4fec7d4b04";
+
+//var apiKey = fs.readFileSync("./others/dat").toString();
 
 function getItemsStaticData(callback){
     var options = {
@@ -52,6 +56,7 @@ function getSummonerByName(name, callback){
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36"
         }
     };
+   
     request(options, function(error, response, body){
         bodyObj = JSON.parse(body);
         callback(bodyObj);
@@ -115,12 +120,10 @@ exports.getRecentMatchDetailsBySummonerName = function(name, callback){
 }
 
 exports.getMatchDetailsBySummonerName = function(name,startTime,endTime,callback){
-    logUtil.logToFile("D:/KEY.txt", "write",exports.apiKey.toString());
-    logUtil.logToFile("D:/KEY.txt", "append",startTime.toString());
-    logUtil.logToFile("D:/KEY.txt", "append",endTime.toString());
     async.waterfall([
         function(done){
             getSummonerByName(name, function(summoner){
+                
                 done(null, summoner);
             });
         },
@@ -129,6 +132,9 @@ exports.getMatchDetailsBySummonerName = function(name,startTime,endTime,callback
                 callback(null);
             }else{
                 getMatchesListByAccountId(summoner.accountId, startTime, endTime, function(gameList){
+                    if(gameList.matches == null){
+                        done(gameList);
+                    }
                     done(null, summoner, gameList);
                 });
             }
@@ -147,6 +153,13 @@ exports.getMatchDetailsBySummonerName = function(name,startTime,endTime,callback
             });
         }
     ],function(err,matchDetails){
+        if(err){
+            var errorMsg = {
+                errorTitle: "no data"
+            };
+            callback(errorMsg);
+
+        }
         var count = 0;
         var result = {};
         result.matches =[];
@@ -211,6 +224,12 @@ exports.getMatchDetailsBySummonerName = function(name,startTime,endTime,callback
         }
         //console.log(result);
         callback(result);
+    });
+};
+
+
+
+
         /*
     //-------------------------------result-data-example----------------------------------/
         {
@@ -251,10 +270,12 @@ exports.getMatchDetailsBySummonerName = function(name,startTime,endTime,callback
             ]
         }
     */
-    });
-}
 
 //--------------------------------------test--------------------------------------------/
+
+exports.getMatchDetailsBySummonerName('Who is 55Kai', '2017/11/29', '2017/11/30', function(matchDetails){
+    console.log(matchDetails)
+});
 
 
 // getSummonerByName("JMGuo", function(info){
