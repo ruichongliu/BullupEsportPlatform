@@ -1,9 +1,11 @@
 var io = require('socket.io-client');
 
 var socket = io.connect('http://127.0.0.1:3000');
+
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
-var lolUtil = require('./js/lolutil.js');
+var lolUtil = require('./js/util/lol_util.js');
+var fs =require('fs');
 
 var userInfo = null;
 var teamInfo = null;
@@ -244,8 +246,10 @@ socket.on('teamInfoUpdate', function (data) {
                 bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                     'participants': roomInfo.participants
                 }, 'main-view');
-                var labelArray = ['战力', '击杀', '死亡', '助攻', '造成伤害', '承受伤害'];
-                var dataArray1 = [50,50,50,50,50,50];
+                var data = getRadarData(roomInfo.participants);
+                console.log(data);
+                var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
+                var dataArray1 = data;
                 bullup.generateRadar(dataArray1, null, labelArray, "我方战力", "team-detail-chart");
             }
 
@@ -310,11 +314,29 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
             bullup.alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password);
-        
-            //////////////////////////////////////
-            var labelArray = ['战力', '击杀', '死亡', '助攻', '造成伤害', '承受伤害'];
-            var dataArray1 = [50,50,50,50,50,50];
-            var dataArray2 = [30,70,50,40,20,90];
+            
+            var bluePts = battleInfo.blueSide.participants;
+            var redPts = battleInfo.redSide.participants;
+            var own;
+            var enemy;
+            for(key in bluePts){
+                if(bluePts[key].name==userInfo.nickname){
+                    own = bluePts;
+                    enemy = redPts;
+                }else{
+                    own = redPts;
+                    enemy = bluePts;
+                }
+            }
+            var o = getRadarData(own);
+            var e = getRadarData(enemy);
+            //console.log('this is radarData:',o,e);
+            
+            var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
+            var dataArray1 = e;
+            var dataArray2 = o;
+            //console.log('this is battleInfo:',JSON.stringify(battleInfo));
+            //-------------------我方---------敌方------
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
             var clock = $('.countdown-clock').FlipClock(60, {
                 // ... your options here
@@ -342,10 +364,27 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             lol_process.grabLOLData('room', socket);
             bullup.alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password);
             
-            //////////////////////////////////////
-            var labelArray = ['战力', '击杀', '死亡', '助攻', '造成伤害', '承受伤害'];
-            var dataArray1 = [50,50,50,50,50,50];
-            var dataArray2 = [30,70,50,40,20,90];
+            var bluePts = battleInfo.blueSide.participants;
+            var redPts = battleInfo.redSide.participants;
+            var own;
+            var enemy;
+            for(key in bluePts){
+                if(bluePts[key].name==userInfo.nickname){
+                    own = bluePts;
+                    enemy = redPts;
+                }else{
+                    own = redPts;
+                    enemy = bluePts;
+                }
+            }
+            var o = getRadarData(own);
+            var e = getRadarData(enemy);
+            //console.log('this is radarData:',o,e);
+
+            var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
+            var dataArray1 = o;
+            var dataArray2 = e;
+            //console.log('this is battleInfo:',JSON.stringify(battleInfo));
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
             var clock = $('.countdown-clock').FlipClock(60, {
                 // ... your options here
@@ -412,19 +451,53 @@ socket.on('battleResult', function(resultPacket){
             break;
         }
     }
+   
     if(flag){
-    //赢了        
+    //赢了     
+     for( key in resultPacket.winTeam ){
+            for ( key1 in resultPacket.participants){
+                if( resultPacket.winTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId ){
+                  resultPacket.winTeam[key].stats = resultPacket.participants[key1].stats; 
+                }
+            }
+        }
+        for( key in resultPacket.loseTeam ){
+            for ( key1 in resultPacket.participants){
+                if( resultPacket.loseTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId){
+                    resultPacket.loseTeam[key].stats = resultPacket.participants[key1].stats;
+                }
+            }
+        }  
         battleResultData.own_team = resultPacket.winTeam;
         battleResultData.win = 1;
         battleResultData.rival_team = resultPacket.loseTeam;
+       
     }else{
     //输了
+    
+        for( key in resultPacket.winTeam ){
+                    for ( key1 in resultPacket.participants){
+                        if(resultPacket.winTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId){
+                            resultPacket.winTeam[key].stats = resultPacket.participants[key1].stats;
+                          
+                        }
+                    }
+                }
+         for( key in resultPacket.loseTeam){
+            for ( key1 in resultPacket.participants){
+                if(resultPacket.loseTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId ){
+                  resultPacket.loseTeam[key].stats = resultPacket.participants[key1].stats;
+                  
+                }
+            }
+        } 
         battleResultData.own_team = resultPacket.loseTeam;
         battleResultData.win = 0;
         battleResultData.rival_team = resultPacket.winTeam;
+       
     }
     battleResultData.wealth_change = resultPacket.rewardAmount;
-    //console.log(JSON.stringify(battleResultData));
+    // console.log(JSON.stringify(battleResultData));
     
     var battleResHtml = bullup.loadSwigView('./swig_battleres.html', {
         battle_res: battleResultData
@@ -539,7 +612,17 @@ function handleLOLBindResult(feedback){
 
 //用户修改信息
 function handleUpdateInfoResult(feedback){
-    bullup.alert(feedback.text);
+    if(feedback.text=='密码修改成功'){
+        alert('密码修改成功，请重新登录');
+        userInfo = null;
+        var temp = bullup.loadSwigView("./swig_menu.html", null);
+        // 打开
+        $("#log_modal").css("display", "block");
+        $('#system_menu').html(temp);
+        $('#router_starter').click();
+    }else{
+        alert(feedback.text);
+    }
 }
 
 //处理提现申请及信息入库
@@ -762,8 +845,11 @@ function handleRoomEstablishmentResult(feedback){
             bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                 'participants': roomInfo.participants
             }, 'main-view');
-            var labelArray = ['战力', '击杀', '死亡', '助攻', '造成伤害', '承受伤害'];
-            var dataArray1 = [50,50,50,50,50,50];
+            console.log('go to the hell:',JSON.stringify(roomInfo.participants));
+            var data = getRadarData(roomInfo.participants);
+            console.log(data);
+            var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
+            var dataArray1 = data;
             bullup.generateRadar(dataArray1, null, labelArray, "我方战力", "team-detail-chart");
         }
         
@@ -789,69 +875,7 @@ function handleTeamEstablishResult(feedback){
         teamInfo = feedback.extension.teamInfo;
         formedTeams = feedback.extension.formedTeams;
         delete formedTeams[teamInfo.roomName];
-       
-        var battle_teams = bullup.loadSwigView('swig_battle.html', {
-			teams: formedTeams
-		});
-        //页面跳转到对战大厅
-        $('.content').html(battle_teams);
-		$('#team-detail-modal').modal();
-		$('#waiting-modal').modal();
-        $.getScript('./js/close_modal.js');
-        $.getScript('./js/refresh_formed_room.js');
-        $(".team_detail_btn").unbind();
-        $(".team_detail_btn").click(function(){
-            var btnId = $(this).attr('id');
-            var roomName = btnId.substring(0, btnId.indexOf('_'));
-            var room = null;
-            for(var team in formedTeams){
-                if(formedTeams[team].roomName == roomName){
-                    room = formedTeams[team];
-                    break;
-                }
-            }
-            //room在队伍详情页
-            var teamDetailsHtml = bullup.loadSwigView('swig_team_detail.html', {
-                team: room
-            });
-            $('#team_detail_container').html(teamDetailsHtml);
-            location.hash = "#team-detail-modal";
-            ///////////untest
-            $('#invite-battle-btn').unbind();
-            $('#invite-battle-btn').click(function(){
-                if (formedTeams[team].mapSelection == roomInfo.mapSelection) {
-                    if (formedTeams[team].teamParticipantsNum == roomInfo.teamParticipantsNum) {
-                        if (formedTeams[team].rewardAmount == roomInfo.rewardAmount) {
-                            var battleInfo = {};
-                            battleInfo.hostTeamName = $('#team_details_team_name').html();
-                            battleInfo.challengerTeamName = teamInfo.roomName;
-                            battleInfo.userId = userInfo.userId;
-                            socket.emit('battleInvite', battleInfo);
-                        } else {
-                            $("#invite-battle-btn").attr('href', 'javascript:void(0)');
-                            alert("您选择的队伍积分不符合");
-                        }
-
-                    } else {
-                        $("#invite-battle-btn").attr('href', 'javascript:void(0)');
-                        alert("您选择的队伍人数不符合");
-                    }
-                } else {
-                    $("#invite-battle-btn").attr('href', 'javascript:void(0)');
-                    alert("您选择的队伍地图不符合");
-                }
-            });
-            //////////
-        });
-		var pages = {
-            totalPage: 10,
-             pageNumbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-             currentPage: 1
-        };
-		//
-		var pagination = bullup.loadSwigView('swig_pagination.html', pages);
-		//		console.log(pagination);
-		$('#pagination-holder').html(pagination);
+        page(formedTeams,1);//此函数在initial_pagination.js
     }else{
         bullup.alert(feedback.text);
     }
@@ -859,71 +883,9 @@ function handleTeamEstablishResult(feedback){
 
 function handleRefreshFormedBattleRoomResult(feedback){
     if(feedback.errorCode == 0){
-        //bullup.alert(feedback.text);
         formedTeams = feedback.extension.formedTeams;
         delete formedTeams[teamInfo.roomName];
-      
-        var battle_teams = bullup.loadSwigView('swig_battle.html', {
-			teams: formedTeams
-		});
-        //页面跳转到对战大厅
-        $('.content').html(battle_teams);
-		$('#team-detail-modal').modal();
-		$('#waiting-modal').modal();
-        $.getScript('./js/close_modal.js');
-        $.getScript('./js/refresh_formed_room.js');
-        $(".team_detail_btn").unbind();
-        $(".team_detail_btn").click(function(){
-            var btnId = $(this).attr('id');
-            var roomName = btnId.substring(0, btnId.indexOf('_'));
-            var room = null;
-            for(var team in formedTeams){
-                if(formedTeams[team].roomName == roomName){
-                    room = formedTeams[team];
-                    break;
-                }
-            }
-            var teamDetailsHtml = bullup.loadSwigView('swig_team_detail.html', {
-                team: room
-            });
-            $('#team_detail_container').html(teamDetailsHtml);
-            location.hash = "#team-detail-modal";
-            ///////////untest
-            $('#invite-battle-btn').unbind();
-            $('#invite-battle-btn').click(function(){
-                if (formedTeams[team].mapSelection == roomInfo.mapSelection) {
-                    if (formedTeams[team].teamParticipantsNum == roomInfo.teamParticipantsNum) {
-                        if (formedTeams[team].rewardAmount == roomInfo.rewardAmount) {
-                            var battleInfo = {};
-                            battleInfo.hostTeamName = $('#team_details_team_name').html();
-                            battleInfo.challengerTeamName = teamInfo.roomName;
-                            battleInfo.userId = userInfo.userId;
-                            socket.emit('battleInvite', battleInfo);
-                        } else {
-                            $("#invite-battle-btn").attr('href', 'javascript:void(0)');
-                            alert("您选择的队伍积分不符合");
-                        }
-
-                    } else {
-                        $("#invite-battle-btn").attr('href', 'javascript:void(0)');
-                        alert("您选择的队伍人数不符合");
-                    }
-                } else {
-                    $("#invite-battle-btn").attr('href', 'javascript:void(0)');
-                    alert("您选择的队伍地图不符合");
-                }
-            });
-            //////////
-        });
-		var pages = {
-			totalPage: 10,
-	 		pageNumbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-	 		currentPage: 1
-		};
-		//
-		var pagination = bullup.loadSwigView('swig_pagination.html', pages);
-		//		console.log(pagination);
-		$('#pagination-holder').html(pagination);
+        page(formedTeams,1);//此函数在initial_pagination.js
     }else{
         bullup.alert(feedback.text);
     }   
@@ -991,7 +953,7 @@ function handleLOLApiUpdateResult(feedback){
 }
 
 function handleLOLKeyRequestResult(feedback){
-    lolUtil.apiKey = feedback.extension.key;
+    fs.writeFileSync('./others/dat', feedback.extension.key);
     var dataquery = bullup.loadSwigView('swig_dataquery.html', {});
     $('.content').html(dataquery);
     $('.datepicker').pickadate({
@@ -1002,7 +964,7 @@ function handleLOLKeyRequestResult(feedback){
         close: 'Ok',
         closeOnSelect: true // Close upon selecting a date,
     });
-    $.getScript('/js/game_history_query.js');
+    $.getScript('./js/game_history_query.js');
 }
 
 function handleAddFriendResult(feedback){
@@ -1054,3 +1016,8 @@ setInterval(()=>{
         lastSocketStatus = socket.connected;
     }
 },1000);
+
+process.on('uncaughtException', function(err) {
+    //alert("召唤师不存在或设置的时间段过长！");
+    console.log(String(err));
+});

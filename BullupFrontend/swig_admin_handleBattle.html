@@ -105,11 +105,15 @@
             <td>{{ i.bullup_battle_compitetion_type }}</td>
             <td>{{ i.bullup_compitetion_id }}</td>
             <td>{{ i.bullup_battle_name }}</td>
-            <td>{{ i.bullup_battle_map_type }}</td>
+            {% if i.bullup_battle_map_type=='map-selection-1' %}
+            <td>召唤师峡谷</td>
+            {% else %}
+            <td>嚎哭深渊</td>
+            {% endif %}
             <td class="bet">{{ i.bullup_battle_bet }}</td>
-            <td>{{ i.bullup_battle_teamnumber/2 }}v{{ i.bullup_battle_teamnumber/2 }}</td>
-            <td class="blueSide" style="color:#599DF5">{{ i.bullup_battle_paticipants_blue }}</td>
-            <td class="redSide" style="color:#CA2254">{{ i.bullup_battle_paticipants_red }}</td>
+            <td>{{ i.bullup_battle_teamnumber }}v{{ i.bullup_battle_teamnumber }}</td>
+            <td class="blueSide" style="color:#599DF5">{{ i.bullup_battle_participants_blue }}</td>
+            <td class="redSide" style="color:#CA2254">{{ i.bullup_battle_participants_red }}</td>
             <td>{{ i.bullup_battle_time|date('Y-m-d h:m') }}</td>
             <td>{{ i.bullup_battle_duration }}</td>
             <!-- <td>{{ i.Bullup_bank_email}}</td> -->
