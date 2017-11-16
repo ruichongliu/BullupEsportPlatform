@@ -953,7 +953,8 @@ function handleLOLApiUpdateResult(feedback){
 }
 
 function handleLOLKeyRequestResult(feedback){
-    fs.writeFileSync('./others/dat', feedback.extension.key);
+    lolUtil.apiKey = feedback.extension.key;
+    //fs.writeFileSync('./others/dat', );
     var dataquery = bullup.loadSwigView('swig_dataquery.html', {});
     $('.content').html(dataquery);
     $('.datepicker').pickadate({
