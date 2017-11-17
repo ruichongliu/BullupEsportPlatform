@@ -1,10 +1,11 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://192.168.2.163:3000');
+var socket = io.connect('http://18.221.98.48:3000');
 
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
-var lolUtil = require('./js/lolutil.js');
+var lolUtil = require('./js/util/lol_util.js');
+var fs =require('fs');
 
 var userInfo = null;
 var teamInfo = null;
@@ -953,6 +954,7 @@ function handleLOLApiUpdateResult(feedback){
 
 function handleLOLKeyRequestResult(feedback){
     lolUtil.apiKey = feedback.extension.key;
+    //fs.writeFileSync('./others/dat', );
     var dataquery = bullup.loadSwigView('swig_dataquery.html', {});
     $('.content').html(dataquery);
     $('.datepicker').pickadate({
@@ -963,7 +965,7 @@ function handleLOLKeyRequestResult(feedback){
         close: 'Ok',
         closeOnSelect: true // Close upon selecting a date,
     });
-    $.getScript('/js/game_history_query.js');
+    $.getScript('./js/game_history_query.js');
 }
 
 function handleAddFriendResult(feedback){
@@ -1015,3 +1017,8 @@ setInterval(()=>{
         lastSocketStatus = socket.connected;
     }
 },1000);
+
+process.on('uncaughtException', function(err) {
+    //alert("召唤师不存在或设置的时间段过长！");
+    console.log(String(err));
+});
