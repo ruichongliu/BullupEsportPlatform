@@ -129,8 +129,8 @@ function processRoomPacket(stdout){
     // stdout = stdout.BattleInfo.gameData;
     // roomPacket.myTeam = stdout.teamOne;
     // roomPacket.theirTeam = stdout.teamTwo;
-    roomPacket.myTeam = stdout.myTeam;
-    roomPacket.theirTeam = stdout.theirTeam;
+    roomPacket.myTeam = stdout.BattleInfo.gameData.teamOne;
+    roomPacket.theirTeam = stdout.BattleInfo.gameData.teamTwo;
     return roomPacket;
 }
 
