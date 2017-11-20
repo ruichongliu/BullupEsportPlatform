@@ -40,5 +40,20 @@
 [2017-11-02 09:52:23] Error: listen EADDRINUSE :::3000
 [2017-11-07 00:56:30] TypeError: Cannot read property 'length' of undefined
 [2017-11-07 01:14:23] Error: ER_DATA_TOO_LONG: Data too long for column 'bullup_battle_map_type' at row 1
+<<<<<<< HEAD
 [2017-11-20 00:04:04] TypeError: Cannot set property 'teamStrengthScore' of undefined
 [2017-11-20 22:08:57] TypeError: Cannot read property 'affectedRows' of undefined
+=======
+[2017-11-10 02:12:30] Error: Connection lost: The server closed the connection.
+[2017-11-15 07:38:06] Error: Cannot enqueue Query after fatal error.
+[2017-11-15 07:38:26] Error: Cannot enqueue Query after fatal error.
+[2017-11-15 07:39:40] Error: listen EADDRINUSE :::3001
+[2017-11-15 07:39:40] Error: listen EADDRINUSE :::3000
+[2017-11-15 07:42:24] Error: ENOENT: no such file or directory, open 'C:\Users\Administrator\Desktop\zuixin\BullupEsportPlatform\other\key.txt'
+[2017-11-15 07:42:26] Error: ENOENT: no such file or directory, open 'C:\Users\Administrator\Desktop\zuixin\BullupEsportPlatform\other\key.txt'
+[2017-11-15 07:48:45] Error: ENOENT: no such file or directory, open 'C:\Users\Administrator\Desktop\zuixin\BullupEsportPlatform\other\key.txt'
+[2017-11-15 07:48:47] Error: ENOENT: no such file or directory, open 'C:\Users\Administrator\Desktop\zuixin\BullupEsportPlatform\other\key.txt'
+[2017-11-15 07:48:48] Error: ENOENT: no such file or directory, open 'C:\Users\Administrator\Desktop\zuixin\BullupEsportPlatform\other\key.txt'
+[2017-11-15 17:32:24] Error: Connection lost: The server closed the connection.
+[2017-11-16 06:22:50] Error: Cannot enqueue Query after fatal error.
+>>>>>>> 93ed0f5d2fe27994d596f0799e21ae8b4308ed3d

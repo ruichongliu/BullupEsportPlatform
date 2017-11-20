@@ -33,7 +33,7 @@ exports.handleLOLKeyUpdate = function(socket){
         var user = userService.users[userId];
         if(user.userRole == 1){
             //管理员 更新key
-            var key = fs.readFileSync("../other/key.txt").toString();
+            var key = fs.readFileSync("./other/key.txt").toString();
             exports.lolApiKey = key;
             socketService.stableSocketEmit(socket, 'feedback', {
                 'errorCode': 0,
