@@ -130,47 +130,28 @@ exports.handleLOLRoomEstablished = function (io, socket) {
                 var blueSide = battle.blueSide;
                 var redSide = battle.redSide;
                 var teamFlag = true;
-                if(myTeam[0].team == 1){
-                    //看我方 蓝队人员配置是否合法
-                    for(var bullupPaticipantIndex in blueSide.participants){
-                        var bullupPaticipant = blueSide.participants[bullupPaticipantIndex];
-                        var memberExsistFlag = false;
-                        var lolAccountId = bullupPaticipant.lolAccountInfo.user_lol_account;
-                        for(var lolPaticipantIndex in myTeam){
-                            var lolPaticipant = myTeam[lolPaticipantIndex];
-                            if(lolPaticipant.summonerId == lolAccountId){
-                                memberExsistFlag = true;
-                                break;
-                            }
-                        }
-                        if(!memberExsistFlag){
-                            teamFlag = false;
+                //if(myTeam[0].team == 1){
+                //看蓝队人员配置是否合法
+                for(var bullupPaticipantIndex in blueSide.participants){
+                    var bullupPaticipant = blueSide.participants[bullupPaticipantIndex];
+                    var memberExsistFlag = false;
+                    var lolAccountId = bullupPaticipant.lolAccountInfo.user_lol_account;
+                    for(var lolPaticipantIndex in myTeam){
+                        var lolPaticipant = myTeam[lolPaticipantIndex];
+                        if(lolPaticipant.summonerId == lolAccountId){
+                            memberExsistFlag = true;
                             break;
                         }
                     }
-                    //看敌方 红队人员配置是否合法
-                    if(teamFlag){
-                        for(var bullupPaticipantIndex in redSide.participants){
-                            var bullupPaticipant = redSide.participants[bullupPaticipantIndex];
-                            var memberExsistFlag = false;
-                            var lolAccountId = bullupPaticipant.lolAccountInfo.user_lol_account;
-                            for(var lolPaticipantIndex in theirTeam){
-                                var lolPaticipant = theirTeam[lolPaticipantIndex];
-                                if(lolPaticipant.summonerId == lolAccountId || lolPaticipant.summonerId=='0'){
-                                    memberExsistFlag = true;
-                                    break;
-                                }
-                            }
-                            if(!memberExsistFlag){
-                                teamFlag = false;
-                                break;
-                            }
-                        }
+                    if(!memberExsistFlag){
+                        teamFlag = false;
+                        break;
                     }
-                }else{
-                    //看敌方 蓝队人员配置是否合法
-                    for(var bullupPaticipantIndex in blueSide.participants){
-                        var bullupPaticipant = blueSide.participants[bullupPaticipantIndex];
+                }
+                //看敌方 红队人员配置是否合法
+                if(teamFlag){
+                    for(var bullupPaticipantIndex in redSide.participants){
+                        var bullupPaticipant = redSide.participants[bullupPaticipantIndex];
                         var memberExsistFlag = false;
                         var lolAccountId = bullupPaticipant.lolAccountInfo.user_lol_account;
                         for(var lolPaticipantIndex in theirTeam){
@@ -185,26 +166,8 @@ exports.handleLOLRoomEstablished = function (io, socket) {
                             break;
                         }
                     }
-                    //看我方 红队人员配置是否合法
-                    if(teamFlag){
-                        for(var bullupPaticipantIndex in redSide.participants){
-                            var bullupPaticipant = redSide.participants[bullupPaticipantIndex];
-                            var memberExsistFlag = false;
-                            var lolAccountId = bullupPaticipant.lolAccountInfo.user_lol_account;
-                            for(var lolPaticipantIndex in myTeam){
-                                var lolPaticipant = myTeam[lolPaticipantIndex];
-                                if(lolPaticipant.summonerId == lolAccountId){
-                                    memberExsistFlag = true;
-                                    break;
-                                }
-                            }
-                            if(!memberExsistFlag){
-                                teamFlag = false;
-                                break;
-                            }
-                        }
-                    }
                 }
+
                 if(teamFlag){
                     if(battle.status == 'unready'){
                         battle.status = 'ready';
