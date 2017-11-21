@@ -5,14 +5,6 @@ var child_process = require("child_process");
 var request = require("request");
 
 $(document).ready(function(){
-    $("#router_test_page1").click(function(e){
-        lolProcess.grabLOLData("login", socket);
-    });
-    
-    $("#router_test_page2").click(function(e){
-        lolProcess.grabLOLData("room", socket);
-    });
-    
 
     $("#router_test_page").click(function(e){
         lolProcess.grabLOLData("result", socket);

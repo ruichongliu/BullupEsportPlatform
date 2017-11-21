@@ -309,8 +309,8 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         //开始抓包
         if( userInfo.creatingRoom){
             userInfo.creatingRoom = false;
-            $("#router_test_page2").click();
-            //lol_process.grabLOLData('room', socket);
+            //$("#router_test_page2").click();
+            lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
             bullup.alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password);
             
@@ -360,8 +360,8 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         // 如果不是创建者，则显示等待蓝方队长建立房间
         //bullup.alert('请等待');
         if(userInfo.creatingRoom){
-            $("#router_test_page2").click();
-            //lol_process.grabLOLData('room', socket);
+            //$("#router_test_page2").click();
+            lol_process.grabLOLData('room', socket);
             bullup.alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password);
             
             var bluePts = battleInfo.blueSide.participants;
@@ -410,8 +410,8 @@ socket.on('lolRoomEstablished', function (data) {
     socket.emit('tokenData', data.token);    
     //游戏开始 刷新时钟 
     if(userInfo.liseningResult == true ){
-        $("#router_test_page").click();
-        //lol_process.grabLOLData('result', socket);
+        //$("#router_test_page").click();
+        lol_process.grabLOLData('result', socket);
         bullup.alert('游戏已开始');                  
         userInfo.liseningResult = false;
     }
