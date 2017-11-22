@@ -13,10 +13,10 @@
 		<div class="table-agile-info">
  <div class="panel panel-default">
     <a style="float:right;margin-right: 10px;margin-top: 10px;" class="waves-effect waves-light btn" id="back">返回</a>
-    <div class="panel-heading">
+    <div class="panel-heading panel-heading-charge">
      充值记录
     </div>
-    <div>
+    <div class="panel-heading-charge-list">
       <table class="table centered" ui-jq="footable" ui-options='{
         "paging": {
           "enabled": true
@@ -64,10 +64,10 @@
 		<div class="table-agile-info">
  <div class="panel panel-default">
 
-    <div class="panel-heading">
-     提现记录
+  <div class="panel-heading panel-heading-withdrawals">
+    <span style="display:inline-block;margin-left:-85px;">提现记录</span>
     </div>
-    <div>
+    <div class="panel-heading-withdrawals-list">
       <table class="table centered" ui-jq="footable" ui-options='{
         "paging": {
           "enabled": true
@@ -118,5 +118,13 @@
 </body>
 <!-- 返回按钮 -->
 <script>
+    $(".panel-heading-charge-list").hide();
+    $(".panel-heading-withdrawals-list").hide();
+    $(".panel-heading-charge").click(function(event){
+      $(".panel-heading-charge-list").toggle();
+    });
+    $(".panel-heading-withdrawals").click(function(event){
+      $(".panel-heading-withdrawals-list").toggle();
+    });
     $.getScript('./js/back.js');
   </script>
