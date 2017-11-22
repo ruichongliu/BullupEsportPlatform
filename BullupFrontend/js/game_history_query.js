@@ -62,7 +62,13 @@ $().ready(function () {
         }
         endDate = year + "/" + month + "/" + day;
         endDate_calc = new Date(month + "/" + day + "/" + year);
-        
+
+        var now = new Date();
+        if (now.getTime() - startDate_calc.getTime() < 0 || now.getTime() - endDate_calc.getTime() < 0) {
+            bullup.alert(" 起始时间或结束时间晚于当前时间！ ");
+            return;
+        }
+
         var timeDiff = endDate_calc.getTime() - startDate_calc.getTime();
         if (timeDiff < 0) {
             bullup.alert(" 起始时间晚于结束时间！ ");
