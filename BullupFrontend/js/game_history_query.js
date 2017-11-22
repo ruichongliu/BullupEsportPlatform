@@ -39,6 +39,7 @@ $().ready(function () {
             default: month="1"; break;
         }
         startDate = year + "/" + month + "/" + day;
+        startDate_calc = new Date(month + "/" + day + "/" + year);
 
         strs = endDate.split(",");
         year = strs[1];
@@ -60,6 +61,17 @@ $().ready(function () {
             default: month="1"; break;
         }
         endDate = year + "/" + month + "/" + day;
+        endDate_calc = new Date(month + "/" + day + "/" + year);
+        
+        var timeDiff = endDate_calc.getTime() - startDate_calc.getTime();
+        if (timeDiff < 0) {
+            bullup.alert(" 起始时间晚于结束时间！ ");
+            return;
+        } else if (Math.ceil(timeDiff / (24 * 3600 * 1000)) > 7) {
+            bullup.alert(" 设置的时间段超过一周！ ")
+            return;
+        }
+        
         startDate = startDate.replace(/\s+/g, '');
         endDate = endDate.replace(/\s+/g, '');
         lolUtil.getMatchDetailsBySummonerName(summonerName, startDate, endDate, function(matchDetails){
