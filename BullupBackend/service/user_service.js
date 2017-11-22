@@ -445,8 +445,27 @@ exports.handleRankRequest = function (socket){
 
 
 exports.handleLOLBind = function(socket){
-    socket.on('lolLoginResult',function(loginPacket){
-        
+    socket.on('lolLoginResult',function(loginPacketStr){
+        var stdout = JSON.parse(loginPacketStr);
+        var loginPacket = {};
+        var rankTierInfo = String(stdout.UserInfo.rankedTierInfo);
+        var ranks = ['UNRANKED','BRONZE','SILVER','GOLD','PLATINUM','DIAMOND','MASTER','CHALLENGER'];
+        loginPacket.currentRank = 'UNRANKED';
+        for(var index in ranks){
+            if(rankTierInfo.indexOf(ranks[index]) != -1){
+                loginPacket.currentRank = ranks[index];
+                break;
+            }
+        }
+        loginPacket.head = "user";
+        loginPacket.accountId = stdout.UserInfo.userId;
+        loginPacket.nickname = stdout.UserInfo.displayName;
+        loginPacket.lastRank = stdout.UserInfo.lastSeasonRank;
+        loginPacket.serverName = stdout.UserInfo.serverName;
+
+
+
+
         var userId = socketService.socketUserMap[socket.id];
         var lolAccount = loginPacket.accountId;
         var lolNickname = loginPacket.nickname;

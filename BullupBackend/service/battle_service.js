@@ -117,7 +117,20 @@ exports.handleBattleInviteResult = function (io, socket) {
  * @param socket
  */
 exports.handleLOLRoomEstablished = function (io, socket) {
-    socket.on('lolRoomEstablished', function (roomPacket) {
+    socket.on('lolRoomEstablished', function (roomPacketStr) {
+        
+        
+        var roomObj = JSON.parse(roomPacketStr);
+        // var roomPacket = {};
+        // roomPacket.head = "room";
+        // roomPacket.myTeam = roomObj.myTeam;
+        // roomPacket.theirTeam = roomObj.theirTeam;
+
+        var roomPacket = {};
+        roomPacket.head = "room";
+        roomPacket.myTeam = roomObj.BattleInfo.gameData.teamOne;
+        roomPacket.theirTeam = roomObj.BattleInfo.gameData.teamTwo;
+
         //检查数据包中的人员是否能对应上
         logUtil.logToFile("./logs/data/data.txt", "append", JSON.stringify(roomPacket), "lolRoomEstablished roomPacket");
         logUtil.logToFile("./logs/data/data.txt", "append", JSON.stringify(exports.battles), "lolRoomEstablished battles");
@@ -181,10 +194,38 @@ exports.handleLOLRoomEstablished = function (io, socket) {
 }
 
 exports.handleBattleResult = function (io, socket){
-    socket.on('lolBattleResult', function (lolResultPacket) {
+    socket.on('lolBattleResult', function (lolResultPacketStr) {
 
         logUtil.logToFile("./logs/data/data.txt", "append", JSON.stringify(lolResultPacket), "lolBattleResult lolResultPacket");
         console.log(io.sockets);
+        //解析字符串
+        if(lolResultPacketStr.charAt(0) != '{'){
+            lolResultPacketStr = lolResultPacketStr.substr(1, lolResultPacketStr.length - 1);
+        }
+        var obj = JSON.parse(lolResultPacketStr);
+        var lolResultPacket = {};
+        lolResultPacket.summonerName = obj.GameData.summonerName;
+        lolResultPacket.gameMode = obj.GameData.gameMode;
+        lolResultPacket.gameType = obj.GameData.gameType;
+        lolResultPacket.accountId = obj.GameData.accountId;
+        var flag = false;
+        var win = false;
+        for(var i = 0;i<obj.GameData.teams[0].players.length;i++){
+            if(obj.GameData.teams[0].players[i].summonerName == lolResultPacket.summonerName){
+                win = obj.GameData.teams[0].isWinningTeam;
+                flag = true;
+                break;
+            }
+        }
+        if(flag == false){
+            win = !obj.GameData.teams[0].isWinningTeam;
+        }
+        if(win == true){
+            lolResultPacket.win = 'yes';
+        }else{
+            lolResultPacket.win = 'no';
+        }
+
 
         if(true){
         //if(lolResultPacket.head == 'result' && lolResultPacket.gameMode == 'CLASSIC' && lolResultPacket.gameType == 'CUSTOM_GAME'){
@@ -257,7 +298,7 @@ exports.handleBattleResult = function (io, socket){
                 resultPacket.roomName = finishedBattle.blueSide.roomName;
                 resultPacket.winTeam = winTeam;
                 resultPacket.loseTeam = loseTeam;
-                resultPacket.participants = lolResultPacket.participants;
+                //resultPacket.participants = lolResultPacket.participants;
                 //算战力变化
                 var newScore = exports.strengthScoreChangedCalculation(winTeamStrengthScore, loseTeamStrengthScore);
                 var winScoreUpdateValue = newScore.newWinnerScore - winTeamStrengthScore;
@@ -348,7 +389,7 @@ exports.handleBattleResult = function (io, socket){
                 resultPacket.roomName = finishedBattle.blueSide.roomName;
                 resultPacket.winTeam = winTeam;
                 resultPacket.loseTeam = loseTeam;
-                resultPacket.participants = lolResultPacket.participants
+                //resultPacket.participants = lolResultPacket.participants
                 //算战力变化
                 var newScore = exports.strengthScoreChangedCalculation(winTeamStrengthScore, loseTeamStrengthScore);
                 var winScoreUpdateValue = newScore.newWinnerScore - winTeamStrengthScore;
