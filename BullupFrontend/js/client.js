@@ -1,10 +1,11 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://192.168.2.163:3000');
+var socket = io.connect('http://49.140.81.199:3000');
 
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
-var lolUtil = require('./js/lolutil.js');
+var lolUtil = require('./js/util/lol_util.js');
+var fs =require('fs');
 
 var userInfo = null;
 var teamInfo = null;
@@ -302,14 +303,13 @@ socket.on('battleInfo', function (battle) {
 });
 
 socket.on('lolRoomEstablish', function (lolRoom) {
-
     socket.emit('tokenData', lolRoom.token);
-    
     userInfo.liseningResult = true; 
     if (userInfo.userId == lolRoom.creatorId) {
         //开始抓包
         if( userInfo.creatingRoom){
             userInfo.creatingRoom = false;
+            //$("#router_test_page2").click();
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
             bullup.alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password);
@@ -360,6 +360,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         // 如果不是创建者，则显示等待蓝方队长建立房间
         //bullup.alert('请等待');
         if(userInfo.creatingRoom){
+            //$("#router_test_page2").click();
             lol_process.grabLOLData('room', socket);
             bullup.alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password);
             
@@ -409,8 +410,9 @@ socket.on('lolRoomEstablished', function (data) {
     socket.emit('tokenData', data.token);    
     //游戏开始 刷新时钟 
     if(userInfo.liseningResult == true ){
+        //$("#router_test_page").click();
         lol_process.grabLOLData('result', socket);
-        bullup.alert('游戏已开始');
+        bullup.alert('游戏已开始');                  
         userInfo.liseningResult = false;
     }
     userInfo.creatingRoom = false;
@@ -953,6 +955,7 @@ function handleLOLApiUpdateResult(feedback){
 
 function handleLOLKeyRequestResult(feedback){
     lolUtil.apiKey = feedback.extension.key;
+    //fs.writeFileSync('./others/dat', );
     var dataquery = bullup.loadSwigView('swig_dataquery.html', {});
     $('.content').html(dataquery);
     $('.datepicker').pickadate({
@@ -963,7 +966,7 @@ function handleLOLKeyRequestResult(feedback){
         close: 'Ok',
         closeOnSelect: true // Close upon selecting a date,
     });
-    $.getScript('/js/game_history_query.js');
+    $.getScript('./js/game_history_query.js');
 }
 
 function handleAddFriendResult(feedback){
@@ -1015,3 +1018,8 @@ setInterval(()=>{
         lastSocketStatus = socket.connected;
     }
 },1000);
+
+process.on('uncaughtException', function(err) {
+    //alert("召唤师不存在或设置的时间段过长！");
+    console.log(String(err));
+});

@@ -1,14 +1,8 @@
-var lolapi = require('./js/util/lol_util.js');
-
-
-process.on('uncaughtException', function(err) {
-    //alert("召唤师不存在或设置的时间段过长！");
-    console.log(String(err));
-});
+var lolUtil = require('./js/util/lol_util.js');
 
 $().ready(function () {
     $('#query_btn').on('click', function (e) {
-        e.preventDefault();
+        //e.preventDefault();
         var summonerName = $('#query_summoner_name').val();
         if(summonerName == ""){
             bullup.alert("请输入召唤师的名字");
@@ -45,6 +39,7 @@ $().ready(function () {
             default: month="1"; break;
         }
         startDate = year + "/" + month + "/" + day;
+        startDate_calc = new Date(month + "/" + day + "/" + year);
 
         strs = endDate.split(",");
         year = strs[1];
@@ -66,9 +61,31 @@ $().ready(function () {
             default: month="1"; break;
         }
         endDate = year + "/" + month + "/" + day;
-        lolapi.getMatchDetailsBySummonerName(summonerName, startDate, endDate, function(matchDetails){
+        endDate_calc = new Date(month + "/" + day + "/" + year);
+
+        var now = new Date();
+        if (now.getTime() - startDate_calc.getTime() < 0 || now.getTime() - endDate_calc.getTime() < 0) {
+            bullup.alert(" 起始时间或结束时间晚于当前时间！ ");
+            return;
+        }
+
+        var timeDiff = endDate_calc.getTime() - startDate_calc.getTime();
+        if (timeDiff < 0) {
+            bullup.alert(" 起始时间晚于结束时间！ ");
+            return;
+        } else if (Math.ceil(timeDiff / (24 * 3600 * 1000)) > 7) {
+            bullup.alert(" 设置的时间段超过一周！ ")
+            return;
+        }
+        
+        startDate = startDate.replace(/\s+/g, '');
+        endDate = endDate.replace(/\s+/g, '');
+        lolUtil.getMatchDetailsBySummonerName(summonerName, startDate, endDate, function(matchDetails){
             if(matchDetails == null || matchDetails == undefined){
-                bullup.alert("召唤师不存在或设置的时间段过长！");
+                bullup.alert(" 召唤师不存在或设置的时间段超过一周！");
+                return;
+            }else if(matchDetails.errorTitle == 'no data'){
+                bullup.alert(" 该段时间内无游戏记录！ ");
                 return;
             }else{
                 var frame = bullup.loadSwigView("swig_queryres.html", {});
