@@ -726,3 +726,24 @@ exports.strengthScoreChangedCalculation = function(winnerScore, loserScore){
 	newScore.newLoserScore = newLoserScore;
 	return newScore;
 }
+
+exports.handleBattleTimeout = function(io,socket){
+    socket.on('isTimeout',function(data){
+        logUtil.listenerLog('battleIsTimeout');
+        //console.log('this is pointInfo:',JSON.stringify(data));
+        delete exports.battles[data.battleName];
+        delete teamService.formedTeams[data.blueRoomName];
+        delete teamService.formedTeams[data.redRoomName];
+        teamService.removeBroadcastTeam(data.blueRoomName);
+        teamService.removeBroadcastTeam(data.redRoomName);
+        var feedback = {
+            errorCode:0,
+            type:'BATTLEISTIMEOUT',
+            text:'长时间未检测到游戏已开始,请重新创建对局',
+            extension:{
+                formedTeams:teamService.formedTeams
+            }
+        };
+        socketService.stableSocketsEmit(exports.io.in(data.battleName), data.battleName, 'feedback', feedback);
+    });
+}
