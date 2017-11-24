@@ -16,7 +16,7 @@
 		  
 		  
 		  <!-- items -->
-		  <div class="lol-items right" style="margin-top:5px" >
+		  <div class="lol-items right" style="margin-top:5px;width:271.25px" >
 			{% for item in player.items %}
 			  {% if item == 0 %}
 				<img class="lol-item" src="./media/item_imgs/ttt.png" alt="">
@@ -33,19 +33,19 @@
 			  </div>
 			</div>
 
-			<div class="col" style="margin-top:12px">
+			<div class="col" style="margin-top:12px;width:67.08px;text-align:right;">
 			  <span class="player-detail-value">{{ player.damage }}</span>
 			</div>
 
-			<div class="col" style="margin-top:12px">
+			<div class="col" style="margin-top:12px;width:67.08px;text-align:right;">
 			  <span class="player-detail-value">{{ player.damageTaken }}</span>
 			</div>
 
 
-			<div class="col" style="margin-top:12px">
+			<div class="col" style="margin-top:12px;width:44.7px;text-align:right;">
 			  <span class="player-detail-value">{{ player.kdaScore }}</span>
 			</div>
-			<div class="col" style="margin-top:12px">
+			<div class="col" style="margin-top:12px;width:67.08px;text-align:right;">
 			  <span class="player-detail-value">{{ player.goldEarned }}</span>
 			</div>
 		  </div>
