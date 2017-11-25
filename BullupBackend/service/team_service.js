@@ -145,7 +145,6 @@ exports.handleTeamEstablish = function (io, socket) {
             }
             var level = String(parseInt(sumScore / teamInfo.participants.length / 50) * 50);
             exports.matchPools[String(teamInfo.participants.length - 1)][level].queue.push(teamInfo);
-            //console.log('this is matchPools',JSON.stringify(exports.matchPools));
             //测试调度算法
             //exports.match();
         }
@@ -224,33 +223,4 @@ exports.match = function(){
             battleService.matchScheduling(exports.matchPools[String(i)]);
         }
     },1000);
-}
-
-exports.cancelMatch = function(io,socket){
-    socket.on('cancelMatch',function(data){
-        logUtil.listenerLog('battleIsTimeout');
-        //console.log('this is cancel room:',JSON.stringify(roomInfo));
-        var roomInfo = data.$roomInfo;
-        var sumScore = 0;
-        for(var index in roomInfo.participants){
-            var score = roomInfo.participants[index].strength.score;
-            sumScore += score;
-        }
-        var level = String(parseInt(sumScore / roomInfo.participants.length / 50) * 50);
-        var tempQueue = exports.matchPools[String(roomInfo.teamParticipantsNum - 1)][level].queue;
-        //console.log('this is tempQueue:',JSON.stringify(tempQueue));
-        for(var key in tempQueue){
-            if(tempQueue[key].roomName == roomInfo.roomName){
-                delete exports.matchPools[String(roomInfo.teamParticipantsNum - 1)][level].queue[key];
-                break;
-            }
-        }
-        var feedback = {
-            errorCode: 0,
-            type: 'CANCELMATCHRESULT',
-            text: '匹配已取消',
-            extension: null
-        };
-        socketService.stableSocketsEmit(io.sockets, roomInfo.roomName, 'feedback', feedback);
-    });
 }
