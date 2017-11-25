@@ -172,6 +172,14 @@ socket.on('feedback', function (feedback) {
         case 'UPDATEINFORESULT':
             handleUpdateInfoResult(feedback);
             break;
+        //创建lol房间超时
+        case 'BATTLEISTIMEOUT':
+            handleBattleTimeoutResulr(feedback);
+            break;
+        //取消自由匹配
+        case 'CANCELMATCHRESULT':
+            handleCancelMatch(feedback);
+            break;
         }
 });
 
@@ -312,7 +320,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
             bullup.alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password);
-            
+            handleTimeout();
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
             var own;
