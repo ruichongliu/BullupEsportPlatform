@@ -27,7 +27,7 @@
       
     </div>
     <div style="width: 100%;text-align: center;">
-     <a class="waves-effect waves-light btn" style="margin:0 auto;">取消匹配</a>
+     <a id="cancelMatch" class="waves-effect waves-light btn" style="margin:0 auto;">取消匹配</a>
      </div>
 </div>
   <div class="row" style="margin: 30px auto;border:1px solid #fff;height: 360px;">
@@ -120,4 +120,11 @@ timer=setInterval(show,10)
     $('#showtime span:eq(4)').html(msStr);
   }
 })
+
+$('#cancelMatch').on('click',function(){
+  //alert(JSON.stringify(roomInfo));
+  socket.emit('cancelMatch',{
+    $roomInfo:roomInfo
+  });
+});
 </script>
