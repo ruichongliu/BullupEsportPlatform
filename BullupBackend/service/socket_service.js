@@ -103,7 +103,11 @@ exports.joinRoom = function (socket, roomName) {
 //----------------------------------------------------------//
 //将需要发送到客户端的消息放置到相应的消息队列里
 exports.stableSocketEmit = function(socket, head, data){
-    var index = socket.id;
+    if(data.old_socket_id != undefined && data.old_socket_id != null){
+       var index = data.old_socket_id;
+    }else {
+        var index = socket.id;
+    }   
     var token = Math.random().toString(36).substring(7) + socket.id; 
     data.token = token;
     if(exports.socketEmitQueue[index] != undefined){
@@ -126,8 +130,8 @@ exports.stableSocketEmit = function(socket, head, data){
             'status': 'unrecieved'
         };
     }
-}
-
+    }
+    
 exports.stableSocketsEmit = function(sockets, roomName, head, data){
     if(sockets.rooms.length != 0){
         //log.logToFile("./logs/data/data.txt", "append", JSON.stringify(sockets), "satbleSocketsEmit sockets");
@@ -170,7 +174,7 @@ exports.stableEmit = function(){
     if (exports.socketEmitQueue != undefined &&
         exports.maxResendTimes != undefined && 
         exports.timeInterval != undefined){
-        for(socketId in exports.socketEmitQueue){
+        for(socketId in exports.socketEmitQueue){          
             //log.logToFile("D://log.txt", "append", "Queue: " + JSON.stringify(exports.socketEmitQueue[socketId].dataQueue));
             var socketObj = exports.socketEmitQueue[socketId].socketObj;
             //如果客户端已经断开连接则不发送消息
@@ -179,7 +183,7 @@ exports.stableEmit = function(){
             }
             //console.log(socketId+ " connected:" + socketObj.connected);
             var dataQueue = exports.socketEmitQueue[socketId].dataQueue;
-            var data = {'blank': true};
+            var data = {'blank': true};         
             for(dataToken in dataQueue){
                 if(dataQueue[dataToken] == undefined || dataQueue[dataToken].status == 'recieved'){
                     continue;
@@ -193,7 +197,7 @@ exports.stableEmit = function(){
                 break;
             }
             if(data.blank != true){
-                socketObj.emit(data.header, data.data);
+                socketObj.emit(data.header, data.data);                
                 delete data;
             }else{
                 continue;
@@ -207,7 +211,9 @@ exports.stableEmit = function(){
 exports.handleReceivedTokenData = function(socket){
     socket.on('tokenData', function(tokenData){
         //从未发送的消息队列中删除该项
-        delete exports.socketEmitQueue[socket.id].dataQueue[tokenData];
+        if(exports.socketEmitQueue[socket.id].dataQueue != null){
+            delete exports.socketEmitQueue[socket.id].dataQueue[tokenData];
+        }        
         //exports.socketEmitQueue[socket.id].dataQueue[tokenData].status = 'recieved';
     });
 }
