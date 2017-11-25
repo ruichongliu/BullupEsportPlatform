@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://127.0.0.1:3000');
+var socket = io.connect('http://192.168.2.162:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -341,7 +341,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             //console.log('this is battleInfo:',JSON.stringify(battleInfo));
             //-------------------我方---------敌方------
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
-            var clock = $('.countdown-clock').FlipClock(60, {
+            var clock = $('.countdown-clock').FlipClock(60*3, {
                 // ... your options here
                 clockFace: 'MinuteCounter',
                 countdown: true
@@ -369,7 +369,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             //bullup.alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password);
             console.log('this is what i want:',JSON.stringify(battleInfo));
             alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password);
-            handleTimeout();
+            //handleTimeout();
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
             var own;
@@ -392,7 +392,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             var dataArray2 = e;
             //console.log('this is battleInfo:',JSON.stringify(battleInfo));
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
-            var clock = $('.countdown-clock').FlipClock(60, {
+            var clock = $('.countdown-clock').FlipClock(60*3, {
                 // ... your options here
                 clockFace: 'MinuteCounter',
                 countdown: true
@@ -425,7 +425,7 @@ function handleTimeout(){
 }
 
 function handleBattleTimeoutResulr(feedback){
-    alert(feedback.text);
+    bullup.alert(feedback.text);
     $('#router_starter').click();
     formedTeams = feedback.extension.formedTeams;
     roomInfo = null;
@@ -438,8 +438,7 @@ socket.on('lolRoomEstablished', function (data) {
     //游戏开始 刷新时钟 
     if(userInfo.liseningResult == true ){
         lol_process.grabLOLData('result', socket);
-        //bullup.alert('游戏已开始');     
-        alert('游戏已开始');
+        bullup.alert('游戏已开始');     
         clearTimeout(timeControl);             
         userInfo.liseningResult = false;
     }
@@ -448,7 +447,7 @@ socket.on('lolRoomEstablished', function (data) {
 
 function handleCancelMatch(feedback){
     $('#router_starter').click();
-    alert(feedback.text);
+    bullup.alert(feedback.text);
     roomInfo = null;
     teamInfo = null;
     battleInfo = null;
@@ -490,8 +489,8 @@ socket.on('battleResult', function(resultPacket){
     }
    
     if(flag){
-    //赢了     
-     for( key in resultPacket.winTeam ){
+        //赢了     
+        for( key in resultPacket.winTeam ){
             for ( key1 in resultPacket.participants){
                 if( resultPacket.winTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId ){
                   resultPacket.winTeam[key].stats = resultPacket.participants[key1].stats; 
@@ -510,21 +509,18 @@ socket.on('battleResult', function(resultPacket){
         battleResultData.rival_team = resultPacket.loseTeam;
        
     }else{
-    //输了
-    
+        //输了
         for( key in resultPacket.winTeam ){
-                    for ( key1 in resultPacket.participants){
-                        if(resultPacket.winTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId){
-                            resultPacket.winTeam[key].stats = resultPacket.participants[key1].stats;
-                          
-                        }
+            for ( key1 in resultPacket.participants){
+                if(resultPacket.winTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId){
+                    resultPacket.winTeam[key].stats = resultPacket.participants[key1].stats;    
                     }
                 }
-         for( key in resultPacket.loseTeam){
+            }
+        for( key in resultPacket.loseTeam){
             for ( key1 in resultPacket.participants){
                 if(resultPacket.loseTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId ){
                   resultPacket.loseTeam[key].stats = resultPacket.participants[key1].stats;
-                  
                 }
             }
         } 
