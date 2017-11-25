@@ -1,7 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://49.140.81.199:3000');
-
+var socket = io.connect('http://192.168.2.162:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -173,6 +172,14 @@ socket.on('feedback', function (feedback) {
         case 'UPDATEINFORESULT':
             handleUpdateInfoResult(feedback);
             break;
+        //创建lol房间超时
+        case 'BATTLEISTIMEOUT':
+            handleBattleTimeoutResulr(feedback);
+            break;
+        //取消自由匹配
+        case 'CANCELMATCHRESULT':
+            handleCancelMatch(feedback);
+            break;
         }
 });
 
@@ -313,7 +320,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
             bullup.alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password);
-            
+            handleTimeout();
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
             var own;
@@ -337,7 +344,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             //console.log('this is battleInfo:',JSON.stringify(battleInfo));
             //-------------------我方---------敌方------
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
-            var clock = $('.countdown-clock').FlipClock(60, {
+            var clock = $('.countdown-clock').FlipClock(60*3, {
                 // ... your options here
                 clockFace: 'MinuteCounter',
                 countdown: true
@@ -386,7 +393,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             var dataArray2 = e;
             //console.log('this is battleInfo:',JSON.stringify(battleInfo));
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
-            var clock = $('.countdown-clock').FlipClock(60, {
+            var clock = $('.countdown-clock').FlipClock(60*3, {
                 // ... your options here
                 clockFace: 'MinuteCounter',
                 countdown: true
@@ -406,17 +413,47 @@ socket.on('lolRoomEstablish', function (lolRoom) {
     }
 });
 
+var timeControl;
+function handleTimeout(){
+    var pointInfo = {
+        battleName:battleInfo.battleName,
+        blueRoomName:battleInfo.blueSide.roomName,
+        redRoomName:battleInfo.redSide.roomName
+    };
+    timeControl = setTimeout(function(){
+        socket.emit('isTimeout',pointInfo);
+    },1000*60*3);
+}
+
+function handleBattleTimeoutResulr(feedback){
+    bullup.alert(feedback.text);
+    $('#router_starter').click();
+    formedTeams = feedback.extension.formedTeams;
+    roomInfo = null;
+    teamInfo = null;
+    battleInfo = null;
+}
+
 socket.on('lolRoomEstablished', function (data) {
     socket.emit('tokenData', data.token);    
     //游戏开始 刷新时钟 
     if(userInfo.liseningResult == true ){
         //$("#router_test_page").click();
         lol_process.grabLOLData('result', socket);
-        bullup.alert('游戏已开始');                  
+        bullup.alert('游戏已开始');     
+        clearTimeout(timeControl);             
         userInfo.liseningResult = false;
     }
     userInfo.creatingRoom = false;
 });
+
+function handleCancelMatch(feedback){
+    $('#router_starter').click();
+    bullup.alert(feedback.text);
+    roomInfo = null;
+    teamInfo = null;
+    battleInfo = null;
+}
 
 socket.on('chatMsg', function(msg){
     if(userInfo == null){
@@ -454,8 +491,8 @@ socket.on('battleResult', function(resultPacket){
     }
    
     if(flag){
-    //赢了     
-     for( key in resultPacket.winTeam ){
+        //赢了     
+        for( key in resultPacket.winTeam ){
             for ( key1 in resultPacket.participants){
                 if( resultPacket.winTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId ){
                   resultPacket.winTeam[key].stats = resultPacket.participants[key1].stats; 
@@ -474,21 +511,18 @@ socket.on('battleResult', function(resultPacket){
         battleResultData.rival_team = resultPacket.loseTeam;
        
     }else{
-    //输了
-    
+        //输了
         for( key in resultPacket.winTeam ){
-                    for ( key1 in resultPacket.participants){
-                        if(resultPacket.winTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId){
-                            resultPacket.winTeam[key].stats = resultPacket.participants[key1].stats;
-                          
-                        }
+            for ( key1 in resultPacket.participants){
+                if(resultPacket.winTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId){
+                    resultPacket.winTeam[key].stats = resultPacket.participants[key1].stats;    
                     }
                 }
-         for( key in resultPacket.loseTeam){
+            }
+        for( key in resultPacket.loseTeam){
             for ( key1 in resultPacket.participants){
                 if(resultPacket.loseTeam[key].lolAccountInfo.user_lol_account==resultPacket.participants[key1].accountId ){
                   resultPacket.loseTeam[key].stats = resultPacket.participants[key1].stats;
-                  
                 }
             }
         } 
