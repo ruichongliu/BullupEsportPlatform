@@ -172,14 +172,6 @@ socket.on('feedback', function (feedback) {
         case 'UPDATEINFORESULT':
             handleUpdateInfoResult(feedback);
             break;
-        //创建lol房间超时
-        case 'BATTLEISTIMEOUT':
-            handleBattleTimeoutResulr(feedback);
-            break;
-        //取消自由匹配
-        case 'CANCELMATCHRESULT':
-            handleCancelMatch(feedback);
-            break;
         }
 });
 
@@ -279,7 +271,12 @@ socket.on('teamInfoUpdate', function (data) {
         $('#confirm_create_team_btn').css('display', 'none');
     }
 
-    //$('#message_center_nav').click();
+    $('#message_center_nav').click();
+    // {"roomName":"嵇昊雨1503584960077","captain":{"name":"嵇昊雨","userId":30,"avatarId":1},"participants":[{"name":"嵇昊雨","userId":30,"avatarId":1,"strength":{"kda":"0.0","averageGoldEarned":0,"averageTurretsKilled":0,"averageDamage":0,"averageDamageTaken":0,"averageHeal":0,"score":2000}},{"name":"嵇昊雨","userId":30,"avatarId":1,"strength":{"kda":"0.0","averageGoldEarned":0,"averageTurretsKilled":0,"averageDamage":0,"averageDamageTaken":0,"averageHeal":0,"score":2000}}],"status":"ESTABLISHING","gameMode":"battle","battleDesc":"不服来战","rewardType":"bullupScore","rewardAmount":"10","mapSelection":"map-selection-1","winningCondition":"push-crystal"}
+
+    // {"name":"嵇昊雨","userId":30,"avatarId":1,"wealth":0,"online":true,"status":"IDLE","friendList":{"郭景明":{"name":"郭景明","userId":29,"avatarId":1,"online":"true","status":"idle"},"嵇昊雨":{"name":"嵇昊雨","userId":30,"avatarId":1,"online":"true","status":"idle"}},"relationMap":{"currentTeamId":null,"currentGameId":null},"strength":{"kda":"0.0","averageGoldEarned":0,"averageTurretsKilled":0,"averageDamage":0,"averageDamageTaken":0,"averageHeal":0,"score":2000}}
+
+    //var temp = bullup.loadSwigView("./swig_menu.html", { logged_user: userInfo });
 });
 
 
@@ -314,10 +311,8 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             //$("#router_test_page2").click();
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
-            //bullup.alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password);
-            console.log('this is what i want:',JSON.stringify(battleInfo));
-            alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password);
-            handleTimeout();
+            bullup.alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password);
+            
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
             var own;
@@ -366,10 +361,8 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         if(userInfo.creatingRoom){
             //$("#router_test_page2").click();
             lol_process.grabLOLData('room', socket);
-            //bullup.alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password);
-            console.log('this is what i want:',JSON.stringify(battleInfo));
-            alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password);
-            //handleTimeout();
+            bullup.alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password);
+            
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
             var own;
@@ -437,6 +430,7 @@ socket.on('lolRoomEstablished', function (data) {
     socket.emit('tokenData', data.token);    
     //游戏开始 刷新时钟 
     if(userInfo.liseningResult == true ){
+        //$("#router_test_page").click();
         lol_process.grabLOLData('result', socket);
         bullup.alert('游戏已开始');     
         clearTimeout(timeControl);             
@@ -592,6 +586,16 @@ function handleLoginResult(feedback) {
         // 登录失败
        // bullup.alert(feedback.text);
        bullup.alert("登陆失败!");
+    
+    } else if (feedback.errorCode == 2){
+        //账号同时登陆,前一个会被挤下线
+        bullup.alert('账号在其他地方登陆!');
+        $('#log_modal').modal('close');
+        userInfo = null;
+        var temp = bullup.loadSwigView("./swig_menu.html", null);
+        $("#log_modal").css("display", "block");
+        $('#system_menu').html(temp);
+        $('#router_starter').click();
     }
 }
 
@@ -1029,6 +1033,7 @@ function handleAddFriendResult(feedback){
 function feedbackMessage(feedback){
     bullup.alert(feedback.text);
 }
+
 
 setInterval(()=>{
     if(socket != undefined){
