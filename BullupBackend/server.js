@@ -64,6 +64,8 @@ io.on('connection', function(socket) {
     teamService.handleTeamDetails(socket);
 
     teamService.handleRefreshFormedBattleRoom(socket);
+    //取消匹配
+    teamService.cancelMatch(io,socket);
 
     battleService.handleBattleInvite(socket);
 
@@ -72,7 +74,9 @@ io.on('connection', function(socket) {
     battleService.handleLOLRoomEstablished(io, socket);
 
     battleService.handleBattleResult(io, socket);
-
+    //建房超时
+    battleService.handleBattleTimeout(io,socket);
+    
     battleService.handleMatch(io);
 
     paymentService.handlePayment(socket);
