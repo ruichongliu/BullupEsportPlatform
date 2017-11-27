@@ -11,10 +11,27 @@
 
 <li><a href="#link_modal">绑定账号</a></li>
 
+<li><a href="#" id="headle_music">播放</a></li>
 
 <li class="divider"></li>
 
-
+<audio autoplay loop id="bullup_background_music">
+    <source src="media/music/music.mp3" type="">
+</audio>
+  <script type="text/javascript">
+  var audio_music = document.getElementById("bullup_background_music");
+  var play = document.getElementById("headle_music");
+  audio_music.pause();
+  play.addEventListener('click',function(event){
+     if(play.innerHTML == "静音"){
+        audio_music.pause();
+        play.innerHTML="播放";
+     }else{
+        audio_music.play();
+        play.innerHTML="静音";
+     }      
+    });
+  </script>
 
 <script>
 

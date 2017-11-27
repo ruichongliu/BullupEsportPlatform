@@ -6,7 +6,11 @@ $().ready(function(){
 		
         });
    
-   
+
+			document.getElementById('headle_music1').addEventListener('click',function(event){
+				console.log("click ok");            
+				document.getElementById("bullup_background_music").pause();
+			});
     });
    
 
