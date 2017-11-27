@@ -21,9 +21,9 @@ $().ready(function(){
         console.log(inputUserNickName);
         if(inputUserNickName != ""){
             if(inputUserNickName.length<=15){
-                for(var friendName in userInfo.friendList){
-                    if(friendName == inputUserNickName){
-                        bullup.alert(friendName + '已经是您的好友');
+                for(var index in userInfo.friendList){
+                    if(userInfo.friendList[index].name == inputUserNickName){
+                        bullup.alert(userInfo.friendList[index].name + '    已经是您的好友');
                         return;
                     }
                 }

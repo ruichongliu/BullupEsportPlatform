@@ -32,7 +32,7 @@ exports.handleLogin = function (socket) {
     socket.on('login', function (data) {
         logUtil.listenerLog('login');
 
-        baseInfoDao.findUserByAccount(data.userName, function (user) {
+        baseInfoDao.findUserByAccount(data.userName, function (user) {            
             if (!user || user.user_password != data.password) {
                 // 登录失败
                 socketService.stableSocketEmit(socket, 'feedback', {
@@ -42,6 +42,22 @@ exports.handleLogin = function (socket) {
                     extension: null
                 });
             } else {
+                //判断账户是否登陆,
+                for(var index in exports.users){
+                    if(index == user.user_id){
+                        if(socket.id != exports.users[index].socket_id){
+                        socketService.stableSocketEmit(socket, 'feedback', {
+                            user_id:index,
+                            socket_id:socket.id,
+                            old_socket_id:exports.users[index].socket_id,
+                            errorCode: 2,
+                            text: '用户已经登陆了！',
+                            type: 'LOGINRESULT',
+                            extension: null
+                        });
+                    }                                            
+                    }
+                }
                 // 登陆成功
                 socketService.add(user.user_id, socket);
                 async.waterfall([
@@ -110,6 +126,7 @@ exports.handleLogin = function (socket) {
                         type: 'LOGINRESULT',
                         text: "登录成功",
                         extension: {
+                            socket_id: socket.id,
                             name: userInfo.userNickname,
                             userId: userInfo.userId,
                             //----------------------
@@ -148,7 +165,7 @@ exports.handleLogin = function (socket) {
                     }
                     exports.addUser(feedback.extension);
 
-                    socketService.stableSocketEmit(socket, 'feedback', feedback);
+                            socketService.stableSocketEmit(socket, 'feedback', feedback);                    
                     //socketService.stableEmit();
                     //socket.emit('feedback', feedback);
                 });
@@ -445,8 +462,27 @@ exports.handleRankRequest = function (socket){
 
 
 exports.handleLOLBind = function(socket){
-    socket.on('lolLoginResult',function(loginPacket){
-        
+    socket.on('lolLoginResult',function(loginPacketStr){
+        var stdout = JSON.parse(loginPacketStr);
+        var loginPacket = {};
+        var rankTierInfo = String(stdout.UserInfo.rankedTierInfo);
+        var ranks = ['UNRANKED','BRONZE','SILVER','GOLD','PLATINUM','DIAMOND','MASTER','CHALLENGER'];
+        loginPacket.currentRank = 'UNRANKED';
+        for(var index in ranks){
+            if(rankTierInfo.indexOf(ranks[index]) != -1){
+                loginPacket.currentRank = ranks[index];
+                break;
+            }
+        }
+        loginPacket.head = "user";
+        loginPacket.accountId = stdout.UserInfo.userId;
+        loginPacket.nickname = stdout.UserInfo.displayName;
+        loginPacket.lastRank = stdout.UserInfo.lastSeasonRank;
+        loginPacket.serverName = stdout.UserInfo.serverName;
+
+
+
+
         var userId = socketService.socketUserMap[socket.id];
         var lolAccount = loginPacket.accountId;
         var lolNickname = loginPacket.nickname;
