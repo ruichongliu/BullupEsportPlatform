@@ -416,9 +416,12 @@ exports.handleUserInviteResult = function (io, socket) {
             //socket.emit('success', 'hello');
             var teamName = feedback.extension.teamName;
             var participant = feedback.extension.userInfo;
+            var roomMember = teamService.mapTeamNameToUnformedTeam(teamName).participants.map((e) => e.userId);
 
             // TODO 更新用户状态
 
+            // 检查用户是否已经在队伍中
+            if (roomMember.indexOf(participant.userId) != -1) {return;}
             // 更新teamList中team信息, 添加该参与者
             teamService.addParticipantToTeam(teamName, participant);
             socketService.joinRoom(socket, teamName);
