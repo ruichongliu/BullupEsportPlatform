@@ -11,7 +11,7 @@ var socketService = dependencyUtil.global.service.socketService;
 var mysqlServerConfig = {
     host:'18.221.98.48',
     user: 'root',
-    password: '123456',
+    password: '1234',
     database: 'bullup',
     useConnectionPooling: true
 };
