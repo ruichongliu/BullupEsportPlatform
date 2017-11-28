@@ -203,6 +203,7 @@ exports.handleBattleResult = function (io, socket){
             lolResultPacketStr = lolResultPacketStr.substr(1, lolResultPacketStr.length - 1);
         }
         var obj = JSON.parse(lolResultPacketStr);
+        console.log('this is fucking result:',lolResultPacketStr);
         var lolResultPacket = {};
         lolResultPacket.summonerName = obj.GameData.summonerName;
         lolResultPacket.gameMode = obj.GameData.gameMode;
@@ -226,6 +227,8 @@ exports.handleBattleResult = function (io, socket){
             lolResultPacket.win = 'no';
         }
 
+        var tempResult = processResultPacket(obj.GameData);
+        console.log('this is tempResult:',JSON.stringify(tempResult));
 
         if(true){
         //if(lolResultPacket.head == 'result' && lolResultPacket.gameMode == 'CLASSIC' && lolResultPacket.gameType == 'CUSTOM_GAME'){
@@ -298,6 +301,9 @@ exports.handleBattleResult = function (io, socket){
                 resultPacket.roomName = finishedBattle.blueSide.roomName;
                 resultPacket.winTeam = winTeam;
                 resultPacket.loseTeam = loseTeam;
+                resultPacket.participants = tempResult.participants;
+                console.log('this is damn finishedBattle:',JSON.stringify(finishedBattle));
+                
                 //resultPacket.participants = lolResultPacket.participants;
                 //算战力变化
                 var newScore = exports.strengthScoreChangedCalculation(winTeamStrengthScore, loseTeamStrengthScore);
@@ -318,7 +324,7 @@ exports.handleBattleResult = function (io, socket){
                 //广播结果数据包
                 socketService.stableSocketsEmit(io.sockets.in(finishedBattle.battleName), finishedBattle.battleName, 'battleResult', resultPacket);
                 console.log(finishedBattle.battleName + "结束");
-
+                console.log('this is winner result:',JSON.stringify(resultPacket));
                 //对局中所有的socket离开所有的socketRoom
                 //io.sockets.in(finishedBattle.battleName).leaveAll();
             }else if(lolResultPacket.win == 'no'){
@@ -389,6 +395,7 @@ exports.handleBattleResult = function (io, socket){
                 resultPacket.roomName = finishedBattle.blueSide.roomName;
                 resultPacket.winTeam = winTeam;
                 resultPacket.loseTeam = loseTeam;
+                resultPacket.participants = tempResult.participants;
                 //resultPacket.participants = lolResultPacket.participants
                 //算战力变化
                 var newScore = exports.strengthScoreChangedCalculation(winTeamStrengthScore, loseTeamStrengthScore);
@@ -409,7 +416,7 @@ exports.handleBattleResult = function (io, socket){
                 //广播结果数据包
                 socketService.stableSocketsEmit(io.sockets.in(finishedBattle.battleName), finishedBattle.battleName, 'battleResult', resultPacket);
                 console.log(finishedBattle.battleName + "结束");
-
+                console.log('this is lose result:',JSON.stringify(resultPacket));
                 //对局中所有的socket离开所有的socketRoom
                 //io.sockets.in(finishedBattle.battleName).leaveAll();
 
@@ -746,4 +753,50 @@ exports.handleBattleTimeout = function(io,socket){
         };
         socketService.stableSocketsEmit(exports.io.in(data.battleName), data.battleName, 'feedback', feedback);
     });
+}
+
+function processResultPacket(stdout){
+    var resultPacket = {};
+    resultPacket.head = "result";
+    resultPacket.accountId = stdout.accountId;
+    resultPacket.gameMode = stdout.gameMode;
+    resultPacket.gameType = stdout.gameType;
+    if(stdout.teams[0].players[0].stats.WIN == 1){
+        resultPacket.win = "yes";
+    }else{
+		resultPacket.win = "no";
+    }
+    resultPacket.participants = [];
+
+    var team1 = stdout.teams[0].players;
+    for(var playerIndex in team1){
+        var player = {};
+        player.accountId = team1[playerIndex].summonerId;
+        player.stats = {};
+        player.stats.kill = team1[playerIndex].stats.CHAMPIONS_KILLED;
+        player.stats.damage = team1[playerIndex].stats.TOTAL_DAMAGE_DEALT_TO_CHAMPIONS;
+        player.stats.damageTaken = team1[playerIndex].stats.TOTAL_DAMAGE_TAKEN;
+        player.stats.heal = team1[playerIndex].stats.TOTAL_HEAL;
+        player.stats.goldEarned = team1[playerIndex].stats.GOLD_EARNED;
+        player.stats.death = team1[playerIndex].stats.NUM_DEATHS;
+        player.stats.assists= team1[playerIndex].stats.ASSISTS;
+        resultPacket.participants.push(player);
+    }
+
+    var team2 = stdout.teams[1].players;
+    for(var playerIndex in team2){
+        var player = {};
+        player.accountId = team2[playerIndex].summonerId;
+        player.stats = {};
+        player.stats.kill = team2[playerIndex].stats.CHAMPIONS_KILLED;
+        player.stats.damage = team2[playerIndex].stats.TOTAL_DAMAGE_DEALT_TO_CHAMPIONS;
+        player.stats.damageTaken = team2[playerIndex].stats.TOTAL_DAMAGE_TAKEN;
+        player.stats.heal = team2[playerIndex].stats.TOTAL_HEAL;
+        player.stats.goldEarned = team2[playerIndex].stats.GOLD_EARNED;
+        player.stats.death = team2[playerIndex].stats.NUM_DEATHS;
+        player.stats.assists= team2[playerIndex].stats.ASSISTS;
+        resultPacket.participants.push(player);
+    }
+
+    return resultPacket;
 }

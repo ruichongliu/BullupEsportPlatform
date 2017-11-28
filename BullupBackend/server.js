@@ -77,7 +77,7 @@ io.on('connection', function(socket) {
     battleService.handleBattleResult(io, socket);
     //建房超时
     battleService.handleBattleTimeout(io,socket);
-
+    
     battleService.handleMatch(io);
 
     paymentService.handlePayment(socket);

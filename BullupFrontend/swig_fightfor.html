@@ -119,8 +119,8 @@ timer=setInterval(show,10)
     $('#showtime span:eq(2)').html(secStr);
     $('#showtime span:eq(4)').html(msStr);
   }
-})
-
+});
+//取消匹配
 $('#cancelMatch').on('click',function(){
   //alert(JSON.stringify(roomInfo));
   socket.emit('cancelMatch',{
