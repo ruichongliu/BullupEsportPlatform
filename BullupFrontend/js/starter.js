@@ -26,6 +26,34 @@ $(document).ready(function(){
         $.getScript('/js/zymly.js');
         $.getScript('/js/Withdraw.js');
     });
+
+    //最小化窗口
+    //加载本机UI库
+    var gui = require('nw.gui');
+
+    //获取当前窗口
+    var win = gui.Window.get();;
+
+    //聆听最小化事件的
+    win.on('minimize', function() {
+    //console.log('Window is minimized');
+    });
+    //最小化
+    $('.zuix').click(function () {
+
+        win.minimize();
+    })
+    //关闭窗口
+    win.on('close', function() {
+    this.hide(); 
+    console.log("We're closing...");
+    this.close(true);
+    });
+    $('.g_bi').click(function () {
+        socket.disconnect();
+        win.close(); 
+    });
+
 });    
 
 function addFireAnimation (id){
@@ -86,5 +114,7 @@ $('.ctavi').click(function () {
         $('#starter-carousel').carousel('next');
     }
 });
+
+
 
 autoplay();

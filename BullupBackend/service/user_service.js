@@ -5,6 +5,7 @@ dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service"
 var logUtil = dependencyUtil.global.utils.logUtil;
 var socketService = dependencyUtil.global.service.socketService;
 var teamService = dependencyUtil.global.service.teamService;
+var battleService = dependencyUtil.global.service.battleService;
 
 var baseInfoDao = dependencyUtil.global.dao.baseInfoDao;
 var strengthInfoDao = dependencyUtil.global.dao.strengthInfoDao;
@@ -146,6 +147,8 @@ exports.handleLogin = function (socket) {
                             }
                         }
                     };
+                    handleEnvironmentRecover(socket, feedback.extension);
+
                     if(userStrength != undefined){
                         var kda = ((userStrength.bullup_strength_k + userStrength.bullup_strength_a) / (userStrength.bullup_strength_d + 1.2)).toFixed(1);
                         feedback.extension.strength = {
@@ -165,7 +168,7 @@ exports.handleLogin = function (socket) {
                     }
                     exports.addUser(feedback.extension);
 
-                            socketService.stableSocketEmit(socket, 'feedback', feedback);                    
+                    socketService.stableSocketEmit(socket, 'feedback', feedback);                    
                     //socketService.stableEmit();
                     //socket.emit('feedback', feedback);
                 });
@@ -767,5 +770,26 @@ exports.insertFeedbackMessage=function(socket){
                 });
             }
         });
-    })
+    });
+}
+
+exports.handleDisconnect = function(socket){
+    var socketId = socket.id;
+    socket.on('disconnect', function (socket) {
+        var userId = socketService.mapSocketToUserId(socketId);
+        if(userId == undefined){
+            //该用户没有登录，什么都不需要做
+        }else{
+
+        }
+        //logUtil.levelMsgLog(0, 'User ' + socket.id + ' disconnected!');
+        //socketService.remove(socket);
+    });
+}
+
+function handleEnvironmentRecover(socket, userData){
+    //在Battle里找  用户是否进入了对局 如果是 把roomInfo  teamInfo  battleInfo传给客户端  把用户加入teamRoom battleRoom
+    
+
+
 }

@@ -45,6 +45,7 @@ io.on('connection', function(socket) {
     userService.handleIconIdUpdate(socket);
     userService.handleAddFriendRequest(socket);
     userService.handleAddFriendResult(socket);
+    userService.handleDisconnect(socket);
 
     //余额
     userService.handleGetBalance(socket);
@@ -118,12 +119,7 @@ io.on('connection', function(socket) {
     //LOLkey
     lolKeyService.handleLOLKeyUpdate(socket);
     lolKeyService.handleLOLKeyRequest(socket);
-
-});
-
-io.on('disconnect', function (socket) {
-    logUtil.levelMsgLog(0, 'User ' + socket.id + ' disconnected!');
-    socketService.remove(socket);
+    
 });
 
 

@@ -7,7 +7,8 @@ var request = require("request");
 $(document).ready(function(){
 
     $("#router_test_page").click(function(e){
-        lolProcess.grabLOLData("result", socket);
+        
+        //lolProcess.grabLOLData("result", socket);
         // lolUtil.getMatchDetailsBySummonerName("Who is 55Kai", "2017/10/11", "2017/10/14", function(details){
         //     console.log(details);
 
