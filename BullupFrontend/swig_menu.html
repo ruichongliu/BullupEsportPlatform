@@ -11,27 +11,14 @@
 
 <li><a href="#link_modal">绑定账号</a></li>
 
-<li><a href="#" id="headle_music">播放</a></li>
+<li><a href="#" id="headle_music">开启静音</a></li>
 
 <li class="divider"></li>
 
-<audio autoplay loop id="bullup_background_music">
-    <source src="media/music/music.mp3" type="">
+<!-- 接收到挑战时的提示音 -->
+<audio id="bullup_background_music">
+    <source src="media/music/prompt.mp3" type="">
 </audio>
-  <script type="text/javascript">
-  var audio_music = document.getElementById("bullup_background_music");
-  var play = document.getElementById("headle_music");
-  audio_music.pause();
-  play.addEventListener('click',function(event){
-     if(play.innerHTML == "静音"){
-        audio_music.pause();
-        play.innerHTML="播放";
-     }else{
-        audio_music.play();
-        play.innerHTML="静音";
-     }      
-    });
-  </script>
 
 <script>
 
@@ -61,4 +48,19 @@ $('.g_bi').click(function () {
 
    win.close();
 })
+
+
+//系统设置提示音是否为静音
+var audio_prompt = document.getElementById("bullup_background_music");
+var play = document.getElementById("headle_music");
+play.addEventListener('click',function(event){
+    if(audio_prompt.muted){
+      audio_prompt.muted = false;
+      play.innerHTML="开启静音";
+    }else{
+      audio_prompt.muted = true;
+      play.innerHTML="开启声音";
+    }      
+  });
+
 </script>
