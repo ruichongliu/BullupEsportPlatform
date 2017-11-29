@@ -13,7 +13,6 @@ $(".message_accept_btn").on('click', function(e){
     switch(message.messageType){
         case 'invitedFromFriend':{
             var bet = message.team.bet;
-            console.log(message);
             if(userInfo.lolAccountInfo == undefined || userInfo.lolAccountInfo == null){
                 //无法加入房间
                 bullup.alert("您还没有绑定LOL账号！无法加入该房间！");
