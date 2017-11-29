@@ -12,9 +12,6 @@ $("#invite_friend_btn").click(function(){
     if(!inviteSelectedFriendBtnEvent){
         inviteSelectedFriendBtnEvent = true;
         $("#invite_selected_friend_btn").click(function(){
-            // 创建房间已有用户list
-            var roomFriendList = roomInfo.participants.map((e) => e.userId);
-            var notInvitedList = [];
             var friendListSize = Number.parseInt($("#friend_list_size_hidden").val());
             for(var i = 0;i<friendListSize;i++){
                 if($("#friend_" + (i+1) + "_check_box").prop("checked")){//选中
@@ -22,13 +19,6 @@ $("#invite_friend_btn").click(function(){
                     //发送请求
                     //console.log("room : " + JSON.stringify(roomInfo));
                     var friend = userInfo.friendList[i];
-                    // 检查被邀请用户是否已经在房间内
-                    if (roomFriendList.indexOf(friend.userId) != -1) {
-                        // 如在，则跳过本用户
-                        notInvitedList[notInvitedList.length] = friend.name;
-                        continue;
-                    }
-
                     socket.emit('message', {
                         name: friend.name,
                         userId: friend.userId,
@@ -46,13 +36,6 @@ $("#invite_friend_btn").click(function(){
                         }
                     });
                 }
-            }
-            // 检查是否有用户因为已在房间内未被邀请
-            if (notInvitedList.length != 0) {
-                tempStr = notInvitedList.reduce((accumulator, currentValue) => accumulator.concat("，").concat(currentValue));
-                
-                bullup.alert("用户".concat(tempStr).concat("已在房间内！"));
-                return;
             }
         });
     }
