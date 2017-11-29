@@ -411,28 +411,31 @@ exports.handleUserInviteResult = function (io, socket) {
     socket.on('inviteResult', function (feedback) {
         logUtil.listenerLog('inviteResult');
 
-        //用户接受邀请
-        if (feedback.errorCode == 0) {
-            //socket.emit('success', 'hello');
+        // 检查队伍是否存在
+        if (teamService.mapTeamNameToUnformedTeam(feedback.extension.teamName)) {
             var teamName = feedback.extension.teamName;
             var participant = feedback.extension.userInfo;
+            //用户接受邀请
+            if (feedback.errorCode == 0 && roomMember.indexOf(participant.userId) == -1) {
+                //socket.emit('success', 'hello');
 
-            // TODO 更新用户状态
+                // TODO 更新用户状态
 
-            // 更新teamList中team信息, 添加该参与者
-            teamService.addParticipantToTeam(teamName, participant);
-            socketService.joinRoom(socket, teamName);
-            //    socket.emit('teamInfoUpdate', teamService.mapTeamNameToUnformedTeam(teamName));
+                // 更新teamList中team信息, 添加该参与者
+                teamService.addParticipantToTeam(teamName, participant);
+                socketService.joinRoom(socket, teamName);
+                //    socket.emit('teamInfoUpdate', teamService.mapTeamNameToUnformedTeam(teamName));
 
-            // 向房间内的所有用户广播当前队伍信息
-            socketService.stableSocketsEmit(io.sockets.in(teamName), teamName, 'teamInfoUpdate', teamService.mapTeamNameToUnformedTeam(teamName));
-        } else if (feedback.errorCode == 1) {
-            // 用户拒绝邀请
-            var hostId = feedback.extension.hostId;
+                // 向房间内的所有用户广播当前队伍信息
+                socketService.stableSocketsEmit(io.sockets.in(teamName), teamName, 'teamInfoUpdate', teamService.mapTeamNameToUnformedTeam(teamName));
+            } else if (feedback.errorCode == 1) {
+                // 用户拒绝邀请
+                var hostId = feedback.extension.hostId;
 
-            // 向发起者发送拒绝信息
-            var dstSocket = socketService.mapUserIdToSocket(hostId);
-            socketService.stableSocketEmit(dstSocket, 'feedback', feedback);
+                // 向发起者发送拒绝信息
+                var dstSocket = socketService.mapUserIdToSocket(hostId);
+                socketService.stableSocketEmit(dstSocket, 'feedback', feedback);
+            }
         }
     });
 }
