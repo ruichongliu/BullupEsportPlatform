@@ -415,6 +415,7 @@ exports.handleUserInviteResult = function (io, socket) {
         if (teamService.mapTeamNameToUnformedTeam(feedback.extension.teamName)) {
             var teamName = feedback.extension.teamName;
             var participant = feedback.extension.userInfo;
+            var roomMember = teamService.mapTeamNameToUnformedTeam(teamName).participants.map((e) => e.userId); 
             //用户接受邀请
             if (feedback.errorCode == 0 && roomMember.indexOf(participant.userId) == -1) {
                 //socket.emit('success', 'hello');
