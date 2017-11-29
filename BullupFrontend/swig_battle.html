@@ -1,7 +1,43 @@
 
 <div class="row">
   <!-- button will fade away -->
-  <a class="nav-link waves-effect waves-light btn right" id="refresh_formed_battle_room">刷新房间</a>
+	<a class="nav-link waves-effect waves-light btn right" id="refresh_formed_battle_room">刷新房间</a>
+
+		<select class="browser-default right" id ="bullup_seek_map" style="width:105px;height:36px;background-color:#2bbbad;color:#fff;margin-right: 2px;">
+			<option value="所有地图">所有地图</option>
+			<option value="召唤师峡谷">召唤师峡谷</option>
+			<option value="嚎哭深渊">嚎哭深渊</option>
+		</select>
+
+
+	
+		<select class="browser-default right" id ="bullup_seek_game_mode" style="width:76px;height:36px;background-color:#2bbbad;color:#fff;margin-right: 2px;">
+			<option value="游戏模式">游戏模式</option>
+			<option value="1V1">1V1</option>
+			<option value="2V2">2V2</option>
+			<option value="3V3">3V3</option>
+			<option value="4V4">4V4</option>
+			<option value="5V5">5V5</option>
+		</select>
+
+
+
+			<select class="browser-default right" id ="bullup_seek_game_type" style="width:90px;height:36px;background-color:#2bbbad;color:#fff;margin-right: 2px;">
+				<option value="获胜方式">获胜方式</option>
+				<option value="推掉水晶">推掉水晶</option>
+				<option value="其他">其他</option>
+			</select>
+
+
+		<div class="row">
+			<select class="browser-default right" id ="bullup_seek_game_reward_amount" style="width:90px;height:36px;background-color:#2bbbad;color:#fff;margin-right: 2px;">
+				<option value="比赛金额">比赛金额</option>
+				<option value="#1">$1</option>
+				<option value="$5">$5</option>
+				<option value="$10">$10</option>
+			</select>
+		</div>
+
 </div>
 
 {% if teams %}
