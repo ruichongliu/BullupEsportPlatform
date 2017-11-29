@@ -42,7 +42,7 @@ $("#invite_friend_btn").click(function(){
                             name: roomInfo.roomName,
                             bet: roomInfo.rewardAmount, // 赌注
                             mapId: roomInfo.mapSelection,
-                            rule: roomInfo.winningCondition                     
+                            rule: roomInfo.winningCondition
                         }
                     });
                 }
