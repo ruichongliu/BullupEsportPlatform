@@ -63,7 +63,6 @@ $(".message_accept_btn").on('click', function(e){
                 $('#message_center_nav').click();
                 break;;
             }
-
             var inviteResult = {
                 errorCode: 0,
                 type: 'INVITERESULT',
