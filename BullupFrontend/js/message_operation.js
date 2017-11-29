@@ -64,31 +64,6 @@ $(".message_accept_btn").on('click', function(e){
                 $('#message_center_nav').click();
                 break;;
             }
-            // if(message.team.member.indexOf(userInfo.userId) != -1) {
-            //     //无法加入房间
-            //     bullup.alert("您已在该房间！");
-            //     var inviteResult = {
-            //         errorCode: 1,
-            //         type: 'INVITERESULT',
-            //         text: userInfo.name + '已在房间内！',
-            //         extension: {
-            //             hostName: message.host.name,
-            //             hostId: message.host.userId,
-            //             teamName: message.team.name,
-            //             userInfo: {
-            //                 name: userInfo.name,
-            //                 userId: userInfo.userId,
-            //                 avatarId: userInfo.avatarId,
-            //                 strength: userInfo.strength
-            //             }
-            //         }
-            //     };
-            //     socket.emit('inviteResult', inviteResult);
-            //     //删除消息
-            //     messageInfo.splice(Number.parseInt(messageIndexString), 1);
-            //     $('#message_center_nav').click();
-            //     break;;
-            // }
             var inviteResult = {
                 errorCode: 0,
                 type: 'INVITERESULT',
