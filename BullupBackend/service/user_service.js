@@ -429,7 +429,7 @@ exports.handleUserInviteResult = function (io, socket) {
 
                 // 向房间内的所有用户广播当前队伍信息
                 socketService.stableSocketsEmit(io.sockets.in(teamName), teamName, 'teamInfoUpdate', teamService.mapTeamNameToUnformedTeam(teamName));
-            } else if (feedback.errorCode == 1) {
+            } else if (feedback.errorCode == 1 && roomMember.indexOf(participant.userId) == -1) {
                 // 用户拒绝邀请
                 var hostId = feedback.extension.hostId;
 
