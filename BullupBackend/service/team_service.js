@@ -30,6 +30,7 @@ exports.init = function() {
  * 队伍创建监听
  * @param socket
  */
+//建立房间
 exports.handleRoomEstablish = function(socket) {
     socket.on('roomEstablish', function (room) {
         logUtil.listenerLog('roomEstablish');
@@ -37,8 +38,10 @@ exports.handleRoomEstablish = function(socket) {
         //变化房间中所有user的satus
         for(var index in room.participants){
             var userId = room.participants[index].userId;
+            userService.changeUserStatus(userId, 'inroom');
             userService.setEnvironment(userId, 'room', room);
         }
+
         //将该socket放入teamname命名的room中
         socketService.joinRoom(socket, room.roomName);
         // 返回回馈信息
@@ -109,6 +112,13 @@ exports.handleTeamEstablish = function (io, socket) {
         teamInfo.status = 'PUBLISHING';
         // 将未形成队伍列表中的队伍放入已形成队伍列表中
         logUtil.logToFile("./logs/data/data.txt", "append", JSON.stringify(teamInfo), "establishTeam teamInfo");
+        //更新队伍成员的状态和环境
+        for(var index in teamInfo.participants){
+            var userId = teamInfo.participants[index].userId;
+            userService.changeUserStatus(userId, 'inteam');
+            userService.setEnvironment(userId, 'team', teamInfo);
+        }
+
         if(teamInfo.gameMode == 'battle'){
             //约战
             exports.formedTeams[teamInfo.roomName] = teamInfo;

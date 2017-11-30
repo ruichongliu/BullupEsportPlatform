@@ -6,6 +6,7 @@ var logUtil = dependencyUtil.global.utils.logUtil;
 var socketService = dependencyUtil.global.service.socketService;
 var teamService = dependencyUtil.global.service.teamService;
 var battleService = dependencyUtil.global.service.battleService;
+var userService = dependencyUtil.global.service.userService;
 
 var baseInfoDao = dependencyUtil.global.dao.baseInfoDao;
 var strengthInfoDao = dependencyUtil.global.dao.strengthInfoDao;
@@ -24,7 +25,7 @@ exports.init = function () {
 exports.addUser = function (user) {
     this.users[user.userId] = user;
     this.users[user.userId].environment = {};
-    this.users[user.userId].status = "";
+    this.users[user.userId].status = "idle";
 }
 
 /**
@@ -420,12 +421,14 @@ exports.handleUserInviteResult = function (io, socket) {
         if (teamService.mapTeamNameToUnformedTeam(feedback.extension.teamName)) {
             var teamName = feedback.extension.teamName;
             var participant = feedback.extension.userInfo;
-            var roomMember = teamService.mapTeamNameToUnformedTeam(teamName).participants.map((e) => e.userId); 
+            var room = teamService.mapTeamNameToUnformedTeam(teamName);
+            var roomMember = room.participants.map((e) => e.userId); 
             //用户接受邀请
             if (feedback.errorCode == 0 && roomMember.indexOf(participant.userId) == -1) {
-                //socket.emit('success', 'hello');
-
-                // TODO 更新用户状态
+                //更新用户状态
+                var userId = participant.userId;
+                userService.changeUserStatus(usetId, 'inroom');
+                userService.setEnvironment(usetId, 'room', room);
 
                 // 更新teamList中team信息, 添加该参与者
                 teamService.addParticipantToTeam(teamName, participant);
@@ -453,6 +456,11 @@ exports.changeUserStatus = function (userId, status) {
 exports.setEnvironment = function (userId, head, data) {
     this.users[userId].environment[head] = data;
 }
+
+exports.deleteEnvironment = function (userId, head) {
+    delete this.users[userId].environment[head];
+}
+
 
 exports.handleRankRequest = function (socket){
     socket.on('rankRequest', function(request){
