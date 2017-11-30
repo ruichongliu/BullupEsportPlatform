@@ -279,7 +279,8 @@ socket.on('teamInfoUpdate', function (data) {
         $('#confirm_create_team_btn').css('display', 'none');
     }
 
-    $('#message_center_nav').click();
+    // 解决被邀请人同意后房主弹出消息中心
+    // $('#message_center_nav').click();
     // {"roomName":"嵇昊雨1503584960077","captain":{"name":"嵇昊雨","userId":30,"avatarId":1},"participants":[{"name":"嵇昊雨","userId":30,"avatarId":1,"strength":{"kda":"0.0","averageGoldEarned":0,"averageTurretsKilled":0,"averageDamage":0,"averageDamageTaken":0,"averageHeal":0,"score":2000}},{"name":"嵇昊雨","userId":30,"avatarId":1,"strength":{"kda":"0.0","averageGoldEarned":0,"averageTurretsKilled":0,"averageDamage":0,"averageDamageTaken":0,"averageHeal":0,"score":2000}}],"status":"ESTABLISHING","gameMode":"battle","battleDesc":"不服来战","rewardType":"bullupScore","rewardAmount":"10","mapSelection":"map-selection-1","winningCondition":"push-crystal"}
 
     // {"name":"嵇昊雨","userId":30,"avatarId":1,"wealth":0,"online":true,"status":"IDLE","friendList":{"郭景明":{"name":"郭景明","userId":29,"avatarId":1,"online":"true","status":"idle"},"嵇昊雨":{"name":"嵇昊雨","userId":30,"avatarId":1,"online":"true","status":"idle"}},"relationMap":{"currentTeamId":null,"currentGameId":null},"strength":{"kda":"0.0","averageGoldEarned":0,"averageTurretsKilled":0,"averageDamage":0,"averageDamageTaken":0,"averageHeal":0,"score":2000}}
@@ -319,7 +320,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             //$("#router_test_page2").click();
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
-            bullup.alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password);
+            bullup.alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + "<br> 请在LOL加入蓝方战队");
             handleTimeout();
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
@@ -369,7 +370,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         if(userInfo.creatingRoom){
             //$("#router_test_page2").click();
             lol_process.grabLOLData('room', socket);
-            bullup.alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password);
+            bullup.alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password +'<br>请在LOL加入红方战队');
             
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
@@ -508,6 +509,7 @@ socket.on('battleResult', function(resultPacket){
         }  
         battleResultData.own_team = resultPacket.winTeam;
         battleResultData.win = 1;
+        battleResultData.gameLength = resultPacket.gameLength;
         battleResultData.rival_team = resultPacket.loseTeam;
        
     }else{
@@ -528,12 +530,18 @@ socket.on('battleResult', function(resultPacket){
         } 
         battleResultData.own_team = resultPacket.loseTeam;
         battleResultData.win = 0;
+        battleResultData.gameLength = resultPacket.gameLength;
         battleResultData.rival_team = resultPacket.winTeam;
        
     }
     battleResultData.wealth_change = resultPacket.rewardAmount;
     // console.log(JSON.stringify(battleResultData));
-    
+    socket.emit('updateKDA',{
+        userId:userInfo.userId,
+        nickname:userInfo.name,
+        result:battleResultData  
+    });
+
     var battleResHtml = bullup.loadSwigView('./swig_battleres.html', {
         battle_res: battleResultData
     });
@@ -597,13 +605,17 @@ function handleLoginResult(feedback) {
     
     } else if (feedback.errorCode == 2){
         //账号同时登陆,前一个会被挤下线
-        bullup.alert('账号在其他地方登陆!');
-        $('#log_modal').modal('close');
-        userInfo = null;
-        var temp = bullup.loadSwigView("./swig_menu.html", null);
-        $("#log_modal").css("display", "block");
-        $('#system_menu').html(temp);
-        $('#router_starter').click();
+        if( userInfo != null){
+            if(userInfo.userId == feedback.user_id){
+                bullup.alert('账号在其他地方登陆!');
+                $('#log_modal').modal('close');
+                userInfo = null;
+                var temp = bullup.loadSwigView("./swig_menu.html", null);
+                $("#log_modal").css("display", "block");
+                $('#system_menu').html(temp);
+                $('#router_starter').click();
+            }
+        }
     }
 }
 
