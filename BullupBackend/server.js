@@ -78,6 +78,8 @@ io.on('connection', function(socket) {
     battleService.handleBattleTimeout(io,socket);
     
     battleService.handleMatch(io);
+    //KDA入库
+    battleService.updateKDA(socket);
 
     paymentService.handlePayment(socket);
     paymentService.handleBankInfo(socket);
