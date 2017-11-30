@@ -54,6 +54,20 @@ $(document).ready(function(){
         win.close(); 
     });
 
+    //系统设置提示音是否为静音
+    var audio_prompt = document.getElementById("bullup_background_music");
+    var play = document.getElementById("headle_music");
+    play.addEventListener('click',function(event){
+        if(audio_prompt.muted){
+        audio_prompt.muted = false;
+        play.innerHTML="开启静音";
+        }else{
+        audio_prompt.muted = true;
+        play.innerHTML="开启声音";
+        }      
+    });
+
+
 });    
 
 function addFireAnimation (id){
