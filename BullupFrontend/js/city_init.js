@@ -28,7 +28,7 @@ $("#country").html(country).chosen({search_contains: true}).change(function(){
         }
     }
     if (!province) {
-        province = '<option value="" b="0">--</option>';
+        province = '<option value="*" b="0">--</option>';
     }
     $("#province").html(province).chosen({search_contains: true}).change(function(){
         var b = $("#province").find("option[value='"+$("#province").val()+"']").attr("b");
@@ -41,7 +41,7 @@ $("#country").html(country).chosen({search_contains: true}).change(function(){
             }
         }
         if (!city) {
-            var city = '<option value="">--</option>';
+            var city = '<option value="*">--</option>';
         }
         $("#city").html(city).chosen({search_contains: true}).change();
         $(".dept_select").trigger("chosen:updated");
