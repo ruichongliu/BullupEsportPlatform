@@ -320,7 +320,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             //$("#router_test_page2").click();
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
-            bullup.alert('请 您 在规定时间内去 创建 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + "<br> 请在LOL加入蓝方战队");
+            bullup.alert('请 您 在规定时间内去 <b>创建</b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + "<br> 请在LOL加入<span style='color：blue'>蓝方</span>战队");
             handleTimeout();
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
@@ -369,8 +369,8 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         //bullup.alert('请等待');
         if(userInfo.creatingRoom){
             //$("#router_test_page2").click();
-            lol_process.grabLOLData('room', socket);
-            bullup.alert('请 您 在规定时间内 加入 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password +'<br>请在LOL加入红方战队');
+            lol_process.grabLOLData('room', socket);        
+            bullup.alert('请 您 在规定时间内 <b>加入</b> 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password +'<br>请在LOL加入<span style="color:red">红方</span>战队');
             
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
