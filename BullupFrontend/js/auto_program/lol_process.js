@@ -28,7 +28,7 @@ exports.grabLOLData = function(type, socket){
 
  
 function syncLogin(callback){
-    process.exec('node C:/Users/Public/Bullup/auto_program/sync_user.js', function(error, stdout, stderr){
+    process.exec('C:/Users/Public/Bullup/auto_program/node C:/Users/Public/Bullup/auto_program/sync_user.js', function(error, stdout, stderr){
         if(error){
             throw error;
         }
@@ -37,7 +37,7 @@ function syncLogin(callback){
 }
 
 function syncRoom(callback){
-    process.exec('node C:/Users/Public/Bullup/auto_program/sync_room.js', function(error, stdout, stderr){
+    process.exec('C:/Users/Public/Bullup/auto_program/node C:/Users/Public/Bullup/auto_program/sync_room.js', function(error, stdout, stderr){
         if(error){
             throw error;
         }
@@ -46,7 +46,7 @@ function syncRoom(callback){
 }
 
 function syncResult(callback){
-    process.exec('node C:/Users/Public/Bullup/auto_program/sync_result.js', function(error, stdout, stderr){
+    process.exec('C:/Users/Public/Bullup/auto_program/node C:/Users/Public/Bullup/auto_program/sync_result.js', function(error, stdout, stderr){
         if(error){
             throw error;
         }

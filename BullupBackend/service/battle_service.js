@@ -129,11 +129,8 @@ exports.handleLOLRoomEstablished = function (io, socket) {
         
         
         var roomObj = JSON.parse(roomPacketStr);
-        // var roomPacket = {};
-        // roomPacket.head = "room";
-        // roomPacket.myTeam = roomObj.myTeam;
-        // roomPacket.theirTeam = roomObj.theirTeam;
-
+        var gameMode = roomObj.BattleInfo.gameData.queue.gameMode;
+       
         var roomPacket = {};
         roomPacket.head = "room";
         roomPacket.myTeam = roomObj.BattleInfo.gameData.teamOne;
@@ -151,6 +148,12 @@ exports.handleLOLRoomEstablished = function (io, socket) {
                 var blueSide = battle.blueSide;
                 var redSide = battle.redSide;
                 var teamFlag = true;
+                var orderedMap = battle.blueSide.mapSelection;
+                if(orderedMap == 'map-selection-1'){
+                    orderedMap = 'CLASSIC';
+                }else if(orderedMap == 'map-selection-2'){
+                    orderedMap = 'ARAM';
+                }
                 //if(myTeam[0].team == 1){
                 //看蓝队人员配置是否合法
                 for(var bullupPaticipantIndex in blueSide.participants){
@@ -189,7 +192,7 @@ exports.handleLOLRoomEstablished = function (io, socket) {
                     }
                 }
 
-                if(teamFlag){
+                if(teamFlag && orderedMap == gameMode){
                     if(battle.status == 'unready'){
                         battle.status = 'ready';
                     }
