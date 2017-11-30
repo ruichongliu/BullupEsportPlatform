@@ -23,6 +23,8 @@ exports.init = function () {
  */
 exports.addUser = function (user) {
     this.users[user.userId] = user;
+    this.users[user.userId].environment = {};
+    this.users[user.userId].status = "";
 }
 
 /**
@@ -444,6 +446,10 @@ exports.changeUserStatus = function (userId, status) {
     this.users[userId].status = status;
 }
 
+exports.setEnvironment = function (userId, head, data) {
+    this.users[userId].environment[head] = data;
+}
+
 exports.handleRankRequest = function (socket){
     socket.on('rankRequest', function(request){
         var userId = socketService.mapSocketToUserId(socket.id);
@@ -790,6 +796,4 @@ exports.handleDisconnect = function(socket){
 function handleEnvironmentRecover(socket, userData){
     //在Battle里找  用户是否进入了对局 如果是 把roomInfo  teamInfo  battleInfo传给客户端  把用户加入teamRoom battleRoom
     
-
-
 }

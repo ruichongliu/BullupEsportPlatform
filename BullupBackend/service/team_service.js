@@ -3,7 +3,7 @@ dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service"
 var logUtil = dependencyUtil.global.utils.logUtil;
 var socketService = dependencyUtil.global.service.socketService;
 var battleService = dependencyUtil.global.service.battleService;
-
+var userService = dependencyUtil.global.service.userService;
 
 exports.init = function() {
     // 已经创建完毕的队伍
@@ -34,7 +34,12 @@ exports.handleRoomEstablish = function(socket) {
     socket.on('roomEstablish', function (room) {
         logUtil.listenerLog('roomEstablish');
         exports.unformedTeams[room.roomName] = room;
-        // 将该socket放入teamname命名的room中
+        //变化房间中所有user的satus
+        for(var index in room.participants){
+            var userId = room.participants[index].userId;
+            userService.setEnvironment(userId, 'room', room);
+        }
+        //将该socket放入teamname命名的room中
         socketService.joinRoom(socket, room.roomName);
         // 返回回馈信息
         socketService.stableSocketEmit(socket, 'feedback', {
