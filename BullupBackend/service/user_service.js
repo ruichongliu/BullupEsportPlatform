@@ -427,8 +427,8 @@ exports.handleUserInviteResult = function (io, socket) {
             if (feedback.errorCode == 0 && roomMember.indexOf(participant.userId) == -1) {
                 //更新用户状态
                 var userId = participant.userId;
-                userService.changeUserStatus(usetId, 'inroom');
-                userService.setEnvironment(usetId, 'room', room);
+                userService.changeUserStatus(userId, 'inroom');
+                userService.setEnvironment(userId, 'room', room);
 
                 // 更新teamList中team信息, 添加该参与者
                 teamService.addParticipantToTeam(teamName, participant);
