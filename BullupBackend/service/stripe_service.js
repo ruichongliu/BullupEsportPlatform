@@ -16,10 +16,9 @@ exports.recharge = function(){
     app.set('views',__dirname + '/views');
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended:false}));
-    
-    var path1 = 'C:/Users/Administrator/Desktop/zuixin/BullupEsportPlatform/BullupBackend/other/';
+    var path1 = 'C:/Users/Administrator/Desktop/c版本/BullupEsportPlatform/BullupBackend/other/';
 
-    var path2 = 'C:/Users/Administrator/Desktop/zuixin/BullupEsportPlatform/BullupBackend/other/';
+    var path2 = 'C:/Users/Administrator/Desktop/c版本/BullupEsportPlatform/BullupBackend/other/';
     app.post('/',function(req,res){
         //var str = req.url.substr(req.url.indexOf('?'), req.url.indexOf('=') - req.url.indexOf('?'));
         var rechargeValue = req.body.rechargeAccount;
@@ -40,24 +39,34 @@ exports.recharge = function(){
         var token = req.body.stripeToken;
         var chargeAmount = req.body.chargeAmount;
         var userId = req.body.userName;
+        
         console.log(token);
+        
         var charge = stripe.charges.create({
             amount:chargeAmount,
             currency:'usd',
             source:token,
-        });
-        var data = {};
-        data.userId = Number.parseInt(userId);
-        data.money = Number.parseInt(chargeAmount) / 100;
-        data.currency = 'dolla';
-        wealthInfoDao.userRecharge(data, function(results){
-            var socket = socketService.mapUserIdToSocket(data.userId);
-            if(results != null){
-                socketService.stableSocketEmit(socket, "rechargeResult", {'text': '充值成功！'});
+        }, function(err, charge) {
+            // asynchronously called
+            if(err){
+                var socket = socketService.mapUserIdToSocket(userId);
+                socketService.stableSocketEmit(socket, "rechargeErrResult", {'err': err});
             }else{
-                socketService.stableSocketEmit(socket, "rechargeResult", {'text': '充值失败！请联系客服！'});
+                var data = {};
+                data.userId = Number.parseInt(userId);
+                data.money = Number.parseInt(chargeAmount) / 100;
+                data.currency = 'dolla';
+                wealthInfoDao.userRecharge(data, function(results){
+                    var socket = socketService.mapUserIdToSocket(data.userId);
+                    if(results != null){
+                        socketService.stableSocketEmit(socket, "rechargeResult", {'text': '充值成功！'});
+                    }else{
+                        socketService.stableSocketEmit(socket, "rechargeResult", {'text': '充值失败！请联系客服！'});
+                    }
+                });
             }
         });
+        
     });
     
     
