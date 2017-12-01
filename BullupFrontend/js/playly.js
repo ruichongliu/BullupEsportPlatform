@@ -5,8 +5,6 @@ $().ready(function(){
         bullup.loadTemplateIntoTarget('swig_team.html', {}, 'main-view');
 		
         });
-   
-   
     });
    
 

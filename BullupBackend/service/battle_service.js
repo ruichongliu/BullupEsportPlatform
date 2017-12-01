@@ -2,6 +2,7 @@ var dependencyUtil = require("../util/dependency_util.js");
 dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service".length).replace(/\\/g, "/"));
 var teamService = dependencyUtil.global.service.teamService;
 var socketService = dependencyUtil.global.service.socketService;
+var userService = dependencyUtil.global.service.userService;
 var logUtil = dependencyUtil.global.utils.logUtil;
 
 var battleRecordDao = dependencyUtil.global.dao.battleRecordDao;
@@ -91,11 +92,17 @@ exports.handleBattleInviteResult = function (io, socket) {
             exports.battles[battle.battleName] = battle;
             // 将挑战队伍的所有用户加入到新的socket room
             for (var i in challengerTeam.participants) {
-                socketService.userJoin(challengerTeam.participants[i].userId, battle.battleName);
+                var userId = challengerTeam.participants[i].userId;
+                socketService.userJoin(userId, battle.battleName);
+                userService.changeUserStatus(userId, 'inbattle');
+                userService.setEnvironment(userId, 'battle', battle);
             }
             // 将受挑战队伍的所有用户加入到新的socket room
             for (var i in hostTeam.participants) {
-                socketService.userJoin(hostTeam.participants[i].userId, battle.battleName);
+                var userId = hostTeam.participants[i].userId;
+                socketService.userJoin(userId, battle.battleName);
+                userService.changeUserStatus(userId, 'inbattle');
+                userService.setEnvironment(userId, 'battle', battle);
             }
             //teamService.printfAllTeamsInfo();
             // 向该对局中所有的用户广播对局信息
@@ -122,11 +129,8 @@ exports.handleLOLRoomEstablished = function (io, socket) {
         
         
         var roomObj = JSON.parse(roomPacketStr);
-        // var roomPacket = {};
-        // roomPacket.head = "room";
-        // roomPacket.myTeam = roomObj.myTeam;
-        // roomPacket.theirTeam = roomObj.theirTeam;
-
+        var gameMode = roomObj.BattleInfo.gameData.queue.gameMode;
+       
         var roomPacket = {};
         roomPacket.head = "room";
         roomPacket.myTeam = roomObj.BattleInfo.gameData.teamOne;
@@ -144,6 +148,12 @@ exports.handleLOLRoomEstablished = function (io, socket) {
                 var blueSide = battle.blueSide;
                 var redSide = battle.redSide;
                 var teamFlag = true;
+                var orderedMap = battle.blueSide.mapSelection;
+                if(orderedMap == 'map-selection-1'){
+                    orderedMap = 'CLASSIC';
+                }else if(orderedMap == 'map-selection-2'){
+                    orderedMap = 'ARAM';
+                }
                 //if(myTeam[0].team == 1){
                 //看蓝队人员配置是否合法
                 for(var bullupPaticipantIndex in blueSide.participants){
@@ -182,7 +192,7 @@ exports.handleLOLRoomEstablished = function (io, socket) {
                     }
                 }
 
-                if(teamFlag){
+                if(teamFlag && orderedMap == gameMode){
                     if(battle.status == 'unready'){
                         battle.status = 'ready';
                     }
@@ -321,6 +331,21 @@ exports.handleBattleResult = function (io, socket){
                 }
                 //写记录
                 battleRecordDao.writeBattleRecord(finishedBattle);
+                //改状态 删环境数据
+                for(var index in winTeam){
+                    var player = winTeam[index];
+                    userService.changeUserStatus(player.userId, 'idle');
+                    userService.deleteEnvironment(player.userId, 'room');
+                    userService.deleteEnvironment(player.userId, 'team');
+                    userService.deleteEnvironment(player.userId, 'battle');
+                }
+                for(var index in loseTeam){
+                    var player = loseTeam[index];
+                    userService.changeUserStatus(player.userId, 'idle');
+                    userService.deleteEnvironment(player.userId, 'room');
+                    userService.deleteEnvironment(player.userId, 'team');
+                    userService.deleteEnvironment(player.userId, 'battle');
+                }
 
                 //广播结果数据包
                 socketService.stableSocketsEmit(io.sockets.in(finishedBattle.battleName), finishedBattle.battleName, 'battleResult', resultPacket);
@@ -414,7 +439,22 @@ exports.handleBattleResult = function (io, socket){
                 }
                 //写记录
                 battleRecordDao.writeBattleRecord(finishedBattle);
-                
+                //改状态 删环境数据
+                for(var index in winTeam){
+                    var player = winTeam[index];
+                    userService.changeUserStatus(player.userId, 'idle');
+                    userService.deleteEnvironment(player.userId, 'room');
+                    userService.deleteEnvironment(player.userId, 'team');
+                    userService.deleteEnvironment(player.userId, 'battle');
+                }
+                for(var index in loseTeam){
+                    var player = loseTeam[index];
+                    userService.changeUserStatus(player.userId, 'idle');
+                    userService.deleteEnvironment(player.userId, 'room');
+                    userService.deleteEnvironment(player.userId, 'team');
+                    userService.deleteEnvironment(player.userId, 'battle');
+                }
+
                 //广播结果数据包
                 socketService.stableSocketsEmit(io.sockets.in(finishedBattle.battleName), finishedBattle.battleName, 'battleResult', resultPacket);
                 console.log(finishedBattle.battleName + "结束");

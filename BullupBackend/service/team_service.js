@@ -3,7 +3,7 @@ dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service"
 var logUtil = dependencyUtil.global.utils.logUtil;
 var socketService = dependencyUtil.global.service.socketService;
 var battleService = dependencyUtil.global.service.battleService;
-
+var userService = dependencyUtil.global.service.userService;
 
 exports.init = function() {
     // 已经创建完毕的队伍
@@ -30,11 +30,19 @@ exports.init = function() {
  * 队伍创建监听
  * @param socket
  */
+//建立房间
 exports.handleRoomEstablish = function(socket) {
     socket.on('roomEstablish', function (room) {
         logUtil.listenerLog('roomEstablish');
         exports.unformedTeams[room.roomName] = room;
-        // 将该socket放入teamname命名的room中
+        //变化房间中所有user的satus
+        for(var index in room.participants){
+            var userId = room.participants[index].userId;
+            userService.changeUserStatus(userId, 'inroom');
+            userService.setEnvironment(userId, 'room', room);
+        }
+
+        //将该socket放入teamname命名的room中
         socketService.joinRoom(socket, room.roomName);
         // 返回回馈信息
         socketService.stableSocketEmit(socket, 'feedback', {
@@ -104,6 +112,13 @@ exports.handleTeamEstablish = function (io, socket) {
         teamInfo.status = 'PUBLISHING';
         // 将未形成队伍列表中的队伍放入已形成队伍列表中
         logUtil.logToFile("./logs/data/data.txt", "append", JSON.stringify(teamInfo), "establishTeam teamInfo");
+        //更新队伍成员的状态和环境
+        for(var index in teamInfo.participants){
+            var userId = teamInfo.participants[index].userId;
+            userService.changeUserStatus(userId, 'inteam');
+            userService.setEnvironment(userId, 'team', teamInfo);
+        }
+
         if(teamInfo.gameMode == 'battle'){
             //约战
             exports.formedTeams[teamInfo.roomName] = teamInfo;
