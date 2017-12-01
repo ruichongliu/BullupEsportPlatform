@@ -211,7 +211,7 @@ exports.stableEmit = function(){
 exports.handleReceivedTokenData = function(socket){
     socket.on('tokenData', function(tokenData){
         //从未发送的消息队列中删除该项
-        if(exports.socketEmitQueue[socket.id].dataQueue != null){
+        if(exports.socketEmitQueue[socket.id].dataQueue != undefined || exports.socketEmitQueue[socket.id].dataQueue != null ){
             delete exports.socketEmitQueue[socket.id].dataQueue[tokenData];
         }        
         //exports.socketEmitQueue[socket.id].dataQueue[tokenData].status = 'recieved';
