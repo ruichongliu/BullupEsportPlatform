@@ -2,9 +2,11 @@ var dependencyUtil = require("../util/dependency_util.js");
 dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service".length).replace(/\\/g, "/"));
 var teamService = dependencyUtil.global.service.teamService;
 var socketService = dependencyUtil.global.service.socketService;
+var userService = dependencyUtil.global.service.userService;
 var logUtil = dependencyUtil.global.utils.logUtil;
 
 var battleRecordDao = dependencyUtil.global.dao.battleRecordDao;
+var strengthInfoDao = dependencyUtil.global.dao.strengthInfoDao;
 
 var matchLevel1MinCount = 2;
 var matchLevel2MinCount = 2;
@@ -90,11 +92,17 @@ exports.handleBattleInviteResult = function (io, socket) {
             exports.battles[battle.battleName] = battle;
             // 将挑战队伍的所有用户加入到新的socket room
             for (var i in challengerTeam.participants) {
-                socketService.userJoin(challengerTeam.participants[i].userId, battle.battleName);
+                var userId = challengerTeam.participants[i].userId;
+                socketService.userJoin(userId, battle.battleName);
+                userService.changeUserStatus(userId, 'inbattle');
+                userService.setEnvironment(userId, 'battle', battle);
             }
             // 将受挑战队伍的所有用户加入到新的socket room
             for (var i in hostTeam.participants) {
-                socketService.userJoin(hostTeam.participants[i].userId, battle.battleName);
+                var userId = hostTeam.participants[i].userId;
+                socketService.userJoin(userId, battle.battleName);
+                userService.changeUserStatus(userId, 'inbattle');
+                userService.setEnvironment(userId, 'battle', battle);
             }
             //teamService.printfAllTeamsInfo();
             // 向该对局中所有的用户广播对局信息
@@ -121,11 +129,8 @@ exports.handleLOLRoomEstablished = function (io, socket) {
         
         
         var roomObj = JSON.parse(roomPacketStr);
-        // var roomPacket = {};
-        // roomPacket.head = "room";
-        // roomPacket.myTeam = roomObj.myTeam;
-        // roomPacket.theirTeam = roomObj.theirTeam;
-
+        var gameMode = roomObj.BattleInfo.gameData.queue.gameMode;
+       
         var roomPacket = {};
         roomPacket.head = "room";
         roomPacket.myTeam = roomObj.BattleInfo.gameData.teamOne;
@@ -143,6 +148,12 @@ exports.handleLOLRoomEstablished = function (io, socket) {
                 var blueSide = battle.blueSide;
                 var redSide = battle.redSide;
                 var teamFlag = true;
+                var orderedMap = battle.blueSide.mapSelection;
+                if(orderedMap == 'map-selection-1'){
+                    orderedMap = 'CLASSIC';
+                }else if(orderedMap == 'map-selection-2'){
+                    orderedMap = 'ARAM';
+                }
                 //if(myTeam[0].team == 1){
                 //看蓝队人员配置是否合法
                 for(var bullupPaticipantIndex in blueSide.participants){
@@ -181,7 +192,7 @@ exports.handleLOLRoomEstablished = function (io, socket) {
                     }
                 }
 
-                if(teamFlag){
+                if(teamFlag && orderedMap == gameMode){
                     if(battle.status == 'unready'){
                         battle.status = 'ready';
                     }
@@ -197,13 +208,12 @@ exports.handleBattleResult = function (io, socket){
     socket.on('lolBattleResult', function (lolResultPacketStr) {
 
         logUtil.logToFile("./logs/data/data.txt", "append", JSON.stringify(lolResultPacket), "lolBattleResult lolResultPacket");
-        console.log(io.sockets);
+        //console.log(io.sockets);
         //解析字符串
         if(lolResultPacketStr.charAt(0) != '{'){
             lolResultPacketStr = lolResultPacketStr.substr(1, lolResultPacketStr.length - 1);
         }
         var obj = JSON.parse(lolResultPacketStr);
-        console.log('this is fucking result:',lolResultPacketStr);
         var lolResultPacket = {};
         lolResultPacket.summonerName = obj.GameData.summonerName;
         lolResultPacket.gameMode = obj.GameData.gameMode;
@@ -228,7 +238,7 @@ exports.handleBattleResult = function (io, socket){
         }
 
         var tempResult = processResultPacket(obj.GameData);
-        console.log('this is tempResult:',JSON.stringify(tempResult));
+        //console.log('this is tempResult:',JSON.stringify(tempResult));
 
         if(true){
         //if(lolResultPacket.head == 'result' && lolResultPacket.gameMode == 'CLASSIC' && lolResultPacket.gameType == 'CUSTOM_GAME'){
@@ -302,6 +312,7 @@ exports.handleBattleResult = function (io, socket){
                 resultPacket.winTeam = winTeam;
                 resultPacket.loseTeam = loseTeam;
                 resultPacket.participants = tempResult.participants;
+                resultPacket.gameLength = tempResult.gameLength;
                 console.log('this is damn finishedBattle:',JSON.stringify(finishedBattle));
                 
                 //resultPacket.participants = lolResultPacket.participants;
@@ -320,11 +331,26 @@ exports.handleBattleResult = function (io, socket){
                 }
                 //写记录
                 battleRecordDao.writeBattleRecord(finishedBattle);
+                //改状态 删环境数据
+                for(var index in winTeam){
+                    var player = winTeam[index];
+                    userService.changeUserStatus(player.userId, 'idle');
+                    userService.deleteEnvironment(player.userId, 'room');
+                    userService.deleteEnvironment(player.userId, 'team');
+                    userService.deleteEnvironment(player.userId, 'battle');
+                }
+                for(var index in loseTeam){
+                    var player = loseTeam[index];
+                    userService.changeUserStatus(player.userId, 'idle');
+                    userService.deleteEnvironment(player.userId, 'room');
+                    userService.deleteEnvironment(player.userId, 'team');
+                    userService.deleteEnvironment(player.userId, 'battle');
+                }
 
                 //广播结果数据包
                 socketService.stableSocketsEmit(io.sockets.in(finishedBattle.battleName), finishedBattle.battleName, 'battleResult', resultPacket);
                 console.log(finishedBattle.battleName + "结束");
-                console.log('this is winner result:',JSON.stringify(resultPacket));
+                //console.log('this is winner result:',JSON.stringify(resultPacket));
                 //对局中所有的socket离开所有的socketRoom
                 //io.sockets.in(finishedBattle.battleName).leaveAll();
             }else if(lolResultPacket.win == 'no'){
@@ -396,6 +422,7 @@ exports.handleBattleResult = function (io, socket){
                 resultPacket.winTeam = winTeam;
                 resultPacket.loseTeam = loseTeam;
                 resultPacket.participants = tempResult.participants;
+                resultPacket.gameLength = tempResult.gameLength;
                 //resultPacket.participants = lolResultPacket.participants
                 //算战力变化
                 var newScore = exports.strengthScoreChangedCalculation(winTeamStrengthScore, loseTeamStrengthScore);
@@ -412,11 +439,26 @@ exports.handleBattleResult = function (io, socket){
                 }
                 //写记录
                 battleRecordDao.writeBattleRecord(finishedBattle);
-                
+                //改状态 删环境数据
+                for(var index in winTeam){
+                    var player = winTeam[index];
+                    userService.changeUserStatus(player.userId, 'idle');
+                    userService.deleteEnvironment(player.userId, 'room');
+                    userService.deleteEnvironment(player.userId, 'team');
+                    userService.deleteEnvironment(player.userId, 'battle');
+                }
+                for(var index in loseTeam){
+                    var player = loseTeam[index];
+                    userService.changeUserStatus(player.userId, 'idle');
+                    userService.deleteEnvironment(player.userId, 'room');
+                    userService.deleteEnvironment(player.userId, 'team');
+                    userService.deleteEnvironment(player.userId, 'battle');
+                }
+
                 //广播结果数据包
                 socketService.stableSocketsEmit(io.sockets.in(finishedBattle.battleName), finishedBattle.battleName, 'battleResult', resultPacket);
                 console.log(finishedBattle.battleName + "结束");
-                console.log('this is lose result:',JSON.stringify(resultPacket));
+                //console.log('this is lose result:',JSON.stringify(resultPacket));
                 //对局中所有的socket离开所有的socketRoom
                 //io.sockets.in(finishedBattle.battleName).leaveAll();
 
@@ -761,6 +803,7 @@ function processResultPacket(stdout){
     resultPacket.accountId = stdout.accountId;
     resultPacket.gameMode = stdout.gameMode;
     resultPacket.gameType = stdout.gameType;
+    resultPacket.gameLength = stdout.gameLength;
     if(stdout.teams[0].players[0].stats.WIN == 1){
         resultPacket.win = "yes";
     }else{
@@ -773,13 +816,15 @@ function processResultPacket(stdout){
         var player = {};
         player.accountId = team1[playerIndex].summonerId;
         player.stats = {};
-        player.stats.kill = team1[playerIndex].stats.CHAMPIONS_KILLED;
-        player.stats.damage = team1[playerIndex].stats.TOTAL_DAMAGE_DEALT_TO_CHAMPIONS;
-        player.stats.damageTaken = team1[playerIndex].stats.TOTAL_DAMAGE_TAKEN;
-        player.stats.heal = team1[playerIndex].stats.TOTAL_HEAL;
-        player.stats.goldEarned = team1[playerIndex].stats.GOLD_EARNED;
-        player.stats.death = team1[playerIndex].stats.NUM_DEATHS;
-        player.stats.assists= team1[playerIndex].stats.ASSISTS;
+        player.stats.kill = team1[playerIndex].stats.CHAMPIONS_KILLED;//击杀敌方英雄数 
+        player.stats.damage = team1[playerIndex].stats.TOTAL_DAMAGE_DEALT_TO_CHAMPIONS;//对英雄的总输出 
+        player.stats.damageTaken = team1[playerIndex].stats.TOTAL_DAMAGE_TAKEN;//承受的总伤害量
+        player.stats.heal = team1[playerIndex].stats.TOTAL_HEAL;//总治愈量
+        player.stats.goldEarned = team1[playerIndex].stats.GOLD_EARNED;//刷金钱的总数
+        player.stats.death = team1[playerIndex].stats.NUM_DEATHS;//死亡次数
+        player.stats.assists = team1[playerIndex].stats.ASSISTS;//助攻次数 
+        player.stats.minions = team1[playerIndex].stats.MINIONS_KILLED;//补兵数目
+        player.stats.tower = team1[playerIndex].stats.TURRETS_KILLED;//推塔数目
         resultPacket.participants.push(player);
     }
 
@@ -788,15 +833,41 @@ function processResultPacket(stdout){
         var player = {};
         player.accountId = team2[playerIndex].summonerId;
         player.stats = {};
-        player.stats.kill = team2[playerIndex].stats.CHAMPIONS_KILLED;
-        player.stats.damage = team2[playerIndex].stats.TOTAL_DAMAGE_DEALT_TO_CHAMPIONS;
-        player.stats.damageTaken = team2[playerIndex].stats.TOTAL_DAMAGE_TAKEN;
-        player.stats.heal = team2[playerIndex].stats.TOTAL_HEAL;
-        player.stats.goldEarned = team2[playerIndex].stats.GOLD_EARNED;
-        player.stats.death = team2[playerIndex].stats.NUM_DEATHS;
-        player.stats.assists= team2[playerIndex].stats.ASSISTS;
+        player.stats.kill = team2[playerIndex].stats.CHAMPIONS_KILLED;//击杀敌方英雄数 
+        player.stats.damage = team2[playerIndex].stats.TOTAL_DAMAGE_DEALT_TO_CHAMPIONS;//对英雄的总输出 
+        player.stats.damageTaken = team2[playerIndex].stats.TOTAL_DAMAGE_TAKEN;//承受的总伤害量
+        player.stats.heal = team2[playerIndex].stats.TOTAL_HEAL;//总治愈量
+        player.stats.goldEarned = team2[playerIndex].stats.GOLD_EARNED;//刷金钱的总数
+        player.stats.death = team2[playerIndex].stats.NUM_DEATHS;//死亡次数
+        player.stats.assists = team2[playerIndex].stats.ASSISTS;//助攻次数 
+        player.stats.minions = team2[playerIndex].stats.MINIONS_KILLED;//补兵数目
+        player.stats.tower = team2[playerIndex].stats.TURRETS_KILLED;//推塔数目
         resultPacket.participants.push(player);
     }
 
     return resultPacket;
+}
+
+exports.updateKDA = function(socket){
+    socket.on('updateKDA',function(data){
+        console.log('this is updateKDA:',JSON.stringify(data));
+        var ownTeam = data.result.own_team;
+        var pointData;
+        for(var key in ownTeam){
+            if(data.userId==ownTeam[key].userId){
+                pointData = ownTeam[key];
+                break;
+            }
+        }
+        if(data.result.win==1){
+            pointData.win = 1;
+        }else{
+            pointData.win = 0;
+        }
+        var $gameLength = data.result.gameLength;
+        var $goldPerminiute = Math.ceil(pointData.stats.goldEarned / $gameLength);
+        console.log('this is gamelength:',$gameLength,pointData.stats.goldEarned,$goldPerminiute);
+        pointData.goldPerminiute = $goldPerminiute;
+        strengthInfoDao.updateKDA(pointData);
+    });
 }

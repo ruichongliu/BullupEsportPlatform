@@ -16,3 +16,27 @@ exports.findStrengthInfoByUserId = function(userId, callback) {
         callback(row[0]);
     });
 }
+
+exports.updateKDA =  function(data){
+    console.log('this is pointData:',JSON.stringify(data));
+    dbUtil.query('update bullup_strength set bullup_strength_k=?,bullup_strength_d=?,bullup_strength_a=?,bullup_strength_minion=?,bullup_strength_gold=?,bullup_strength_tower=?,bullup_strength_damage=?,bullup_strength_damage_taken=?,bullup_strength_heal=?,bullup_strength_gold_perminiute=? where user_id=?',
+                [
+                    data.stats.kill,
+                    data.stats.death,
+                    data.stats.assists,
+                    data.stats.minions,
+                    data.stats.goldEarned,
+                    data.stats.tower,
+                    data.stats.damage,
+                    data.stats.damageTaken,
+                    data.stats.heal,
+                    data.goldPerminiute,
+                    data.userId
+                ],
+                function(err,res){
+                    if (err) throw err;
+                });
+    dbUtil.query('update bullup_strength set bullup_strength_wins=bullup_strength_wins+? where user_id=?',[data.win,data.userId],function(err,res){
+        if (err) throw err;
+    });
+}
