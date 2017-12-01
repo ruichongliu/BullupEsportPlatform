@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://192.168.2.162:3000');
+var socket = io.connect('http://192.168.2.163:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -533,7 +533,7 @@ socket.on('battleResult', function(resultPacket){
     }
     battleResultData.wealth_change = resultPacket.rewardAmount;
     // console.log(JSON.stringify(battleResultData));
-    
+
     var battleResHtml = bullup.loadSwigView('./swig_battleres.html', {
         battle_res: battleResultData
     });
@@ -554,6 +554,34 @@ socket.on('battleResult', function(resultPacket){
 socket.on('rechargeResult', function(text){
     socket.emit('tokenData', text.token);  
     bullup.alert(text.text);
+    $('#router_starter').click();
+});
+socket.on('rechargeErrResult', function(err){
+    socket.emit('tokenData', err.token);
+    console.log(err.err.type);
+    switch (err.err.type) {
+        case 'StripeCardError':
+            bullup.alert(err.err.message);
+            break;
+        case 'RateLimitError':
+            bullup.alert(err.err.message);
+            break;
+        case 'StripeInvalidRequestError':
+            bullup.alert(err.err.message);
+            break;
+        case 'StripeAPIError':
+            bullup.alert(err.err.message);
+            break;
+        case 'StripeConnectionError':
+            bullup.alert(err.err.message);
+            break;
+        case 'StripeAuthenticationError':
+            bullup.alert(err.err.message);
+            break;
+        default:
+            break;
+        }  
+  
     $('#router_starter').click();
 });
 
