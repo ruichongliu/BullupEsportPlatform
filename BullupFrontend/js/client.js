@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://192.168.2.100:3000');
+var socket = io.connect('http://49.140.81.199:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -509,6 +509,7 @@ socket.on('battleResult', function(resultPacket){
         }  
         battleResultData.own_team = resultPacket.winTeam;
         battleResultData.win = 1;
+        battleResultData.gameLength = resultPacket.gameLength;
         battleResultData.rival_team = resultPacket.loseTeam;
        
     }else{
@@ -529,12 +530,18 @@ socket.on('battleResult', function(resultPacket){
         } 
         battleResultData.own_team = resultPacket.loseTeam;
         battleResultData.win = 0;
+        battleResultData.gameLength = resultPacket.gameLength;
         battleResultData.rival_team = resultPacket.winTeam;
        
     }
     battleResultData.wealth_change = resultPacket.rewardAmount;
     // console.log(JSON.stringify(battleResultData));
-    
+    socket.emit('updateKDA',{
+        userId:userInfo.userId,
+        nickname:userInfo.name,
+        result:battleResultData  
+    });
+
     var battleResHtml = bullup.loadSwigView('./swig_battleres.html', {
         battle_res: battleResultData
     });

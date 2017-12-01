@@ -5,6 +5,8 @@ dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service"
 var logUtil = dependencyUtil.global.utils.logUtil;
 var socketService = dependencyUtil.global.service.socketService;
 var teamService = dependencyUtil.global.service.teamService;
+var battleService = dependencyUtil.global.service.battleService;
+var userService = dependencyUtil.global.service.userService;
 
 var baseInfoDao = dependencyUtil.global.dao.baseInfoDao;
 var strengthInfoDao = dependencyUtil.global.dao.strengthInfoDao;
@@ -22,6 +24,8 @@ exports.init = function () {
  */
 exports.addUser = function (user) {
     this.users[user.userId] = user;
+    this.users[user.userId].environment = {};
+    this.users[user.userId].status = "idle";
 }
 
 /**
@@ -146,6 +150,8 @@ exports.handleLogin = function (socket) {
                             }
                         }
                     };
+                    handleEnvironmentRecover(socket, feedback.extension);
+
                     if(userStrength != undefined){
                         var kda = ((userStrength.bullup_strength_k + userStrength.bullup_strength_a) / (userStrength.bullup_strength_d + 1.2)).toFixed(1);
                         feedback.extension.strength = {
@@ -165,7 +171,7 @@ exports.handleLogin = function (socket) {
                     }
                     exports.addUser(feedback.extension);
 
-                            socketService.stableSocketEmit(socket, 'feedback', feedback);                    
+                    socketService.stableSocketEmit(socket, 'feedback', feedback);                    
                     //socketService.stableEmit();
                     //socket.emit('feedback', feedback);
                 });
@@ -415,12 +421,14 @@ exports.handleUserInviteResult = function (io, socket) {
         if (teamService.mapTeamNameToUnformedTeam(feedback.extension.teamName)) {
             var teamName = feedback.extension.teamName;
             var participant = feedback.extension.userInfo;
-            var roomMember = teamService.mapTeamNameToUnformedTeam(teamName).participants.map((e) => e.userId); 
+            var room = teamService.mapTeamNameToUnformedTeam(teamName);
+            var roomMember = room.participants.map((e) => e.userId); 
             //用户接受邀请
             if (feedback.errorCode == 0 && roomMember.indexOf(participant.userId) == -1) {
-                //socket.emit('success', 'hello');
-
-                // TODO 更新用户状态
+                //更新用户状态
+                var userId = participant.userId;
+                userService.changeUserStatus(usetId, 'inroom');
+                userService.setEnvironment(usetId, 'room', room);
 
                 // 更新teamList中team信息, 添加该参与者
                 teamService.addParticipantToTeam(teamName, participant);
@@ -444,6 +452,15 @@ exports.handleUserInviteResult = function (io, socket) {
 exports.changeUserStatus = function (userId, status) {
     this.users[userId].status = status;
 }
+
+exports.setEnvironment = function (userId, head, data) {
+    this.users[userId].environment[head] = data;
+}
+
+exports.deleteEnvironment = function (userId, head) {
+    delete this.users[userId].environment[head];
+}
+
 
 exports.handleRankRequest = function (socket){
     socket.on('rankRequest', function(request){
@@ -771,5 +788,24 @@ exports.insertFeedbackMessage=function(socket){
                 });
             }
         });
-    })
+    });
+}
+
+exports.handleDisconnect = function(socket){
+    var socketId = socket.id;
+    socket.on('disconnect', function (socket) {
+        var userId = socketService.mapSocketToUserId(socketId);
+        if(userId == undefined){
+            //该用户没有登录，什么都不需要做
+        }else{
+
+        }
+        //logUtil.levelMsgLog(0, 'User ' + socket.id + ' disconnected!');
+        //socketService.remove(socket);
+    });
+}
+
+function handleEnvironmentRecover(socket, userData){
+    //在Battle里找  用户是否进入了对局 如果是 把roomInfo  teamInfo  battleInfo传给客户端  把用户加入teamRoom battleRoom
+    
 }
