@@ -320,14 +320,14 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             //$("#router_test_page2").click();
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
-            bullup.alert('请 您 在规定时间内去 <b>创建</b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + "<br> 请在LOL加入<span style='color：blue'>蓝方</span>战队");
+            bullup.alert('请 您 在规定时间内去 <b><span style="color:blue;">创建</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入 <span style="color:blue"> 蓝方 </span> 战队');
             handleTimeout();
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
             var own;
             var enemy;
             for(key in bluePts){
-                if(bluePts[key].name==userInfo.nickname){
+                if(bluePts[key].name==userInfo.name){
                     own = bluePts;
                     enemy = redPts;
                 }else{
@@ -370,14 +370,22 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         if(userInfo.creatingRoom){
             //$("#router_test_page2").click();
             lol_process.grabLOLData('room', socket);        
-            bullup.alert('请 您 在规定时间内 <b>加入</b> 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password +'<br>请在LOL加入<span style="color:red">红方</span>战队');
             
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
             var own;
             var enemy;
+
+            for(key in redPts){
+                if(redPts[key].name==userInfo.name){
+                    //判断是否是红队,提示进入红队
+                    bullup.alert('请 您 在规定时间内 <b><span style="color:red"> 加入 </span></b> 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password +'<br>请在LOL加入<span style="color:red"> 红方 </span>战队');
+                }
+            }
             for(key in bluePts){
-                if(bluePts[key].name==userInfo.nickname){
+                if(bluePts[key].name==userInfo.name){
+                    //判断用户是否是蓝队,提示进入蓝队
+                    bullup.alert('请 您 在规定时间内去 <b><span style="color:blue">加入</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入<span style="color:blue"> 蓝方 </span>战队');            
                     own = bluePts;
                     enemy = redPts;
                 }else{
@@ -562,6 +570,34 @@ socket.on('battleResult', function(resultPacket){
 socket.on('rechargeResult', function(text){
     socket.emit('tokenData', text.token);  
     bullup.alert(text.text);
+    $('#router_starter').click();
+});
+socket.on('rechargeErrResult', function(err){
+    socket.emit('tokenData', err.token);
+    console.log(err.err.type);
+    switch (err.err.type) {
+        case 'StripeCardError':
+            bullup.alert(err.err.message);
+            break;
+        case 'RateLimitError':
+            bullup.alert(err.err.message);
+            break;
+        case 'StripeInvalidRequestError':
+            bullup.alert(err.err.message);
+            break;
+        case 'StripeAPIError':
+            bullup.alert(err.err.message);
+            break;
+        case 'StripeConnectionError':
+            bullup.alert(err.err.message);
+            break;
+        case 'StripeAuthenticationError':
+            bullup.alert(err.err.message);
+            break;
+        default:
+            break;
+        }  
+  
     $('#router_starter').click();
 });
 
