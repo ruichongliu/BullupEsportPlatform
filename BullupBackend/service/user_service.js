@@ -451,10 +451,14 @@ exports.handleUserInviteResult = function (io, socket) {
 
 exports.changeUserStatus = function (userId, status) {
     this.users[userId].status = status;
+
+    console.log("userId: " + userId + " status: " + status);
 }
 
 exports.setEnvironment = function (userId, head, data) {
     this.users[userId].environment[head] = data;
+
+    console.log("userId: " + userId + " env_head: " + head);
 }
 
 exports.deleteEnvironment = function (userId, head) {

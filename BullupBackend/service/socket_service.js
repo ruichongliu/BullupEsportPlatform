@@ -220,7 +220,7 @@ exports.handleReceivedTokenData = function(socket){
 
 exports.handleReconnect = function(io, socket){
     socket.on('reconnected', function(reconnectPacket){
-        console.log("reconnect: " + JSON.stringify(reconnectPacket));
+        //console.log("reconnect: " + JSON.stringify(reconnectPacket));
         //如果之前用户已经登录
         if(reconnectPacket.userInfo != null && reconnectPacket.userInfo != undefined){
             //更新socketMap
