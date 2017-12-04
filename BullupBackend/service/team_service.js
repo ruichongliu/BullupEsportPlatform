@@ -346,14 +346,13 @@ exports.exitTeam = function(userId, roomName){
         for(var participantIndex in participants){
             if(participants[participantIndex].userId == userId){
                 delete participants[participantIndex];
-                room.participants.length -= 1;
                 break;
             }
         }
         for(var participantIndex in participants){
             var participantUserId = participants[participantIndex].userId;
             var socket = socketService.mapUserIdToSocket(participantUserId);
-            socketService.stableSocketEmit(socket, "teamCanceled", null);
+            socketService.stableSocketEmit(socket, "teamCanceled", {});
             //更新每个人的状态
             userService.changeUserStatus(participantUserId, "idle");
             delete userService.users[participantUserId].environment.room;
