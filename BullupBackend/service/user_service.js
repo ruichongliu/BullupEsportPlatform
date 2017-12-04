@@ -452,13 +452,13 @@ exports.handleUserInviteResult = function (io, socket) {
 exports.changeUserStatus = function (userId, status) {
     this.users[userId].status = status;
 
-    console.log("userId: " + userId + " status: " + status);
+    console.log("user: " + this.users[userId].name + " status: " + status);
 }
 
 exports.setEnvironment = function (userId, head, data) {
     this.users[userId].environment[head] = data;
 
-    console.log("userId: " + userId + " env_head: " + head);
+    console.log("user: " + this.users[userId].name + " env_head: " + head);
 }
 
 exports.deleteEnvironment = function (userId, head) {
@@ -802,7 +802,35 @@ exports.handleDisconnect = function(socket){
         if(userId == undefined){
             //该用户没有登录，什么都不需要做
         }else{
-
+            var userStatus = exports.users[userId].status;
+            var userEnvironment = exports.users[userId].environment;
+            if(userStatus == "idle"){
+                //暂时 什么都不用做
+                
+            }else{
+                if(userStatus == "inroom"){
+                    //在房间里
+                    //退出房间  通知房内其他人
+                    var enviroment = exports.users[userId].environment;
+                    var roomName = enviroment.room.roomName;
+                    teamService.exitRoom(userId, roomName);
+                    //删除用户登录信息
+                    delete exports.users[userId];
+                }else if(userStatus == "inteam"){
+                    //在队伍里
+                    //退出队伍  通知其他队友
+                    var enviroment = exports.users[userId].environment;
+                    var roomName = enviroment.room.roomName;
+                    teamService.exitTeam(userId, roomName);
+                    //删除用户登录信息
+                    delete exports.users[userId];
+                }else if(userStatus == "inbattle"){
+                    //在对战中
+                    //状态变为离线  什么都不做
+                    exports.changeUserStatus(userId, "offline");
+                }
+            }
+        
         }
         //logUtil.levelMsgLog(0, 'User ' + socket.id + ' disconnected!');
         //socketService.remove(socket);
