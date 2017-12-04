@@ -221,6 +221,13 @@ socket.on('teamInfoUpdate', function (data) {
 
     userInfo.creatingRoom = true;
     //console.log(JSON.stringify(roomInfo));
+    //处理空值
+    for(var index in roomInfo.participants){
+        if(roomInfo.participants[index] == null){
+            delete roomInfo.participants[index];
+            roomInfo.participants.length -= 1;
+        }
+    }
     //更新房间信息
     var roomInfoFrameHtml = bullup.loadSwigView('swig_myroom_frame.html', {});
     var roomInfoHtml = bullup.loadSwigView('swig_myroom_info.html', {
@@ -614,11 +621,17 @@ socket.on('roomCanceled', function(data){
     $('#router_starter').click();
 });
 
-socket.on('updateRoomMember', function(updatedPaticipants){
-    socket.emit('tokenData', updatedPaticipants.token);
+socket.on('updateRoomMember', function(updatedParticipants){
+    socket.emit('tokenData', updatedParticipants.token);
     //更新房间成员信息
-    roomInfo.participants = updatedPaticipants;
-    //更新页面
+    roomInfo.participants = updatedParticipants.participants;
+    //处理空值
+    for(var index in roomInfo.participants){
+        if(roomInfo.participants[index] == null){
+            delete roomInfo.participants[index];
+            roomInfo.participants.length -= 1;
+        }
+    }
     //更新房间信息
     var roomInfoFrameHtml = bullup.loadSwigView('swig_myroom_frame.html', {});
     var roomInfoHtml = bullup.loadSwigView('swig_myroom_info.html', {
@@ -631,7 +644,6 @@ socket.on('updateRoomMember', function(updatedPaticipants){
     $('.content').html(roomInfoFrameHtml);
     $('#team_info').html(roomInfoHtml);
     $('#teamates_info').html(teamatesHtml);
-    
     if(userInfo.name == roomInfo.participants[0].name){
         //房主更新friendList
         $.getScript('/js/invite_friend.js');
@@ -643,7 +655,6 @@ socket.on('updateRoomMember', function(updatedPaticipants){
             onOpen: function(el) {},
             onClose: function(el) {}
         });
-
         $("#confirm_create_team_btn").click(function(){
             //console.log(roomInfo);
             if(roomInfo.gameMode == 'match'){
@@ -657,7 +668,6 @@ socket.on('updateRoomMember', function(updatedPaticipants){
                 var dataArray1 = data;
                 bullup.generateRadar(dataArray1, null, labelArray, "我方战力", "team-detail-chart");
             }
-
             var teamStrengthScore = 0;
             var teamParticipantsNum = 0;
             for(var index in roomInfo.participants){
@@ -667,15 +677,96 @@ socket.on('updateRoomMember', function(updatedPaticipants){
             teamStrengthScore /= teamParticipantsNum;
             roomInfo.teamStrengthScore = teamStrengthScore;
             roomInfo.teamParticipantsNum = teamParticipantsNum;
-
             socket.emit('establishTeam', roomInfo);
         });
-
     }else{
         //普通对员只显示队伍信息，没有好友邀请栏
         $('#invite_friend_btn').css('display', 'none');
         $('#confirm_create_team_btn').css('display', 'none');
     }
+});
+
+socket.on('updateTeamMember', function(updatedParticipants){
+    socket.emit('tokenData', updatedParticipants.token);
+    roomInfo.status = 'ESTABLISHING';
+    teamInfo = null;
+    
+    roomInfo.participants = updatedParticipants.participants;
+    //处理空值
+    for(var index in roomInfo.participants){
+        if(roomInfo.participants[index] == null){
+            delete roomInfo.participants[index];
+            roomInfo.participants.length -= 1;
+        }
+    }
+    //更新房间信息
+    var roomInfoFrameHtml = bullup.loadSwigView('swig_myroom_frame.html', {});
+    var roomInfoHtml = bullup.loadSwigView('swig_myroom_info.html', {
+        room: roomInfo
+    });
+    var teamates = roomInfo.participants;
+    var teamatesHtml = bullup.loadSwigView('swig_myroom_teamate.html', {
+        teamates : teamates
+    });
+    $('.content').html(roomInfoFrameHtml);
+    $('#team_info').html(roomInfoHtml);
+    $('#teamates_info').html(teamatesHtml);
+    if(userInfo.name == roomInfo.participants[0].name){
+        //房主更新friendList
+        $.getScript('/js/invite_friend.js');
+        $('#invite_friend_btn').sideNav({
+            menuWidth: 400, // Default is 300
+            edge: 'right', // Choose the horizontal origin
+            closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+            draggable: true, // Choose whether you can drag to open on touch screens,
+            onOpen: function(el) {},
+            onClose: function(el) {}
+        });
+        $("#confirm_create_team_btn").click(function(){
+            //console.log(roomInfo);
+            if(roomInfo.gameMode == 'match'){
+                //bullup.alert("匹配中，请等待！");
+                bullup.loadTemplateIntoTarget('swig_fightfor.html', {
+                    'participants': roomInfo.participants
+                }, 'main-view');
+                var data = getRadarData(roomInfo.participants);
+                console.log(data);
+                var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
+                var dataArray1 = data;
+                bullup.generateRadar(dataArray1, null, labelArray, "我方战力", "team-detail-chart");
+            }
+            var teamStrengthScore = 0;
+            var teamParticipantsNum = 0;
+            for(var index in roomInfo.participants){
+                teamStrengthScore += roomInfo.participants[index].strength.score;
+                teamParticipantsNum++;
+            }
+            teamStrengthScore /= teamParticipantsNum;
+            roomInfo.teamStrengthScore = teamStrengthScore;
+            roomInfo.teamParticipantsNum = teamParticipantsNum;
+            socket.emit('establishTeam', roomInfo);
+        });
+    }else{
+        //普通对员只显示队伍信息，没有好友邀请栏
+        $('#invite_friend_btn').css('display', 'none');
+        $('#confirm_create_team_btn').css('display', 'none');
+    }
+    bullup.alert('有玩家退出了队伍');
+
+});
+
+socket.on('teamCanceled', function(data){
+    socket.emit('tokenData', data.token);
+    //房间信息置空
+    roomInfo = null;
+    //队伍信息置空
+    teamInfo = null;
+    //用户可以继续创建房间
+    userInfo.creatingRoom = false;
+    //提示用户房间取消
+    bullup.alert("房间已取消");
+    //页面跳转到主页
+    $('#router_starter').click();
 });
 
 
@@ -983,7 +1074,13 @@ function handleRoomEstablishmentResult(feedback){
     userInfo.creatingRoom = true;
     //socket.emit('tokenData', feedback.token);
     roomInfo = feedback.extension;
-    //console.log(JSON.stringify(roomInfo));
+    //处理空值
+    for(var index in roomInfo.participants){
+        if(roomInfo.participants[index] == null){
+            delete roomInfo.participants[index];
+            roomInfo.participants.length -= 1;
+        }
+    }
     var roomInfoFrameHtml = bullup.loadSwigView('swig_myroom_frame.html', {});
     var roomInfoHtml = bullup.loadSwigView('swig_myroom_info.html', {
         room: roomInfo

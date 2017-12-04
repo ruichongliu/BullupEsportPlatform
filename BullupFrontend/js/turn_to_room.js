@@ -35,6 +35,13 @@ $(document).ready(function(){
             page(formedTeams,1);//此函数在initial_pagination.js
         }else if(roomInfo != null){
             //回到房间页面
+            //处理空值
+            for(var index in roomInfo.participants){
+                if(roomInfo.participants[index] == null){
+                    delete roomInfo.participants[index];
+                    roomInfo.participants.length -= 1;
+                }
+            }
             var roomInfoFrameHtml = bullup.loadSwigView('swig_myroom_frame.html', {});
             var roomInfoHtml = bullup.loadSwigView('swig_myroom_info.html', {
                 room: roomInfo

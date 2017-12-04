@@ -279,13 +279,15 @@ exports.exitRoom = function(userId, roomName){
         for(var participantIndex in participants){
             if(participants[participantIndex].userId == userId){
                 delete participants[participantIndex];
+                delete exports.unformedTeams[roomName].participants[participantIndex];
+                exports.unformedTeams[roomName].participants.length -= 1;
                 break;
             }
         }
         for(var participantIndex in participants){
             var participantUserId = participants[participantIndex].userId;
             var socket = socketService.mapUserIdToSocket(participantUserId);
-            socketService.stableSocketEmit(socket, "updateRoomMember", participants);
+            socketService.stableSocketEmit(socket, "updateRoomMember", room);
             //更新所有人的状态
             userService.setEnvironment(participantUserId, "room", room);
             //更新socket room
@@ -322,13 +324,15 @@ exports.exitTeam = function(userId, roomName){
         for(var participantIndex in participants){
             if(participants[participantIndex].userId == userId){
                 delete participants[participantIndex];
+                room.participants -= 1;
+                room.status = 'ESTABLISHING';
                 break;
             }
         }
         for(var participantIndex in participants){
             var participantUserId = participants[participantIndex].userId;
             var socket = socketService.mapUserIdToSocket(participantUserId);
-            socketService.stableSocketEmit(socket, "teamCanceled", room);
+            socketService.stableSocketEmit(socket, "updateTeamMember", room.participants);
             //更新每个人的状态
             userService.changeUserStatus(participantUserId, "inroom");
             delete userService.users[participantUserId].environment.team;
@@ -342,6 +346,7 @@ exports.exitTeam = function(userId, roomName){
         for(var participantIndex in participants){
             if(participants[participantIndex].userId == userId){
                 delete participants[participantIndex];
+                room.participants.length -= 1;
                 break;
             }
         }
