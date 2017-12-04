@@ -30,15 +30,21 @@ exports.addUser = function (user) {
     this.users[user.userId].status = "idle";
 
     if(this.environment[user.userId] != undefined){
+        var environment = JSON.parse(JSON.stringify(this.users[user.userId].environment));
+        if(battleService.battles[environment.battle.battleName] == undefined){
+            return;
+        }
+
         this.users[user.userId].environment = this.environment[user.userId];
         this.users[user.userId].status = "inbattle";
         //加入room
-        var environment = JSON.parse(JSON.stringify(this.users[user.userId].environment));
         socketService.userJoin(user.userId, environment.room.roomName);
         socketService.userJoin(user.userId, environment.team.roomName);
         socketService.userJoin(user.userId, environment.battle.battleName);
         //获取socket
         var socket = socketService.mapUserIdToSocket(user.userId);
+        //更新battle的status
+        environment.battle.status = battleService.battles[environment.battle.battleName].status;
         //发送环境信息
         socketService.stableSocketEmit(socket, "EnvironmentRecover", environment);
         //删除服务器存留的环境信息

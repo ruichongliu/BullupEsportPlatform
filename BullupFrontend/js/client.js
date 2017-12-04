@@ -777,6 +777,15 @@ socket.on('EnvironmentRecover', function(environment){
     teamInfo = environment.team;
     //对战信息
     battleInfo = environment.battle;
+    //开启抓包程序
+    if(battleInfo.status == "unready"){
+        //抓对局包
+        lol_process.grabLOLData('room', socket);
+    }else if(battleInfo.status == "ready"){
+        //抓结果包
+        lol_process.grabLOLData('result', socket);
+    }
+
     //回到对局
     $("#turn_to_room_btn").click();
 });
