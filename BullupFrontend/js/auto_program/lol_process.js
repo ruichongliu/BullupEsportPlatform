@@ -26,6 +26,13 @@ exports.grabLOLData = function(type, socket){
     }
 }
 
+exports.killBullupService = function(){
+    process.execFile('killBS.bat',null,{cwd:'./js/auto_program/'},function(error, stdout, stderr){
+        if(error){
+            throw error;
+        }
+    });
+}
  
 function syncLogin(callback){
     process.exec('C:/Users/Public/Bullup/auto_program/node C:/Users/Public/Bullup/auto_program/sync_user.js', function(error, stdout, stderr){

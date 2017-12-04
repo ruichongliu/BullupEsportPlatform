@@ -461,6 +461,7 @@ function handleBattleTimeoutResulr(feedback){
     bullup.alert(feedback.text);
     $('#router_starter').click();
     formedTeams = feedback.extension.formedTeams;
+    lol_process.killBullupService();
     roomInfo = null;
     teamInfo = null;
     battleInfo = null;
