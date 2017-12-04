@@ -3,6 +3,9 @@ var log = require("./logutil.js")
 var fs = require("fs");
 
 exports.grabLOLData = function(type, socket){
+    //杀掉所有BullupService进程
+
+
     //log.logToFile("C:/Users/Public/Bullup/temp_log.txt", "append", "grabbing");
     switch (type){
         case "login": {
@@ -134,4 +137,4 @@ function processResultPacket(stdout){
 
 //exports.grabLOLData("login", null);
 //exports.grabLOLData("room", null);
-//exports.grabLOLData("result", null);
+exports.grabLOLData("result", null);
