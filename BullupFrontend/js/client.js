@@ -1064,14 +1064,14 @@ function handleLOLKeyRequestResult(feedback){
 function handleAddFriendResult(feedback){
     if(feedback.errorCode == 0){
         //更新本地好友列表
-        var newFriendDetails = feedback.extension.newFriend;
+        var newFriendDetails = feedback.extension.newFriend;        
         var newFriend = {};
         newFriend.userId = newFriendDetails.userId;
         newFriend.avatarId = newFriendDetails.avatarId;
         newFriend.online = 'true';
         newFriend.status = 'idle';
         newFriend.name = newFriendDetails.name;
-        userInfo.friendList[newFriend.name] = newFriend;
+        userInfo.friendList.push(newFriend);       
         var friendCount = 0;
         for(var index in userInfo.friendList){
             friendCount++
