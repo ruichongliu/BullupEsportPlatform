@@ -23,7 +23,7 @@ Date.prototype.format = function (fmt) {
 }
 
 exports.listenerLog = function(listenerName) {//xj
-    console.log('In ' + listenerName + ' listener!');
+    //console.log('In ' + listenerName + ' listener!');
 }
 
 /**
