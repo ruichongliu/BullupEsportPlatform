@@ -192,6 +192,8 @@ exports.handleLOLRoomEstablished = function (io, socket) {
                     }
                 }
 
+                //teamFlag = true;
+
                 if(teamFlag && orderedMap == gameMode){
                     if(battle.status == 'unready'){
                         battle.status = 'ready';
