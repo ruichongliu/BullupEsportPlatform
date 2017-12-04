@@ -269,3 +269,96 @@ exports.cancelMatch = function(io,socket){
         socketService.stableSocketsEmit(io.sockets, roomInfo.roomName, 'feedback', feedback);
     });
 }
+
+//测试
+exports.exitRoom = function(userId, roomName){
+    var room = exports.unformedTeams[roomName];
+    if(room.captain.userId != userId){
+        //不是队长 从队员列表删除 并且通知房间中其他人
+        var participants = room.participants;
+        for(var participantIndex in participants){
+            if(participants[participantIndex].userId == userId){
+                delete participants[participantIndex];
+                delete exports.unformedTeams[roomName].participants[participantIndex];
+                exports.unformedTeams[roomName].participants.length -= 1;
+                break;
+            }
+        }
+        for(var participantIndex in participants){
+            var participantUserId = participants[participantIndex].userId;
+            var socket = socketService.mapUserIdToSocket(participantUserId);
+            socketService.stableSocketEmit(socket, "updateRoomMember", room);
+            //更新所有人的状态
+            userService.setEnvironment(participantUserId, "room", room);
+            //更新socket room
+        }
+    }else{
+        //是队长 房间删除  通知所有成员
+        var participants = room.participants;
+        for(var participantIndex in participants){
+            if(participants[participantIndex].userId == userId){
+                delete participants[participantIndex];
+                break;
+            }
+        }
+        for(var participantIndex in participants){
+            var participantUserId = participants[participantIndex].userId;
+            var socket = socketService.mapUserIdToSocket(participantUserId);
+            socketService.stableSocketEmit(socket, "roomCanceled", {});
+            //更新所有人状态
+            userService.changeUserStatus(participantUserId, "idle");
+            delete userService.users[participantUserId].environment.room;
+            //更新socket room
+        }
+        //删除房间
+        delete exports.unformedTeams[roomName];
+    }
+}
+
+//测试
+exports.exitTeam = function(userId, roomName){
+    var room = exports.formedTeams[roomName];
+    if(room.captain.userId != userId){
+        //不是队长 从队员列表删除 并且通知房间中其他人
+        var participants = room.participants;
+        for(var participantIndex in participants){
+            if(participants[participantIndex].userId == userId){
+                delete participants[participantIndex];
+                room.participants.length -= 1;
+                room.status = 'ESTABLISHING';
+                break;
+            }
+        }
+        for(var participantIndex in participants){
+            var participantUserId = participants[participantIndex].userId;
+            var socket = socketService.mapUserIdToSocket(participantUserId);
+            socketService.stableSocketEmit(socket, "updateTeamMember", room);
+            //更新每个人的状态
+            userService.changeUserStatus(participantUserId, "inroom");
+            delete userService.users[participantUserId].environment.team;
+            //更新socket room
+        }
+        //重新加入创建中的房间
+        exports.unformedTeams[roomName] = room;
+    }else{
+        //是队长 房间删除  通知所有成员
+        var participants = room.participants;
+        for(var participantIndex in participants){
+            if(participants[participantIndex].userId == userId){
+                delete participants[participantIndex];
+                break;
+            }
+        }
+        for(var participantIndex in participants){
+            var participantUserId = participants[participantIndex].userId;
+            var socket = socketService.mapUserIdToSocket(participantUserId);
+            socketService.stableSocketEmit(socket, "teamCanceled", {});
+            //更新每个人的状态
+            userService.changeUserStatus(participantUserId, "idle");
+            delete userService.users[participantUserId].environment.room;
+            delete userService.users[participantUserId].environment.team;
+            //更新socket room
+        }
+    }
+    delete exports.formedTeams[roomName];
+}
