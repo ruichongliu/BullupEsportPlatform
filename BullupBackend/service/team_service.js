@@ -270,7 +270,7 @@ exports.cancelMatch = function(io,socket){
     });
 }
 
-//未测试
+//测试
 exports.exitRoom = function(userId, roomName){
     var room = exports.unformedTeams[roomName];
     if(room.captain.userId != userId){
@@ -315,7 +315,7 @@ exports.exitRoom = function(userId, roomName){
     }
 }
 
-//未测试
+//测试
 exports.exitTeam = function(userId, roomName){
     var room = exports.formedTeams[roomName];
     if(room.captain.userId != userId){

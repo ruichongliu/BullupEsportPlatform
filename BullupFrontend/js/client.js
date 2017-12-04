@@ -769,6 +769,17 @@ socket.on('teamCanceled', function(data){
     $('#router_starter').click();
 });
 
+socket.on('EnvironmentRecover', function(environment){
+    socket.emit('tokenData', environment.token);
+    //房间信息
+    roomInfo = environment.room;
+    //队伍信息
+    teamInfo = environment.team;
+    //对战信息
+    battleInfo = environment.battle;
+    //回到对局
+    $("#turn_to_room_btn").click();
+});
 
 /**
  * 处理用户登录

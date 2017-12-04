@@ -17,6 +17,8 @@ var rankInfoDao = dependencyUtil.global.dao.rankInfoDao;
 
 exports.init = function () {
     this.users = {};
+
+    this.environment = {};
 }
 
 /**
@@ -26,6 +28,23 @@ exports.addUser = function (user) {
     this.users[user.userId] = user;
     this.users[user.userId].environment = {};
     this.users[user.userId].status = "idle";
+
+    if(this.environment[user.userId] != undefined){
+        this.users[user.userId].environment = this.environment[user.userId];
+        this.users[user.userId].status = "inbattle";
+        //加入room
+        var environment = JSON.parse(JSON.stringify(this.users[user.userId].environment));
+        socketService.userJoin(user.userId, environment.room.roomName);
+        socketService.userJoin(user.userId, environment.team.roomName);
+        socketService.userJoin(user.userId, environment.battle.battleName);
+        //获取socket
+        var socket = socketService.mapUserIdToSocket(user.userId);
+        //发送环境信息
+        socketService.stableSocketEmit(socket, "EnvironmentRecover", environment);
+        //删除服务器存留的环境信息
+        delete this.environment[user.userId];
+    }
+
 }
 
 /**
@@ -150,8 +169,6 @@ exports.handleLogin = function (socket) {
                             }
                         }
                     };
-                    handleEnvironmentRecover(socket, feedback.extension);
-
                     if(userStrength != undefined){
                         var kda = ((userStrength.bullup_strength_k + userStrength.bullup_strength_a) / (userStrength.bullup_strength_d + 1.2)).toFixed(1);
                         feedback.extension.strength = {
@@ -811,23 +828,24 @@ exports.handleDisconnect = function(socket){
                 if(userStatus == "inroom"){
                     //在房间里
                     //退出房间  通知房内其他人
-                    var enviroment = exports.users[userId].environment;
-                    var roomName = enviroment.room.roomName;
+                    var environment = exports.users[userId].environment;
+                    var roomName = environment.room.roomName;
                     teamService.exitRoom(userId, roomName);
                     //删除用户登录信息
                     delete exports.users[userId];
                 }else if(userStatus == "inteam"){
                     //在队伍里
                     //退出队伍  通知其他队友
-                    var enviroment = exports.users[userId].environment;
-                    var roomName = enviroment.room.roomName;
+                    var environment = exports.users[userId].environment;
+                    var roomName = environment.room.roomName;
                     teamService.exitTeam(userId, roomName);
                     //删除用户登录信息
                     delete exports.users[userId];
                 }else if(userStatus == "inbattle"){
                     //在对战中
-                    //状态变为离线  什么都不做
-                    exports.changeUserStatus(userId, "offline");
+                    //保存环境信息
+                    exports.environment[userId] = exports.users[userId].environment;
+                    
                 }
             }
         
@@ -835,9 +853,4 @@ exports.handleDisconnect = function(socket){
         //logUtil.levelMsgLog(0, 'User ' + socket.id + ' disconnected!');
         //socketService.remove(socket);
     });
-}
-
-function handleEnvironmentRecover(socket, userData){
-    //在Battle里找  用户是否进入了对局 如果是 把roomInfo  teamInfo  battleInfo传给客户端  把用户加入teamRoom battleRoom
-    
 }
