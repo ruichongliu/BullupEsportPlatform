@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://49.140.81.199:3000');
+var socket = io.connect('http://192.168.2.162:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -345,11 +345,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             //console.log('this is battleInfo:',JSON.stringify(battleInfo));
             //-------------------我方---------敌方------
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
-            var clock = $('.countdown-clock').FlipClock(60*3, {
-                // ... your options here
-                clockFace: 'MinuteCounter',
-                countdown: true
-            });
+            flipClock();
             $('#my_collapsible').collapsible('open', 0);
             $('#my_collapsible').collapsible('open', 1);
             $('#my_collapsible').collapsible('open', 2);
@@ -394,11 +390,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             var dataArray2 = e;
             //console.log('this is battleInfo:',JSON.stringify(battleInfo));
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
-            var clock = $('.countdown-clock').FlipClock(60*3, {
-                // ... your options here
-                clockFace: 'MinuteCounter',
-                countdown: true
-            });
+            flipClock();
             $('#my_collapsible').collapsible('open', 0);
             $('#my_collapsible').collapsible('open', 1);
             $('#my_collapsible').collapsible('open', 2);
@@ -413,6 +405,37 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         //////////////////////////////////////
     }
 });
+
+var timeFlag = false;
+function flipClock(){
+    if(timeFlag){
+        clearInterval(s);
+    }
+    timeFlag = true;
+    second--;
+    var time = secondCount();
+    var clock = $('.countdown-clock').FlipClock(time, {
+        // ... your options here
+        clockFace: 'MinuteCounter',
+        countdown: true
+    });
+}
+var second = 180;
+var s;
+function secondCount(){
+    s = setInterval(function(){
+        second--;
+    },1000);
+    if(second<0){
+        second = 180;
+    }
+    var i = second;
+    if(i<0){
+        i = 0;
+    }
+    return i;
+}
+
 
 var timeControl;
 function handleTimeout(){
@@ -442,7 +465,8 @@ socket.on('lolRoomEstablished', function (data) {
         //$("#router_test_page").click();
         lol_process.grabLOLData('result', socket);
         bullup.alert('游戏已开始');     
-        clearTimeout(timeControl);             
+        clearTimeout(timeControl);
+        handleTimeout2();             
         userInfo.liseningResult = false;
     }
     userInfo.creatingRoom = false;
@@ -477,9 +501,21 @@ socket.on('chatMsg', function(msg){
     
 });
     
+var timeControl2;
+function handleTimeout2(){
+    var pointInfo = {
+        battleName:battleInfo.battleName,
+        blueRoomName:battleInfo.blueSide.roomName,
+        redRoomName:battleInfo.redSide.roomName
+    };
+    timeControl2 = setTimeout(function(){
+        socket.emit('isTimeout',pointInfo);
+    },1000*60*90);
+}
 
 socket.on('battleResult', function(resultPacket){
-    socket.emit('tokenData', resultPacket.token);  
+    socket.emit('tokenData', resultPacket.token);
+    clearTimeout(timeControl2);  
     //读取数据
     var winTeam = resultPacket.winTeam;
     var battleResultData = {};
