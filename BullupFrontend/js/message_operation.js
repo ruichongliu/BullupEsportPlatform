@@ -180,6 +180,21 @@ $(".message_reject_btn").on('click', function(e){
             $('#message_center_nav').click();
             break;
         }
+         case 'inviteBattle':{
+            var inviteBattleResult = {
+                errorCode: 1,
+                type: 'INVITEBATTLERESULT',
+                text: userInfo.name + '拒绝了您的邀请',
+                extension: {
+                    userId:message.team.captain.userId
+                }
+            }
+            socket.emit('inviteBattleResult', inviteBattleResult);
+            //删除消息
+            messageInfo.splice(Number.parseInt(messageIndexString), 1);
+            $('#message_center_nav').click();
+            break;
+        }
     }
 });
 //新添加，点击删除可以删除消息系统中所有的消息
