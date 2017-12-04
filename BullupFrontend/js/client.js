@@ -572,6 +572,34 @@ socket.on('rechargeResult', function(text){
     bullup.alert(text.text);
     $('#router_starter').click();
 });
+socket.on('rechargeErrResult', function(err){
+    socket.emit('tokenData', err.token);
+    console.log(err.err.type);
+    switch (err.err.type) {
+        case 'StripeCardError':
+            bullup.alert(err.err.message);
+            break;
+        case 'RateLimitError':
+            bullup.alert(err.err.message);
+            break;
+        case 'StripeInvalidRequestError':
+            bullup.alert(err.err.message);
+            break;
+        case 'StripeAPIError':
+            bullup.alert(err.err.message);
+            break;
+        case 'StripeConnectionError':
+            bullup.alert(err.err.message);
+            break;
+        case 'StripeAuthenticationError':
+            bullup.alert(err.err.message);
+            break;
+        default:
+            break;
+        }  
+  
+    $('#router_starter').click();
+});
 
 /**
  * 处理用户登录
