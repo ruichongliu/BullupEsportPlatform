@@ -11,15 +11,32 @@ $(document).ready(function(){
             $('#team-detail-modal').css('display', 'none');    
             $('.modal-overlay').remove();
 
-            var labelArray = ['战力', '击杀', '死亡', '助攻', '造成伤害', '承受伤害'];
-            var dataArray1 = [50,50,50,50,50,50];
-            var dataArray2 = [30,70,50,40,20,90];
+            var bluePts = battleInfo.blueSide.participants;
+            var redPts = battleInfo.redSide.participants;
+            var own;
+            var enemy;
+            for(key in bluePts){
+                if(bluePts[key].name==userInfo.nickname){
+                    own = bluePts;
+                    enemy = redPts;
+                }else{
+                    own = redPts;
+                    enemy = bluePts;
+                }
+            }
+            var o = getRadarData(own);
+            var e = getRadarData(enemy);
+            //console.log('this is radarData:',o,e);
+            var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
+            var dataArray1 = e;
+            var dataArray2 = o;
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
-            var clock = $('.countdown-clock').FlipClock(60, {
-                // ... your options here
-                clockFace: 'MinuteCounter',
-                countdown: true
-            });
+            // var clock = $('.countdown-clock').FlipClock(60*3, {
+            //     // ... your options here
+            //     clockFace: 'MinuteCounter',
+            //     countdown: true
+            // });
+            flipClock();
             $('#my_collapsible').collapsible('open', 0);
             $('#my_collapsible').collapsible('open', 1);
             $('#my_collapsible').collapsible('open', 2);
