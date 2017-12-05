@@ -303,19 +303,23 @@ socket.on('battleInfo', function (battle) {
 
     battleInfo = battle;
     //console.log(JSON.stringify(battleInfo));
+    //console.log(lolRoom);
+});
+
+
+//加载比赛页面
+function swig_fight(lolRoom){
     var battleRoomHtml = bullup.loadSwigView("./swig_fight.html", {
         blueSide: battleInfo.blueSide,
         redSide: battleInfo.redSide,
+        lolRoom: lolRoom,
     });
     $('#main-view').html(battleRoomHtml);
-
- 
     $('#waiting-modal').css('display', 'none');    
     $('#team-detail-modal').css('display', 'none');    
     $('.modal-overlay').remove();
+}
 
-    
-});
 
 socket.on('lolRoomEstablish', function (lolRoom) {
     socket.emit('tokenData', lolRoom.token);
@@ -323,11 +327,14 @@ socket.on('lolRoomEstablish', function (lolRoom) {
     if (userInfo.userId == lolRoom.creatorId) {
         //开始抓包
         if( userInfo.creatingRoom){
+            lolRoom.createUser = true;
+            lolRoom.team = "blue";
+            swig_fight(lolRoom);
             userInfo.creatingRoom = false;
             //$("#router_test_page2").click();
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
-            bullup.alert('请 您 在规定时间内去 <b><span style="color:blue;">创建</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入 <span style="color:blue"> 蓝方 </span> 战队');
+               bullup.alert('请 您 在规定时间内去 <b><span style="color:blue;">创建</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入 <span style="color:blue"> 蓝方 </span> 战队');
             handleTimeout();
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
@@ -382,12 +389,18 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             for(key in redPts){
                 if(redPts[key].name==userInfo.name){
                     //判断是否是红队,提示进入红队
+                    lolRoom.createUser = false;
+                    lolRoom.team = "red";
+                    swig_fight(lolRoom);
                     bullup.alert('请 您 在规定时间内 <b><span style="color:red"> 加入 </span></b> 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password +'<br>请在LOL加入<span style="color:red"> 红方 </span>战队');
                 }
             }
             for(key in bluePts){
                 if(bluePts[key].name==userInfo.name){
                     //判断用户是否是蓝队,提示进入蓝队
+                    lolRoom.createUser = false;
+                    lolRoom.team = "blue";
+                    swig_fight(lolRoom);
                     bullup.alert('请 您 在规定时间内去 <b><span style="color:blue">加入</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入<span style="color:blue"> 蓝方 </span>战队');            
                     own = bluePts;
                     enemy = redPts;
