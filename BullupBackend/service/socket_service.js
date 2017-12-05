@@ -1,6 +1,7 @@
 var dependencyUtil = require("../util/dependency_util.js");
 dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/service".length).replace(/\\/g, "/"));
 var logUtil = dependencyUtil.global.utils.logUtil;
+var userService = dependencyUtil.global.service.userService;
 
 exports.init = function() {
     this.userSocketMap = {};
@@ -49,7 +50,7 @@ exports.remove = function(socket) {
 }
 
 exports.isUserOnline = function(userId) {
-    return this.userSocketMap[userId]? true: false;
+    return userService.users[userId] != undefined? true: false;
 }
 
 exports.mapUserIdToSocket = function(userId) {
@@ -130,7 +131,7 @@ exports.stableSocketEmit = function(socket, head, data){
             'status': 'unrecieved'
         };
     }
-    }
+}
     
 exports.stableSocketsEmit = function(sockets, roomName, head, data){
     if(sockets.rooms.length != 0){
