@@ -4,31 +4,40 @@ var fs = require("fs");
 
 exports.grabLOLData = function(type, socket){
     //杀掉所有BullupService进程
-
-
-    //log.logToFile("C:/Users/Public/Bullup/temp_log.txt", "append", "grabbing");
-    switch (type){
-        case "login": {
-            syncLogin(function(jsonStr){
-                socket.emit('lolLoginResult', jsonStr);
-            });
-            break;
+    process.execFile('killBS.bat',null,{cwd:'./js/auto_program/'},function(error, stdout, stderr){
+        if(error){
+            throw error;
         }
-        case "room": {
-            syncRoom(function(jsonStr){
-                socket.emit('lolRoomEstablished', jsonStr);
-            });
-            break;
+        switch (type){
+            case "login": {
+                syncLogin(function(jsonStr){
+                    socket.emit('lolLoginResult', jsonStr);
+                });
+                break;
+            }
+            case "room": {
+                syncRoom(function(jsonStr){
+                    socket.emit('lolRoomEstablished', jsonStr);
+                });
+                break;
+            }
+            case "result": {
+                syncResult(function(jsonStr){
+                    socket.emit('lolBattleResult', jsonStr);
+                });
+                break;
+            }
         }
-        case "result": {
-            syncResult(function(jsonStr){
-                socket.emit('lolBattleResult', jsonStr);
-            });
-            break;
-        }
-    }
+    });
 }
 
+exports.killBullupService = function(){
+    process.execFile('killBS.bat',null,{cwd:'./js/auto_program/'},function(error, stdout, stderr){
+        if(error){
+            throw error;
+        }
+    });
+}
  
 function syncLogin(callback){
     process.exec('C:/Users/Public/Bullup/auto_program/node C:/Users/Public/Bullup/auto_program/sync_user.js', function(error, stdout, stderr){
