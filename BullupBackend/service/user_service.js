@@ -30,7 +30,7 @@ exports.addUser = function (user) {
     this.users[user.userId].status = "idle";
 
     if(this.environment[user.userId] != undefined){
-        var environment = JSON.parse(JSON.stringify(this.users[user.userId].environment));
+        var environment = JSON.parse(JSON.stringify(this.environment[user.userId]));
         if(battleService.battles[environment.battle.battleName] == undefined){
             return;
         }

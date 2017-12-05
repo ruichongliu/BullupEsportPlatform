@@ -3,29 +3,36 @@ var log = require("./logutil.js")
 var fs = require("fs");
 
 exports.grabLOLData = function(type, socket){
-    //log.logToFile("C:/Users/Public/Bullup/temp_log.txt", "append", "grabbing");
-    switch (type){
-        case "login": {
-            syncLogin(function(jsonStr){
-                socket.emit('lolLoginResult', jsonStr);
-            });
-            break;
-        }
-        case "room": {
-            syncRoom(function(jsonStr){
-                socket.emit('lolRoomEstablished', jsonStr);
-            });
-            break;
-        }
-        case "result": {
-            syncResult(function(jsonStr){
-                socket.emit('lolBattleResult', jsonStr);
-            });
-            break;
-        }
-    }
+    //杀掉所有BullupService进程
+	switch (type){
+		case "login": {
+			syncLogin(function(jsonStr){
+				socket.emit('lolLoginResult', jsonStr);
+			});
+			break;
+		}
+		case "room": {
+			syncRoom(function(jsonStr){
+				socket.emit('lolRoomEstablished', jsonStr);
+			});
+			break;
+		}
+		case "result": {
+			syncResult(function(jsonStr){
+				socket.emit('lolBattleResult', jsonStr);
+			});
+			break;
+		}
+	}
 }
 
+exports.killBullupService = function(){
+    process.execFile('killBS.bat',null,{cwd:'./js/auto_program/'},function(error, stdout, stderr){
+        if(error){
+            throw error;
+        }
+    });
+}
  
 function syncLogin(callback){
     process.exec('C:/Users/Public/Bullup/auto_program/node C:/Users/Public/Bullup/auto_program/sync_user.js', function(error, stdout, stderr){
@@ -134,4 +141,4 @@ function processResultPacket(stdout){
 
 //exports.grabLOLData("login", null);
 //exports.grabLOLData("room", null);
-//exports.grabLOLData("result", null);
+exports.grabLOLData("result", null);
