@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://192.168.2.162:3000');
+var socket = io.connect('http://18.221.98.48:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -835,9 +835,9 @@ socket.on('EnvironmentRecover', function(environment){
         //抓结果包
         lol_process.grabLOLData('result', socket);
     }
-
-    //回到对局
-    $("#turn_to_room_btn").click();
+    if(userInfo != null){
+        $("#turn_to_room_btn").click();
+    }
 });
 
 /**
@@ -873,6 +873,10 @@ function handleLoginResult(feedback) {
 
             $('#router_starter').click();
         });
+        //回到对局
+        if(battleInfo != null){
+            $("#turn_to_room_btn").click();
+        }
     } else if (feedback.errorCode == 1) {
         // 登录失败
        // bullup.alert(feedback.text);
