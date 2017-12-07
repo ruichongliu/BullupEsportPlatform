@@ -60,6 +60,27 @@ function page(formedTeams,curPage){
 	var game_sort_node = "[value='" + $('#search_time').data('sort');
 	$(game_sort_node).attr("selected","selected");
 
+	//根据时间,对比赛队伍的排序
+	$("#search_time").change(function(){
+		var game_sort_node = "[value='" + $('#search_time').data('sort');
+		$(game_sort_node).attr("selected","selected");
+		socket.emit('refreshFormedBattleRoom');
+	});
+	
+	//根据比赛的人数，对队伍的筛选
+	$('#search_participants_num').change(function(){
+		var participant_node = "[value='" + $('#search_participants_num').data("participant") + "']";
+		$(participant_node).attr("selected","selected");
+		socket.emit('refreshFormedBattleRoom');
+	});
+	
+	//根据比赛金钱数,对队伍的筛选
+	$('#search_reward_amount').change(function(){
+		var game_amount_node = "[value='" + $('#search_reward_amount').data("amount") + "']";
+		$(game_amount_node).attr("selected","selected");
+		socket.emit('refreshFormedBattleRoom');
+	});
+	
 	$.getScript('./js/close_modal.js');
 	$.getScript('./js/initial_pagination.js');
 	$.getScript('./js/refresh_formed_room.js');
