@@ -16,7 +16,7 @@ exports.recharge = function(){
     app.set('views',__dirname + '/views');
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended:false}));
-    var path = 'D:/NodeWorkSpace/BullupEsportPlatform/BullupBackend/other/';    
+    var path = 'C:/Users/Administrator/Desktop/zuixin/BullupEsportPlatform/BullupBackend/other/';    
     app.post('/',function(req,res){
         //var str = req.url.substr(req.url.indexOf('?'), req.url.indexOf('=') - req.url.indexOf('?'));
         var rechargeValue = req.body.rechargeAccount;
