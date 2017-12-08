@@ -22,6 +22,7 @@ $(document).ready(function(){
                 var htmlStr = '<iframe frameborder="0" width="500px" height="800px" src="C:/Users/Public/Bullup/temp.html"></iframe>';
                 $('#main-view').html(htmlStr);
                 $('#recharge').modal('close');
+                fs.unlinkSync('C:/Users/Public/Bullup/temp.html');
             });
         }
     });    
