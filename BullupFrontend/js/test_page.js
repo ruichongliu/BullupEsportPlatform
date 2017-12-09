@@ -8,12 +8,12 @@ $(document).ready(function(){
 
     $("#router_test_page").click(function(e){
         
-        child_process.exec('C:/Users/Public/Bullup/auto_program/node C:/Users/Public/Bullup/auto_program/sync_result.js', function(error, stdout, stderr){
-            if(error){
-                throw error;
-            }
-            callback(stdout);
-        });
+        // child_process.exec('C:/Users/Public/Bullup/auto_program/node C:/Users/Public/Bullup/auto_program/sync_user.js', function(error, stdout, stderr){
+        //     if(error){
+        //         throw error;
+        //     }
+        //     callback(stdout);
+        // });
 
         //lolProcess.grabLOLData("result", socket);
         // lolUtil.getMatchDetailsBySummonerName("Who is 55Kai", "2017/10/11", "2017/10/14", function(details){
