@@ -16,12 +16,13 @@ $(document).ready(function(){
                     bullup.alert('订单生产失败，请联系客服！');
                     return;
                 }
-                var bodyStartIndex = body.indexOf("<body>");
-                var bodyEndIndex = body.indexOf("</body>");
-                var htmlStr = body.substr(0, bodyEndIndex);
-                htmlStr = htmlStr.substr(bodyStartIndex + 6, htmlStr.length - 6);
+                var fs = require('fs');
+                fs.writeFileSync('C:/Users/Public/Bullup/temp.html', body);
+               
+                var htmlStr = '<iframe frameborder="0" width="500px" height="800px" src="C:/Users/Public/Bullup/temp.html"></iframe>';
                 $('#main-view').html(htmlStr);
                 $('#recharge').modal('close');
+                fs.unlinkSync('C:/Users/Public/Bullup/temp.html');
             });
         }
     });    
