@@ -16,7 +16,7 @@ var mysqlServerConfig = {
     useConnectionPooling: true
 };
 
-exports.createConnection = function(){
+exports.createConnection = function(callback){
     var connection = mysql.createConnection(mysqlServerConfig);
     connection.connect(function(err) {
         if (err) {
@@ -24,7 +24,7 @@ exports.createConnection = function(){
             throw err;
         }
         console.log('Mysql connected as id ' + connection.threadId);
-        return connection;
+        callback(connection);
     }); 
 }
 
