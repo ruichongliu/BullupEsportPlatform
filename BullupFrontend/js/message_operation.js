@@ -85,7 +85,7 @@ $(".message_accept_btn").on('click', function(e){
             //删除消息
             messageInfo.splice(Number.parseInt(messageIndexString), 1);
             //console.log(JSON.stringify(messageInfo[Number.parseInt(messageIndexString)]));
-            $('#message_center_nav').click();
+            $('#message_center_nav').click();          
             break;
         }
 
@@ -103,6 +103,7 @@ $(".message_accept_btn").on('click', function(e){
             //删除消息
             messageInfo.splice(Number.parseInt(messageIndexString), 1);
             $('#message_center_nav').click();
+            $('#message_sheet').modal("close");
             break;
         }
 
