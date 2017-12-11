@@ -8,15 +8,17 @@ var dbUtil = dependencyUtil.global.utils.databaseUtil;
 //-----------------------账户管理部分---------------------------------
 exports.findAllAccount = function(callback){
     var userInfo = {};
+    var connection = dbUtil.createConnection();
+
     async.waterfall([
         function(callback){
-            dbUtil.query('select user_id from user_base', [], function(err,result){
+            dbUtil.query(connection, 'select user_id from user_base', [], function(err,result){
                 if (err) throw err;
                 userInfo = result;
                 callback(null,userInfo);
             });
         },function(userInfo,callback){
-            dbUtil.query('select user_account from user_base', [], function(err,result2){
+            dbUtil.query(connection, 'select user_account from user_base', [], function(err,result2){
                 if (err) throw err;
                 for(var i = 0;i<result2.length;i++){
                     userInfo[i].account = result2[i].user_account;
@@ -24,7 +26,7 @@ exports.findAllAccount = function(callback){
                 callback(null,userInfo);
             });
         },function(userInfo,callback){
-            dbUtil.query('select * from lol_bind', [], function(err,result3){
+            dbUtil.query(connection, 'select * from lol_bind', [], function(err,result3){
                 if (err) throw err;
                 var arr = [];
                 for(var i=0;i<userInfo.length;i++){
@@ -40,7 +42,7 @@ exports.findAllAccount = function(callback){
                 callback(null,userInfo);
             });  
         },function(userInfo,callback){
-            dbUtil.query('select lol_info_id,user_lol_account from lol_info', [], function(err,result4){
+            dbUtil.query(connection, 'select lol_info_id,user_lol_account from lol_info', [], function(err,result4){
                 if (err) throw err;
                 for(var i=0;i<userInfo.length;i++){
                     if(!userInfo[i].lol_info_id){
@@ -55,7 +57,7 @@ exports.findAllAccount = function(callback){
                 callback(null,userInfo);
             });   
         },function(userInfo,callback){
-            dbUtil.query('select * from bullup_suspension_state', [], function(err,result5){
+            dbUtil.query(connection, 'select * from bullup_suspension_state', [], function(err,result5){
                 if (err) throw err;
                 var arr = [];
                 for(var i=0;i<userInfo.length;i++){
@@ -73,21 +75,26 @@ exports.findAllAccount = function(callback){
         }
     ],function(err,res){
         if (err) throw err;
+        dbUtil.closeConnection(connection);
         callback(res);
     });
 }
 
 //----------------封号-------------------------------
 exports.suspendAccount = function(data,callback){
-    dbUtil.query('insert into bullup_suspension_state (user_id)values(?)',[data.userId],function(err,res){
+    var connection = dbUtil.createConnection();
+    dbUtil.query(connection, 'insert into bullup_suspension_state (user_id)values(?)',[data.userId],function(err,res){
         if (err) throw err;
+        dbUtil.closeConnection();
         callback(res);
     });
 }
 //----------------解封-------------------------------
 exports.unblockAccount = function(data,callback){
-    dbUtil.query('delete from bullup_suspension_state where user_id=?',[data.userId],function(err,res){
+    var connection = dbUtil.createConnection();
+    dbUtil.query(connection, 'delete from bullup_suspension_state where user_id=?',[data.userId],function(err,res){
         if (err) throw err;
+        dbUtil.closeConnection(connection);
         callback(res);
     });
 }
@@ -95,15 +102,19 @@ exports.unblockAccount = function(data,callback){
 //-----------------------------申述反馈管理部分--------------------------
 //查找全部申诉反馈信息
 exports.findAllFeedback = function(callback){
-    dbUtil.query('select * from bullup_feedback', [], function(err,res){
+    var connection = dbUtil.createConnection();
+    dbUtil.query(connection, 'select * from bullup_feedback', [], function(err,res){
         if (err) throw err;
+        dbUtil.closeConnection(connection);
         callback(res);
     });
 }
 //将反馈状态改为'已处理'
 exports.handleFeedback = function(data,callback){
-    dbUtil.query('update bullup_feedback set user_feedback_state="已处理",user_feedback_handle_time=? where user_feedback_id=?',[data.handleTime,data.feedbackId],function(err,res){
+    var connection = dbUtil.createConnection();
+    dbUtil.query(connection, 'update bullup_feedback set user_feedback_state="已处理",user_feedback_handle_time=? where user_feedback_id=?',[data.handleTime,data.feedbackId],function(err,res){
         if (err) throw err;
+        dbUtil.closeConnection(connection);
         callback(res);
     });
 }
@@ -119,22 +130,27 @@ exports.findAllRechargeInfo = function(callback){
     async.waterfall([
         function(callback){
             //var tempInfo = {};
-            dbUtil.query('select * from bullup_payment_history', [], function(err,result){
+            var connection = dbUtil.createConnection();
+            dbUtil.query(connection, 'select * from bullup_payment_history', [], function(err,result){
                 if (err) throw err;
                 //tempInfo.rechargeInfo = result;
+                dbUtil.closeConnection(connection);
                 callback(null,result);
             });
         },
         // function(tempInfo,callback){
         //     //var tempInfo = {};
-        //     dbUtil.query('select user_id,bullup_withdraw_id,bullup_bank_money,bullup_bank_cardnumber,bullup_payment_account_id,bullup_bank_wdtime,bullup_bank_state from bullup_bankcard_info where user_id=?',[data.userId],function(err,result){
+        //     var connection = dbUtil.createConnection();
+        //     dbUtil.query(connection, 'select user_id,bullup_withdraw_id,bullup_bank_money,bullup_bank_cardnumber,bullup_payment_account_id,bullup_bank_wdtime,bullup_bank_state from bullup_bankcard_info where user_id=?',[data.userId],function(err,result){
         //         if (err) throw err;
         //         tempInfo.withdrawInfo = result;
+        //
         //         callback(null,tempInfo);
         //     });
         // },
     ],function(err,res){
         if(err) throw err;
+        dbUtil.closeConnection(connection);
         callback(res);
     });
 }
@@ -143,10 +159,11 @@ exports.findAllRechargeInfo = function(callback){
 exports.findAnalysisData = function(callback){
     var tempArr = [];
     var analysisData = {};
+    var connection = dbUtil.createConnection();
     async.waterfall([
         function(callback){//总共多少只队伍
-            dbUtil.query('select distinct bullup_battle_paticipants_red from bullup_battle_record;', [], function(err,res1){
-                dbUtil.query('select distinct bullup_battle_paticipants_blue from bullup_battle_record;', [], function(err,res2){
+            dbUtil.query(connection, 'select distinct bullup_battle_paticipants_red from bullup_battle_record;', [], function(err,res1){
+                dbUtil.query(connection, 'select distinct bullup_battle_paticipants_blue from bullup_battle_record;', [], function(err,res2){
                     if (err) throw err;
                     for(var i=0;i<res1.length;i++){
                         tempArr.push(res1[i].bullup_battle_paticipants_red);
@@ -169,8 +186,8 @@ exports.findAnalysisData = function(callback){
                 });
             });
         },function(analysisData,callback){//每支队伍赢了几场，胜场数
-            dbUtil.query('select bullup_battle_paticipants_red,count(*) as winSum from bullup_battle_record where bullup_battle_result="红方赢" group by bullup_battle_paticipants_red;', [], function(err,res3){
-                dbUtil.query('select bullup_battle_paticipants_blue,count(*) as winSum from bullup_battle_record where bullup_battle_result="蓝方赢" group by bullup_battle_paticipants_blue;', [], function(err,res4){
+            dbUtil.query(connection, 'select bullup_battle_paticipants_red,count(*) as winSum from bullup_battle_record where bullup_battle_result="红方赢" group by bullup_battle_paticipants_red;', [], function(err,res3){
+                dbUtil.query(connection, 'select bullup_battle_paticipants_blue,count(*) as winSum from bullup_battle_record where bullup_battle_result="蓝方赢" group by bullup_battle_paticipants_blue;', [], function(err,res4){
                     if (err) throw err;
                     var a = [];
                     for(var i in res3){
@@ -200,8 +217,8 @@ exports.findAnalysisData = function(callback){
                 });
             });
         },function(analysisData,callback){//每支队伍的参赛次数，总场数
-            dbUtil.query('select bullup_battle_paticipants_blue,count(*) as battleSum from bullup_battle_record group by bullup_battle_paticipants_blue;',function(err,res5){
-                dbUtil.query('select bullup_battle_paticipants_red,count(*) as battleSum from bullup_battle_record group by bullup_battle_paticipants_red;',function(err,res6){
+            dbUtil.query(connection, 'select bullup_battle_paticipants_blue,count(*) as battleSum from bullup_battle_record group by bullup_battle_paticipants_blue;',function(err,res5){
+                dbUtil.query(connection, 'select bullup_battle_paticipants_red,count(*) as battleSum from bullup_battle_record group by bullup_battle_paticipants_red;',function(err,res6){
                     if (err) throw err;
                     var a = [];
                     for(var i in res5){
@@ -233,7 +250,7 @@ exports.findAnalysisData = function(callback){
                 });
             });
         },function(analysisData,callback){//全平台对战次数
-            dbUtil.query('select count(*) as x from bullup_battle_record', [], function(err,res7){
+            dbUtil.query(connection, 'select count(*) as x from bullup_battle_record', [], function(err,res7){
                 if (err) throw err;
                 analysisData.countAllBattle = res7[0].x;
                 callback(null,analysisData);
@@ -241,6 +258,7 @@ exports.findAnalysisData = function(callback){
         }
     ],function(err,res){
         if (err) throw err;
+        dbUtil.closeConnection(connection);
         callback(res);
     })
 }

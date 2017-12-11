@@ -6,14 +6,17 @@ var dbUtil = dependencyUtil.global.utils.databaseUtil;
 
 
 exports.findUserLOLAccountInfo = function(userId, callback) {
-    dbUtil.query('select lol_info_id from lol_bind  where user_id = ?', [userId], function(err, rows){
+    var connection = dbUtil.createConnection();
+    dbUtil.query(connection, 'select lol_info_id from lol_bind  where user_id = ?', [userId], function(err, rows){
         if(rows[0] != undefined){
             var lolInfoId = rows[0].lol_info_id;
-            dbUtil.query('select * from lol_info where lol_info_id = ?', [lolInfoId], function(err, rows){
+            dbUtil.query(connection, 'select * from lol_info where lol_info_id = ?', [lolInfoId], function(err, rows){
+                //dbupdate
                 callback(rows[0]);
             });
         }else{
             var blankObj;
+            //dbupdate
             callback(blankObj);
         }
     });
@@ -21,9 +24,10 @@ exports.findUserLOLAccountInfo = function(userId, callback) {
 
 
 exports.validateBindInfo = function(userId, lolAccount, lolArea, callback){
+    var connection = dbUtil.createConnection();
     async.waterfall([
         function(callback){
-            dbUtil.query('select * from lol_info where user_lol_area = ? and user_lol_account = ?', [lolArea, lolAccount], function(err, res){
+            dbUtil.query(connection, 'select * from lol_info where user_lol_area = ? and user_lol_account = ?', [lolArea, lolAccount], function(err, res){
                 //首先判断该账号在该区是否可以绑定
                 if(res[0] != undefined){
                     var bindValidityResult = {};
@@ -42,7 +46,7 @@ exports.validateBindInfo = function(userId, lolAccount, lolArea, callback){
             });
         },
         function(tempInfo, callback){
-            dbUtil.query('select lol_info_id from lol_bind where user_id = ?', [tempInfo.userId], function(err, row) {
+            dbUtil.query(connection, 'select lol_info_id from lol_bind where user_id = ?', [tempInfo.userId], function(err, row) {
                 if (err){ 
                     throw err;
                 }
@@ -68,7 +72,7 @@ exports.validateBindInfo = function(userId, lolAccount, lolArea, callback){
         function(tempInfo, callback){
             var lolInfoIds = tempInfo.lolInfoIds;
             async.eachSeries(lolInfoIds, function(lolInfoId, errCb){
-                dbUtil.query('select * from lol_info where lol_info_id = ?', [lolInfoId.lol_info_id], function(err, row) {
+                dbUtil.query(connection, 'select * from lol_info where lol_info_id = ?', [lolInfoId.lol_info_id], function(err, row) {
                     if (err){ 
                         throw err;
                     }
@@ -85,11 +89,13 @@ exports.validateBindInfo = function(userId, lolAccount, lolArea, callback){
         }
     ],
     function(err,result){
+        //dbupdate
         callback(result);
     });    
 }
 
 exports.insertBindInfo = function(userId, lolAccount, lolNickname, lolArea, callback){
+    var connection = dbUtil.createConnection();
     async.waterfall([
         function(callback){
             var tempInfo = {};
@@ -97,24 +103,25 @@ exports.insertBindInfo = function(userId, lolAccount, lolNickname, lolArea, call
             tempInfo.lolAccount = lolAccount;
             tempInfo.lolArea = lolArea;
             tempInfo.lolNickname = lolNickname;
-            dbUtil.query('insert into lol_info (user_lol_account, user_lol_nickname, user_lol_area) values (?, ?, ?)', [lolAccount, lolNickname, lolArea], function(err, row){
+            dbUtil.query(connection, 'insert into lol_info (user_lol_account, user_lol_nickname, user_lol_area) values (?, ?, ?)', [lolAccount, lolNickname, lolArea], function(err, row){
                 callback(null, tempInfo);
             });
         },
         function(tempInfo, callback){
-            dbUtil.query('select lol_info_id from lol_info where user_lol_account = ? and user_lol_nickname = ? and user_lol_area = ?', [tempInfo.lolAccount, tempInfo.lolNickname, tempInfo.lolArea], function(err, row){
+            dbUtil.query(connection, 'select lol_info_id from lol_info where user_lol_account = ? and user_lol_nickname = ? and user_lol_area = ?', [tempInfo.lolAccount, tempInfo.lolNickname, tempInfo.lolArea], function(err, row){
                 tempInfo.lolInfoId = row[0].lol_info_id;
                 callback(null, tempInfo);
             });
         }
     ], function(err,result){
-        dbUtil.query('insert into lol_bind (user_id, lol_info_id) values (?, ?)', [result.userId, result.lolInfoId], function(err, res){
+        dbUtil.query(connection, 'insert into lol_bind (user_id, lol_info_id) values (?, ?)', [result.userId, result.lolInfoId], function(err, res){
             var result = {};
             if(res.affectedRows > 0){
                 result.errorCode = 0;
             }else{
                 result.errorCode = 1;
             }
+            //dbupdate
             callback(result);
         });
     });
