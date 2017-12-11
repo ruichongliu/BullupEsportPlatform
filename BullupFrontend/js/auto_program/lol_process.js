@@ -141,4 +141,4 @@ function processResultPacket(stdout){
 
 //exports.grabLOLData("login", null);
 //exports.grabLOLData("room", null);
-exports.grabLOLData("result", null);
+//exports.grabLOLData("result", null);

@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://49.140.81.199:3000');
+var socket = io.connect('http://18.221.98.48:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -492,7 +492,8 @@ socket.on('lolRoomEstablished', function (data) {
     //游戏开始 刷新时钟 
     if(userInfo.liseningResult == true ){
         //$("#router_test_page").click();
-        lol_process.grabLOLData('result', socket);
+        lol_process.grabLOLData('result', socket);      
+        $("#show_game_start").css("display","inline-block");
         bullup.alert('游戏已开始');     
         clearTimeout(timeControl);
         handleTimeout2();             
@@ -626,7 +627,7 @@ socket.on('battleResult', function(resultPacket){
 
 socket.on('rechargeResult', function(text){
     socket.emit('tokenData', text.token);  
-    bullup.alert(text.text);
+    alert(text.text);//阻塞 弹出充值成功页面
     $('#router_starter').click();
 });
 
