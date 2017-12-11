@@ -11,12 +11,12 @@ exports.findUserLOLAccountInfo = function(userId, callback) {
         if(rows[0] != undefined){
             var lolInfoId = rows[0].lol_info_id;
             dbUtil.query(connection, 'select * from lol_info where lol_info_id = ?', [lolInfoId], function(err, rows){
-                //dbupdate
+                dbUtil.closeConnection(connection);
                 callback(rows[0]);
             });
         }else{
             var blankObj;
-            //dbupdate
+            dbUtil.closeConnection(connection);
             callback(blankObj);
         }
     });
@@ -89,7 +89,7 @@ exports.validateBindInfo = function(userId, lolAccount, lolArea, callback){
         }
     ],
     function(err,result){
-        //dbupdate
+        dbUtil.closeConnection(connection);
         callback(result);
     });    
 }
@@ -121,7 +121,7 @@ exports.insertBindInfo = function(userId, lolAccount, lolNickname, lolArea, call
             }else{
                 result.errorCode = 1;
             }
-            //dbupdate
+            dbUtil.closeConnection(connection);
             callback(result);
         });
     });
