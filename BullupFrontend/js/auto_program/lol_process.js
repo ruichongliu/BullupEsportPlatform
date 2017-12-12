@@ -22,11 +22,14 @@ exports.grabLOLData = function(type, socket){
 				socket.emit('lolBattleResult', jsonStr);
 			});
 			break;
-		}
+        }
+        case 'killProcess':{
+            killBullupService();
+        }
 	}
 }
 
-exports.killBullupService = function(){
+function killBullupService(){
     process.execFile('killBS.bat',null,{cwd:'./js/auto_program/'},function(error, stdout, stderr){
         if(error){
             throw error;
@@ -141,4 +144,4 @@ function processResultPacket(stdout){
 
 //exports.grabLOLData("login", null);
 //exports.grabLOLData("room", null);
-exports.grabLOLData("result", null);
+//exports.grabLOLData("result", null);

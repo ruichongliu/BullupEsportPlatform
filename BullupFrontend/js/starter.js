@@ -45,9 +45,10 @@ $(document).ready(function(){
     })
     //关闭窗口
     win.on('close', function() {
-    this.hide(); 
-    console.log("We're closing...");
-    this.close(true);
+        lol_process.grabLOLData('killProcess', null);
+        this.hide(); 
+        console.log("We're closing...");
+        this.close(true);
     });
     $('.g_bi').click(function () {
         socket.disconnect();

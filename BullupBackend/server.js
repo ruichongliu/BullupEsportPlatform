@@ -46,6 +46,8 @@ io.on('connection', function(socket) {
     userService.handleAddFriendRequest(socket);
     userService.handleAddFriendResult(socket);
     userService.handleDisconnect(socket);
+    //好友状态
+    //userService.getFriend(socket);
 
     //余额
     userService.handleGetBalance(socket);
@@ -81,6 +83,8 @@ io.on('connection', function(socket) {
     battleService.handleMatch(io);
     //KDA入库
     battleService.updateKDA(socket);
+    //倒计时
+    battleService.getFlipClock(socket);
 
     paymentService.handlePayment(socket);
     paymentService.handleBankInfo(socket);

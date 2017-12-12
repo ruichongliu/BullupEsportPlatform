@@ -3,6 +3,7 @@ var dependencyUtil = require("../util/dependency_util.js");
 dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/dao".length).replace(/\\/g, "/"));
 
 var dbUtil = dependencyUtil.global.utils.databaseUtil;
+var socketService = dependencyUtil.global.service.socketService;
 
 exports.findUserByAccount = function(account, callback) {
     dbUtil.query('select * from `user_base` where user_account=?', [account], function (err, results){
@@ -69,6 +70,41 @@ exports.findFriendListByUserId = function(userId, callback) {
     })
 }
 
+//好友状态
+// exports.findFriend = function(userId, callback) {
+//     dbUtil.query('select friend_user_id from bullup_friend where user_id=?', [userId], function(err, rows) {
+//         var friendList = {};
+//         var status;
+//         async.eachSeries(rows, function(row, errCb){
+//             exports.findUserById(row.friend_user_id, function(user) {
+//                 //调用socketService中的方法，判断用户是否在线
+//                 //if (socketService.mapUserIdToSocket(user.user_id) != undefined) {
+//                     //返回true时
+//                     friendList[user.user_nickname] = {
+//                         name: user.user_nickname,
+//                         userId: user.user_id,
+//                         avatarId: user.icon_id,
+//                         online: 'true',
+//                         status: "idle"
+//                     };
+//                 //}else{
+//                 //     //返回false时
+//                 //     friendList[user.user_nickname] = {
+//                 //         name: user.user_nickname,
+//                 //         userId: user.user_id,
+//                 //         avatarId: user.icon_id,
+//                 //         online: 'false',
+//                 //         status: "idle"
+//                 //     };
+//                 // }
+//                 errCb();
+//             })
+//         }, function(err) {
+//             if (err) console.log(err);
+//             callback(friendList);
+//         });
+//     })
+// }
 
 //用户修改信息
 exports.updateNickname= function(data,callback){
