@@ -860,3 +860,47 @@ exports.handleDisconnect = function(socket){
         //socketService.remove(socket);
     });
 }
+
+// exports.getFriend = function(socket){
+//     socket.on('getFriend',function(data){
+//         baseInfoDao.findFriend(data.userId,function(res){
+//             if(!res){
+//                 socketService.stableSocketEmit(socket, 'feedback',{
+//                     errorCode:1,
+//                     text:'获取失败',
+//                     type:'GETFRIENDRESULT',
+//                     extension:null
+//                 });
+//             }else{
+//                 //定义一个空数组，用来保存根据状态排序后的信息
+//                 var arr = new Array();
+//                 for(obj in res){
+//                     arr.push(res[obj]);
+//                 }
+//                 arr.sort(function(x,y){
+//                     return x.online < y.online ? 1 : -1;
+//                 });
+//                 console.log(JSON.stringify(arr));
+//                 //userInfo.friendList = arr;
+//                 console.log('-------------------');
+//                 // for(var key in arr){
+//                 //     // if (socketService.mapUserIdToSocket(res[key].user_id) != undefined){
+
+//                 //     // }
+//                 //     console.log(arr[key]);
+//                 //     console.log(socketService.mapUserIdToSocket(arr[key].userId));
+//                 // }
+//                 console.log('this is user to socket:',socketService.userSocketMap);
+//                 console.log('this is socket to user:',socketService.socketUserMap);
+//                 socketService.stableSocketEmit(socket, 'feedback',{
+//                     errorCode:0,
+//                     text:'获取成功',
+//                     type:'GETFRIENDRESULT',
+//                     extension:{
+//                         data:arr
+//                     }
+//                 });
+//             }
+//         });
+//     });
+// }
