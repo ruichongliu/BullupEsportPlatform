@@ -50,27 +50,13 @@ exports.findFriendListByUserId = function(userId, callback) {
             var status;
             async.eachSeries(rows, function(row, errCb){
                 exports.findUserById(row.friend_user_id, function(user) {
-                    //调用socketService中的方法，判断用户是否在线
-                    //if (socketService.isUserOnline(user.user_id)) {
-                        //返回true时
-                        friendList[user.user_nickname] = {
-                            name: user.user_nickname,
-                            userId: user.user_id,
-                            avatarId: user.icon_id,
-                            online: 'true',
-                            status: "idle"
-                        };
-                    // }else{
-                    //     //返回false时
-                    //     friendList[user.user_nickname] = {
-                    //         name: user.user_nickname,
-                    //         userId: user.user_id,
-                    //         avatarId: user.icon_id,
-                    //         online: 'false',
-                    //         status: "idle"
-                    //     };
-                    // }
-                    
+                    friendList[user.user_nickname] = {
+                        name: user.user_nickname,
+                        userId: user.user_id,
+                        avatarId: user.icon_id,
+                        online: 'false',
+                        status: "idle"
+                    };
                     errCb();
                 })
             }, function(err) {
@@ -81,42 +67,6 @@ exports.findFriendListByUserId = function(userId, callback) {
         });
     });
 }
-
-//好友状态
-// exports.findFriend = function(userId, callback) {
-//     dbUtil.query('select friend_user_id from bullup_friend where user_id=?', [userId], function(err, rows) {
-//         var friendList = {};
-//         var status;
-//         async.eachSeries(rows, function(row, errCb){
-//             exports.findUserById(row.friend_user_id, function(user) {
-//                 //调用socketService中的方法，判断用户是否在线
-//                 //if (socketService.mapUserIdToSocket(user.user_id) != undefined) {
-//                     //返回true时
-//                     friendList[user.user_nickname] = {
-//                         name: user.user_nickname,
-//                         userId: user.user_id,
-//                         avatarId: user.icon_id,
-//                         online: 'true',
-//                         status: "idle"
-//                     };
-//                 //}else{
-//                 //     //返回false时
-//                 //     friendList[user.user_nickname] = {
-//                 //         name: user.user_nickname,
-//                 //         userId: user.user_id,
-//                 //         avatarId: user.icon_id,
-//                 //         online: 'false',
-//                 //         status: "idle"
-//                 //     };
-//                 // }
-//                 errCb();
-//             })
-//         }, function(err) {
-//             if (err) console.log(err);
-//             callback(friendList);
-//         });
-//     })
-// }
 
 //用户修改信息
 exports.updateNickname= function(data,callback){

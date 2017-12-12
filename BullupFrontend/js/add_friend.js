@@ -4,19 +4,18 @@ $().ready(function(){
         if(userInfo == null){
             bullup.alert("请您先登录");
         }else{
-            // var friendCount = 0;
-            // for(var index in userInfo.friendList){
-            //     friendCount++
-            // }
-            // bullup.loadTemplateIntoTarget('swig_home_friendlist.html', {
-            //     'userInfo': userInfo,
-            //     'friendListLength': friendCount
-            // }, 'user-slide-out');
-            // $('.collapsible').collapsible();
-            // $('#friend_list_real_btn').click();
             socket.emit('getFriend',{
                 userId:userInfo.userId
             });
+            var friendCount = 0;
+            for(var index in userInfo.friendList){
+                friendCount++
+            }
+            bullup.loadTemplateIntoTarget('swig_home_friendlist.html', {
+                'userInfo': userInfo,
+                'friendListLength': friendCount
+            }, 'user-slide-out');
+            $('.collapsible').collapsible();
             $('#friend_list_real_btn').click();
         }
     });
