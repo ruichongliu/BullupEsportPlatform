@@ -5,38 +5,50 @@ dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/dao".len
 var dbUtil = dependencyUtil.global.utils.databaseUtil;
 
 exports.updateStrengthInfo = function(bindInfo, callback){
-    dbUtil.query("update bullup_strength set bullup_strength_score = ? where user_id = ?", [bindInfo.oriStrengthScore, bindInfo.userId], function(err, res){
-        callback(res);
+    dbUtil.createConnection(function(connection){
+        dbUtil.query(connection, "update bullup_strength set bullup_strength_score = ? where user_id = ?", [bindInfo.oriStrengthScore, bindInfo.userId], function(err, res){
+            dbUtil.closeConnection(connection);
+            callback(res);
+        });
     });
 }
 
 exports.findStrengthInfoByUserId = function(userId, callback) {
-    dbUtil.query('select * from bullup_strength where user_id=?',  [userId], function(err, row) {
-        if (err) throw err;
-        callback(row[0]);
+    dbUtil.createConnection(function(connection){
+        dbUtil.query(connection, 'select * from bullup_strength where user_id=?',  [userId], function(err, row) {
+            if (err) throw err;
+            dbUtil.closeConnection(connection);
+            callback(row[0]);
+        });
     });
 }
 
 exports.updateKDA =  function(data){
     console.log('this is pointData:',JSON.stringify(data));
-    dbUtil.query('update bullup_strength set bullup_strength_k=?,bullup_strength_d=?,bullup_strength_a=?,bullup_strength_minion=?,bullup_strength_gold=?,bullup_strength_tower=?,bullup_strength_damage=?,bullup_strength_damage_taken=?,bullup_strength_heal=?,bullup_strength_gold_perminiute=? where user_id=?',
-                [
-                    data.stats.kill,
-                    data.stats.death,
-                    data.stats.assists,
-                    data.stats.minions,
-                    data.stats.goldEarned,
-                    data.stats.tower,
-                    data.stats.damage,
-                    data.stats.damageTaken,
-                    data.stats.heal,
-                    data.goldPerminiute,
-                    data.userId
-                ],
-                function(err,res){
-                    if (err) throw err;
-                });
-    dbUtil.query('update bullup_strength set bullup_strength_wins=bullup_strength_wins+? where user_id=?',[data.win,data.userId],function(err,res){
-        if (err) throw err;
+    dbUtil.createConnection(function(connection1){
+        dbUtil.query(connection1, 'update bullup_strength set bullup_strength_k=?,bullup_strength_d=?,bullup_strength_a=?,bullup_strength_minion=?,bullup_strength_gold=?,bullup_strength_tower=?,bullup_strength_damage=?,bullup_strength_damage_taken=?,bullup_strength_heal=?,bullup_strength_gold_perminiute=? where user_id=?',
+            [
+                data.stats.kill,
+                data.stats.death,
+                data.stats.assists,
+                data.stats.minions,
+                data.stats.goldEarned,
+                data.stats.tower,
+                data.stats.damage,
+                data.stats.damageTaken,
+                data.stats.heal,
+                data.goldPerminiute,
+                data.userId
+            ],
+            function(err,res){
+                if (err) throw err;
+                dbUtil.closeConnection(connection1);
+            });
+        });
+    dbUtil.createConnection(function(connection2){
+        dbUtil.query(connection2, 'update bullup_strength set bullup_strength_wins=bullup_strength_wins+? where user_id=?',[data.win,data.userId],function(err,res){
+            if (err) throw err;
+            dbUtil.closeConnection(connection2);
+        });
     });
 }
