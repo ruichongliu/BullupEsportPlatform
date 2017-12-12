@@ -829,7 +829,8 @@ exports.handleDisconnect = function(socket){
             var userEnvironment = exports.users[userId].environment;
             if(userStatus == "idle"){
                 //暂时 什么都不用做
-                
+                //删除用户登录信息
+                delete exports.users[userId];
             }else{
                 if(userStatus == "inroom"){
                     //在房间里
@@ -861,46 +862,43 @@ exports.handleDisconnect = function(socket){
     });
 }
 
-// exports.getFriend = function(socket){
-//     socket.on('getFriend',function(data){
-//         baseInfoDao.findFriend(data.userId,function(res){
-//             if(!res){
-//                 socketService.stableSocketEmit(socket, 'feedback',{
-//                     errorCode:1,
-//                     text:'获取失败',
-//                     type:'GETFRIENDRESULT',
-//                     extension:null
-//                 });
-//             }else{
-//                 //定义一个空数组，用来保存根据状态排序后的信息
-//                 var arr = new Array();
-//                 for(obj in res){
-//                     arr.push(res[obj]);
-//                 }
-//                 arr.sort(function(x,y){
-//                     return x.online < y.online ? 1 : -1;
-//                 });
-//                 console.log(JSON.stringify(arr));
-//                 //userInfo.friendList = arr;
-//                 console.log('-------------------');
-//                 // for(var key in arr){
-//                 //     // if (socketService.mapUserIdToSocket(res[key].user_id) != undefined){
-
-//                 //     // }
-//                 //     console.log(arr[key]);
-//                 //     console.log(socketService.mapUserIdToSocket(arr[key].userId));
-//                 // }
-//                 console.log('this is user to socket:',socketService.userSocketMap);
-//                 console.log('this is socket to user:',socketService.socketUserMap);
-//                 socketService.stableSocketEmit(socket, 'feedback',{
-//                     errorCode:0,
-//                     text:'获取成功',
-//                     type:'GETFRIENDRESULT',
-//                     extension:{
-//                         data:arr
-//                     }
-//                 });
-//             }
-//         });
-//     });
-// }
+exports.getFriend = function(socket){
+    socket.on('getFriend',function(data){
+        baseInfoDao.findFriendListByUserId(data.userId,function(res){
+            if(!res){
+                socketService.stableSocketEmit(socket, 'feedback',{
+                    errorCode:1,
+                    text:'获取失败',
+                    type:'GETFRIENDRESULT',
+                    extension:null
+                });
+            }else{
+                //判断用户是否在users
+                for(var key in res){
+                    if(exports.users[res[key].userId]!=undefined){
+                        res[key].online = 'true';
+                    }
+                }
+                //定义一个空数组，用来保存根据状态排序后的信息
+                var arr = new Array();
+                for(obj in res){
+                    arr.push(res[obj]);
+                }
+                arr.sort(function(x,y){
+                    return x.online < y.online ? 1 : -1;
+                });
+                // console.log(JSON.stringify(arr));
+                // console.log('-------------------');
+                // console.log('this is users{}:',exports.users);
+                socketService.stableSocketEmit(socket, 'feedback',{
+                    errorCode:0,
+                    text:'获取成功',
+                    type:'GETFRIENDRESULT',
+                    extension:{
+                        data:arr
+                    }
+                });
+            }
+        });
+    });
+}

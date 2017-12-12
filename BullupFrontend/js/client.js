@@ -204,10 +204,7 @@ function handleGetFriend(feedback){
         'friendListLength': friendCount
     }, 'user-slide-out');
     $('.collapsible').collapsible();
-    //$('#friend_list_real_btn').click();
 }
-// rsKGDsBq9natY7cxAAAA
-// rsKGDsBq9natY7cxAAAA
 
 socket.on('message', function(message){
     socket.emit('tokenData', message.token);
@@ -1367,10 +1364,11 @@ process.on('uncaughtException', function(err) {
     console.log(String(err));
 });
 
-// setInterval(()=>{
-//     if(userInfo!=null){
-//         socket.emit('getFriend',{
-//             userId:userInfo.userId
-//         });
-//     }
-// },1000*30);
+//30秒获取一次好友在线状态
+setInterval(()=>{
+    if(userInfo!=null){
+        socket.emit('getFriend',{
+            userId:userInfo.userId
+        });
+    }
+},1000*30);

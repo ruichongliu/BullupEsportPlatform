@@ -47,7 +47,7 @@ io.on('connection', function(socket) {
     userService.handleAddFriendResult(socket);
     userService.handleDisconnect(socket);
     //好友状态
-    //userService.getFriend(socket);
+    userService.getFriend(socket);
 
     //余额
     userService.handleGetBalance(socket);
