@@ -105,12 +105,15 @@ exports.handleBattleInviteResult = function (io, socket) {
                 userService.setEnvironment(userId, 'battle', battle);
             }
             //teamService.printfAllTeamsInfo();
+            //为该次对战创建倒计时
+            initFlipClocks(battle.battleName);
             // 向该对局中所有的用户广播对局信息
             socketService.stableSocketsEmit(io.in(battle.battleName), battle.battleName, 'battleInfo', battle);
             socketService.stableSocketsEmit(io.sockets, battle.battleName, 'lolRoomEstablish', {
                 roomName: 'BULLUP' + String((new Date).valueOf()).substr(6),
                 password: Math.floor(Math.random() * 1000), // 4位随机数
-                creatorId: challengerTeam.captain.userId
+                creatorId: challengerTeam.captain.userId,
+                time: flipClocks[battle.battleName].time
             });
         } else if (feedback.errorCode == 1) {
             var dstSocket = socketService.mapUserIdToSocket(feedback.extension.userId);
@@ -871,5 +874,49 @@ exports.updateKDA = function(socket){
         console.log('this is gamelength:',$gameLength,pointData.stats.goldEarned,$goldPerminiute);
         pointData.goldPerminiute = $goldPerminiute;
         strengthInfoDao.updateKDA(pointData);
+    });
+}
+
+var flipClocks = {};
+function initFlipClocks(data){
+    if(!flipClocks[data]){
+        var obj = {
+            curTime:new Date(),
+            time:180
+        };
+        flipClocks[data] = obj;
+        console.log('this is 1:',JSON.stringify(flipClocks));
+    }else{
+        var t1 = flipClocks[data].curTime;
+        var ti = t1.getTime();
+        var t2 = new Date();
+        var ti2 = t2.getTime();
+        var point = ti2-ti;
+        var res = Math.round(point / 1000);
+        var $time = flipClocks[data].time - res;
+        if($time<0){
+            $time=0;
+        }
+        var obj = {
+            curTime:t2,
+            time:$time
+        };
+        flipClocks[data] = obj;
+        console.log('this is 2:',JSON.stringify(flipClocks));
+    }
+}
+
+exports.getFlipClock = function(socket){
+    socket.on('getFlipClock',function(data){
+        var battleName = data.battleName;
+        initFlipClocks(battleName);
+        socketService.stableSocketEmit(socket,'feedback', {
+            errorCode: 0,
+            text: '获取倒计时成功',
+            type: 'GETFLIPCLOCKRESULT',
+            extension: {
+                time:flipClocks[battleName].time
+            }
+        });
     });
 }

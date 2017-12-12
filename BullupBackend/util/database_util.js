@@ -16,17 +16,23 @@ var mysqlServerConfig = {
     useConnectionPooling: true
 };
 
-var connection = mysql.createConnection(mysqlServerConfig);
+exports.createConnection = function(callback){
+    var connection = mysql.createConnection(mysqlServerConfig);
+    connection.connect(function(err) {
+        if (err) {
+            console.error('error connecting: ' + err.stack);
+            throw err;
+        }
+        console.log('Mysql connected as id ' + connection.threadId);
+        callback(connection);
+    }); 
+}
 
-connection.connect(function(err) {
-    if (err) {
-        console.error('error connecting: ' + err.stack);
-        return;
-    }
-    console.log('Mysql connected as id ' + connection.threadId);
-});
+exports.closeConnection = function(connection){
+    connection.end();
+}
 
-exports.query = function(sql, values, callback){
+exports.query = function(connection, sql, values, callback){
     connection.query(sql, values, function(err, res){
         callback(err, res);
     });
