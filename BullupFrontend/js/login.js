@@ -13,6 +13,23 @@ $().ready(function () {
 		// get the log in result and render the page
 	});
 
+    //按回车键登陆
+	document.onkeydown=function(event){
+        var e = event || window.event || arguments.callee.caller.arguments[0];
+        //console.log(e.keyCode);
+        if(e && e.keyCode==13){ 
+				if($("#log_modal").hasClass("open")){
+				var $log_name = $('#login_username').val();
+				var $log_password = $('#login_password').val();
+				 	//communicate with the server
+					socket.emit('login', {
+					    userName: $log_name,
+						password: $log_password
+					});
+				}
+            }
+    };
+
 
 	$("#register_btn").on('click', function (e) {
 		e.preventDefault();
