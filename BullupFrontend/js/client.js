@@ -356,8 +356,8 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             userInfo.creatingRoom = false;
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
-            bullup.alert('请 您 在规定时间内去 <b><span style="color:blue;">创建</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入 <span style="color:blue"> 蓝方 </span> 战队');
-            
+            bullup.alert('请 您 在规定时间内去 <b><span style="color:#0a0aa0;">创建</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入 <b style="color:#0a0aa0"> 蓝方 </b> 战队');
+            handleTimeout();
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
             var own;
@@ -415,7 +415,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
                     lolRoom.createUser = false;
                     lolRoom.team = "red";
                     swig_fight(lolRoom);
-                    bullup.alert('请 您 在规定时间内 <b><span style="color:red"> 加入 </span></b> 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password +'<br>请在LOL加入<span style="color:red"> 红方 </span>战队');
+                    bullup.alert('请 您 在规定时间内 <b><span style="color:red"> 加入 </span></b> 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password +'<br>请在LOL加入<b style="color:red"> 红方 </b>战队');
                 }
             }
             for(key in bluePts){
@@ -424,7 +424,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
                     lolRoom.createUser = false;
                     lolRoom.team = "blue";
                     swig_fight(lolRoom);
-                    bullup.alert('请 您 在规定时间内去 <b><span style="color:blue">加入</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入<span style="color:blue"> 蓝方 </span>战队');            
+                    bullup.alert('请 您 在规定时间内去 <b><span style="color:#0a0aa0">加入</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入<b style="color:#0a0aa0"> 蓝方 </b>战队');            
                     own = bluePts;
                     enemy = redPts;
                 }else{
