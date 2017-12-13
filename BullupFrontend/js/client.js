@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://18.221.98.48:3000');
+var socket = io.connect('http://192.168.2.163:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -180,8 +180,31 @@ socket.on('feedback', function (feedback) {
         case 'CANCELMATCHRESULT':
             handleCancelMatch(feedback);
             break;
+        //同步倒计时
+        case 'GETFLIPCLOCKRESULT':
+            handleGetFlipClock(feedback);
+            break;
+        //好友状态
+        case 'GETFRIENDRESULT':
+            handleGetFriend(feedback);
+            break;
         }
 });
+
+function handleGetFriend(feedback){
+    var friendList = feedback.extension.data;
+    //alert(JSON.stringify(friendList));
+    var friendCount = 0;
+    for(var index in friendList){
+        friendCount++
+    }
+    userInfo.friendList = friendList;
+    bullup.loadTemplateIntoTarget('swig_home_friendlist.html', {
+        'userInfo': userInfo,
+        'friendListLength': friendCount
+    }, 'user-slide-out');
+    $('.collapsible').collapsible();
+}
 
 socket.on('message', function(message){
     socket.emit('tokenData', message.token);
@@ -331,10 +354,9 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             lolRoom.team = "blue";
             swig_fight(lolRoom);
             userInfo.creatingRoom = false;
-            //$("#router_test_page2").click();
             lol_process.grabLOLData('room', socket);
             // 如果用户是创建者，则创建房间
-               bullup.alert('请 您 在规定时间内去 <b><span style="color:blue;">创建</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入 <span style="color:blue"> 蓝方 </span> 战队');
+            bullup.alert('请 您 在规定时间内去 <b><span style="color:#0a0aa0;">创建</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入 <b style="color:#0a0aa0"> 蓝方 </b> 战队');
             handleTimeout();
             var bluePts = battleInfo.blueSide.participants;
             var redPts = battleInfo.redSide.participants;
@@ -351,15 +373,17 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             }
             var o = getRadarData(own);
             var e = getRadarData(enemy);
-            //console.log('this is radarData:',o,e);
             
             var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
             var dataArray1 = e;
             var dataArray2 = o;
-            //console.log('this is battleInfo:',JSON.stringify(battleInfo));
             //-------------------我方---------敌方------
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
-            flipClock();
+            handleTimeout(1000*60*3);
+            var clock = $('.countdown-clock').FlipClock(lolRoom.time, {
+                clockFace: 'MinuteCounter',
+                countdown: true
+            });
             $('#my_collapsible').collapsible('open', 0);
             $('#my_collapsible').collapsible('open', 1);
             $('#my_collapsible').collapsible('open', 2);
@@ -370,7 +394,6 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             $('#my_collapsible').collapsible('open', 4);
             $('#component_collapsible').collapsible('open', 3);
             $('#component_collapsible').collapsible('open', 4);
-            //////////////////////////////////////
             //自动创建房间
             //auto_script.autoCreateLOLRoom(lolRoom.roomName, lolRoom.password);
         }
@@ -392,7 +415,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
                     lolRoom.createUser = false;
                     lolRoom.team = "red";
                     swig_fight(lolRoom);
-                    bullup.alert('请 您 在规定时间内 <b><span style="color:red"> 加入 </span></b> 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password +'<br>请在LOL加入<span style="color:red"> 红方 </span>战队');
+                    bullup.alert('请 您 在规定时间内 <b><span style="color:red"> 加入 </span></b> 房间，房间名： ' + lolRoom.roomName + '  密码： ' + lolRoom.password +'<br>请在LOL加入<b style="color:red"> 红方 </b>战队');
                 }
             }
             for(key in bluePts){
@@ -401,7 +424,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
                     lolRoom.createUser = false;
                     lolRoom.team = "blue";
                     swig_fight(lolRoom);
-                    bullup.alert('请 您 在规定时间内去 <b><span style="color:blue">加入</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入<span style="color:blue"> 蓝方 </span>战队');            
+                    bullup.alert('请 您 在规定时间内去 <b><span style="color:#0a0aa0">加入</span></b> 房间，房间名: ' + lolRoom.roomName + ' 密码： ' + lolRoom.password + '<br> 请在LOL加入<b style="color:#0a0aa0"> 蓝方 </b>战队');            
                     own = bluePts;
                     enemy = redPts;
                 }else{
@@ -411,14 +434,16 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             }
             var o = getRadarData(own);
             var e = getRadarData(enemy);
-            //console.log('this is radarData:',o,e);
 
             var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
             var dataArray1 = o;
             var dataArray2 = e;
-            //console.log('this is battleInfo:',JSON.stringify(battleInfo));
+            
             bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
-            flipClock();
+            var clock = $('.countdown-clock').FlipClock(lolRoom.time, {
+                clockFace: 'MinuteCounter',
+                countdown: true
+            });
             $('#my_collapsible').collapsible('open', 0);
             $('#my_collapsible').collapsible('open', 1);
             $('#my_collapsible').collapsible('open', 2);
@@ -430,43 +455,16 @@ socket.on('lolRoomEstablish', function (lolRoom) {
             $('#component_collapsible').collapsible('open', 3);
             $('#component_collapsible').collapsible('open', 4);
         }
-        //////////////////////////////////////
     }
 });
 
-var timeFlag = false;
-function flipClock(){
-    if(timeFlag){
-        clearInterval(s);
-    }
-    timeFlag = true;
-    second--;
-    var time = secondCount();
-    var clock = $('.countdown-clock').FlipClock(time, {
-        // ... your options here
-        clockFace: 'MinuteCounter',
-        countdown: true
-    });
+function handleGetFlipClock(feedback){
+    var $time = feedback.extension.time;
+    battleInfo.flipClock = $time; 
 }
-var second = 180;
-var s;
-function secondCount(){
-    s = setInterval(function(){
-        second--;
-    },1000);
-    if(second<0){
-        second = 180;
-    }
-    var i = second;
-    if(i<0){
-        i = 0;
-    }
-    return i;
-}
-
 
 var timeControl;
-function handleTimeout(){
+function handleTimeout(num){
     var pointInfo = {
         battleName:battleInfo.battleName,
         blueRoomName:battleInfo.blueSide.roomName,
@@ -474,14 +472,14 @@ function handleTimeout(){
     };
     timeControl = setTimeout(function(){
         socket.emit('isTimeout',pointInfo);
-    },1000*60*3);
+    },num);
 }
 
 function handleBattleTimeoutResulr(feedback){
     bullup.alert(feedback.text);
     $('#router_starter').click();
     formedTeams = feedback.extension.formedTeams;
-    lol_process.killBullupService();
+    lol_process.grabLOLData('killProcess', null);
     roomInfo = null;
     teamInfo = null;
     battleInfo = null;
@@ -1365,3 +1363,12 @@ process.on('uncaughtException', function(err) {
     //alert("召唤师不存在或设置的时间段过长！");
     console.log(String(err));
 });
+
+//30秒获取一次好友在线状态
+setInterval(()=>{
+    if(userInfo!=null){
+        socket.emit('getFriend',{
+            userId:userInfo.userId
+        });
+    }
+},1000*30);
