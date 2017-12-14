@@ -134,7 +134,7 @@ exports.stableSocketEmit = function(socket, head, data){
 }
     
 exports.stableSocketsEmit = function(roomName, head, data){
-    var sockets = roomSocketMap[roomName];
+    var sockets = exports.roomSocketMap[roomName];
     for(var socketIdIndex in sockets){
         var socket = sockets[socketIdIndex];
         var socketId = socket.id;
