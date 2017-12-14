@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://192.168.2.163:3000');
+var socket = io.connect('http://192.168.2.127:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -204,6 +204,15 @@ function handleGetFriend(feedback){
         'friendListLength': friendCount
     }, 'user-slide-out');
     $('.collapsible').collapsible();
+
+    var friendListHeadHtml = bullup.loadSwigView('swig_friend_list_head.html', {
+        user: userInfo
+    });
+    var friendListHtml = bullup.loadSwigView('swig_friend_list.html', {
+        user: userInfo
+    });
+    $("#user_view").html(friendListHeadHtml);
+    $('.friend-list').html(friendListHtml);
 }
 
 socket.on('message', function(message){
