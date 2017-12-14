@@ -98,7 +98,7 @@ exports.joinRoom = function (socket, roomName) {
             exports.roomSocketMap[roomName].push(socket);
         }
     }
-    socket.join(roomName);
+    //socket.join(roomName);
 }
 
 //----------------------------------------------------------//
@@ -133,40 +133,35 @@ exports.stableSocketEmit = function(socket, head, data){
     }
 }
     
-exports.stableSocketsEmit = function(sockets, roomName, head, data){
-    if(sockets.rooms.length != 0){
-        //log.logToFile("./logs/data/data.txt", "append", JSON.stringify(sockets), "satbleSocketsEmit sockets");
-        var a = 10;
-    }
-    
-    for(var socketId in sockets.connected){
-        if(sockets.adapter.rooms[roomName].sockets[socketId] == true){
-            var token = Math.random().toString(36).substring(7) + socketId; 
-            var newData = {};
-            newData = JSON.parse(JSON.stringify(data));
-            newData.token = token;
-            if(exports.socketEmitQueue[socketId] != undefined){
-                exports.socketEmitQueue[socketId].dataQueue[String(token)] = {
-                    'header': head,
-                    'data': newData,
-                    'createTimeStamp': 0,
-                    'sendTimes': 0,
-                    'status': 'unrecieved'
-                };
-            }else{
-                exports.socketEmitQueue[socketId] = {};
-                //
-                exports.socketEmitQueue[socketId].socketObj = socket;
-                exports.socketEmitQueue[socketId].dataQueue = {};
-                exports.socketEmitQueue[socketId].dataQueue[String(token)] = {
-                    'header': head,
-                    'data': newData,
-                    'createTimeStamp': 0,
-                    'sendTimes': 0,
-                    'status': 'unrecieved'
-                };
-            }
-        
+exports.stableSocketsEmit = function(roomName, head, data){
+    var sockets = roomSocketMap[roomName];
+    for(var socketIdIndex in sockets){
+        var socket = sockets[socketIdIndex];
+        var socketId = socket.id;
+        var token = Math.random().toString(36).substring(7) + socketId; 
+        var newData = {};
+        newData = JSON.parse(JSON.stringify(data));
+        newData.token = token;
+        if(exports.socketEmitQueue[socketId] != undefined){
+            exports.socketEmitQueue[socketId].dataQueue[String(token)] = {
+                'header': head,
+                'data': newData,
+                'createTimeStamp': 0,
+                'sendTimes': 0,
+                'status': 'unrecieved'
+            };
+        }else{
+            exports.socketEmitQueue[socketId] = {};
+            //
+            exports.socketEmitQueue[socketId].socketObj = socket;
+            exports.socketEmitQueue[socketId].dataQueue = {};
+            exports.socketEmitQueue[socketId].dataQueue[String(token)] = {
+                'header': head,
+                'data': newData,
+                'createTimeStamp': 0,
+                'sendTimes': 0,
+                'status': 'unrecieved'
+            };
         }
     }   
 }
