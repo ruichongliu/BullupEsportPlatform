@@ -58,3 +58,13 @@
 [2017-11-16 06:22:50] Error: Cannot enqueue Query after fatal error.
 
 [2017-12-08 15:59:01] TypeError: Cannot read property 'id' of undefined
+[2017-12-14 23:30:57] Error: listen EADDRINUSE :::3001
+[2017-12-15 00:04:41] Error: Connection lost: The server closed the connection.
+[2017-12-15 00:04:43] Error: connect ETIMEDOUT
+[2017-12-15 00:04:44] Error: connect ETIMEDOUT
+[2017-12-15 00:14:52] TypeError: Cannot set property 'teamStrengthScore' of undefined
+[2017-12-15 10:12:33] Error: connect ETIMEDOUT
+[2017-12-15 10:12:35] Error: connect ETIMEDOUT
+[2017-12-15 10:12:37] Error: Quit inactivity timeout
+[2017-12-15 10:20:01] Error: connect ETIMEDOUT
+[2017-12-15 10:20:03] Error: connect ETIMEDOUT
