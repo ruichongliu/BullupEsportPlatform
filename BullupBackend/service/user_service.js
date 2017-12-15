@@ -875,7 +875,15 @@ exports.getFriend = function(socket){
                 //判断用户是否在users
                 for(var key in res){
                     if(exports.users[res[key].userId]!=undefined){
-                        res[key].online = 'true';
+                        if(exports.users[res[key].userId].status=='idle'){
+                            res[key].online = 'true';
+                        }else if(exports.users[res[key].userId].status=='inroom'){
+                            res[key].online = 'inroom';
+                        }else if(exports.users[res[key].userId].status=='inteam'){
+                            res[key].online = 'inteam';
+                        }else if(exports.users[res[key].userId].status=='inbattle'){
+                            res[key].online = 'inbattle';
+                        }
                     }
                 }
                 //定义一个空数组，用来保存根据状态排序后的信息

@@ -204,6 +204,15 @@ function handleGetFriend(feedback){
         'friendListLength': friendCount
     }, 'user-slide-out');
     $('.collapsible').collapsible();
+
+    var friendListHeadHtml = bullup.loadSwigView('swig_friend_list_head.html', {
+        user: userInfo
+    });
+    var friendListHtml = bullup.loadSwigView('swig_friend_list.html', {
+        user: userInfo
+    });
+    $("#user_view").html(friendListHeadHtml);
+    $('.friend-list').html(friendListHtml);
 }
 
 socket.on('message', function(message){
