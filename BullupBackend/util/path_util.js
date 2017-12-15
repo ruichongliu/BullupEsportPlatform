@@ -43,6 +43,7 @@ exports.init = function(rootPath){
     exports.paths.servicePaths.socketServicePath = exports.directories.serviceDirectory + "socket_service.js";
     exports.paths.servicePaths.stripeServicePath = exports.directories.serviceDirectory + "stripe_service.js";
     exports.paths.servicePaths.teamServicePath = exports.directories.serviceDirectory + "team_service.js";
+    exports.paths.servicePaths.testServicePath = exports.directories.serviceDirectory + "test_service.js";
     //Util路径
     exports.paths.utilPaths.databaseUtilPath = exports.directories.utilDirectory + "database_util.js";
     exports.paths.utilPaths.pathUtilPath = exports.directories.utilDirectory + "path_util.js";

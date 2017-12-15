@@ -26,30 +26,31 @@
 	</div>
 
 	<div class="col s12 m4 center-info">
+		<div class="countdown-name"></div>
+		<div class="countdown-clock"></div>
+
 		{% if lolRoom %}
-		<div style="color:#fff;position:absolute;z-index:100;width:405px;font-size:20px;background:#455a64;padding: 17px 0 17px 0;margin-top:8px;border:1px solid #fff">请  您  在规定的时间内 
-			{% if lolRoom.createUser == true %} 
-			<b style="color:blue">创 建</b>
+		<div style="color:#FFF;position:absolute;z-index:100;width:405px;font-size:16px;background:#455a64;padding: 17px 0 17px 0;">请 您 在规定的时间之内 
+			{% if lolRoom.createUser == true %}
+			<b style="color:#0a0aa0">创建</b>
 			{% else %}
-			<b style="color:red">加 入</b>
+			<b style="color:red">加入</b>
 			{% endif %}
-			 房间 ，	
-			<br/>房间名：{{ lolRoom.roomName }} 密码：{{lolRoom.password}}
+			 房间
+			<br/>房间名:{{ lolRoom.roomName }} 密码:{{lolRoom.password}}
 			<br/>请在LOL加入
-			{% if lolRoom.team == "red" %} 
-			<span style="color:red"> 红方 </span>
+			{% if lolRoom.team == "red" %}
+			<b style="color:red"> 红方 </b>
 			{% else %}
-			<span style="color:blue"> 蓝方 </span>
+			<b style="color:#0a0aa0"> 蓝方 </b>
 			{% endif %}
 			 战队
 			 <br/>
 			 <span id="show_game_start" class="show_game_start" > 游戏已开始 </span>			 
 			</div>
-		{% endif %}	
-		<div class="countdown-name" style="padding:70px;"></div>
-		<div class="countdown-clock"></div>
+		{% endif %}
 		
-		<canvas id="teams-radar-chart"></canvas>
+		<canvas id="teams-radar-chart" style="margin-top:125px;"></canvas>
 	</div>
 	
 	<div class="col s12 m4">

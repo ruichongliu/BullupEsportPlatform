@@ -34,13 +34,13 @@
 .show_game_start{
     margin-top: 5px;
     background: #455a64;
-    width: 350px;
-    height: 120px;
+    width: 405px;
+    height: 110px;
     text-align: center;
-    line-height: 120px;
+    line-height: 110px;
     font-size: 35px;
     display:none;
     position: fixed;
-    top: 200px;
-    left: 470px;
+    top: 185px;
+    left: 438px;
 }

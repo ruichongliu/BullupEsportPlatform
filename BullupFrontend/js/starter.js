@@ -45,9 +45,10 @@ $(document).ready(function(){
     })
     //关闭窗口
     win.on('close', function() {
-    this.hide(); 
-    console.log("We're closing...");
-    this.close(true);
+        lol_process.grabLOLData('killProcess', null);
+        this.hide(); 
+        console.log("We're closing...");
+        this.close(true);
     });
     $('.g_bi').click(function () {
         socket.disconnect();
@@ -129,5 +130,21 @@ $('.ctavi').click(function () {
 });
 
 
+// //阻止右键点击
+// window.onload = function(){
+//    document.oncontextmenu = function(e){
+//        e.preventDefault();
+//    };
+// }
+// //禁用F12调试工具
+// document.onkeydown=function (e){
+//    var currKey=0,evt=e||window.event;
+//    currKey=evt.keyCode||evt.which||evt.charCode;
+//    if (currKey == 123) {
+//        window.event.cancelBubble = true;
+//        window.event.returnValue = false;
+//        console.log("donot open tiaoshiban");
+//    }
+// }
 
 autoplay();

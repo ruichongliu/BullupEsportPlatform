@@ -3,6 +3,7 @@ var dependencyUtil = require("../util/dependency_util.js");
 dependencyUtil.init(__dirname.toString().substr(0, __dirname.length - "/dao".length).replace(/\\/g, "/"));
 
 var dbUtil = dependencyUtil.global.utils.databaseUtil;
+var socketService = dependencyUtil.global.service.socketService;
 
 exports.findUserByAccount = function(account, callback) {
     dbUtil.createConnection(function(connection){
@@ -49,27 +50,13 @@ exports.findFriendListByUserId = function(userId, callback) {
             var status;
             async.eachSeries(rows, function(row, errCb){
                 exports.findUserById(row.friend_user_id, function(user) {
-                    //调用socketService中的方法，判断用户是否在线
-                    //if (socketService.isUserOnline(user.user_id)) {
-                        //返回true时
-                        friendList[user.user_nickname] = {
-                            name: user.user_nickname,
-                            userId: user.user_id,
-                            avatarId: user.icon_id,
-                            online: 'true',
-                            status: "idle"
-                        };
-                    // }else{
-                    //     //返回false时
-                    //     friendList[user.user_nickname] = {
-                    //         name: user.user_nickname,
-                    //         userId: user.user_id,
-                    //         avatarId: user.icon_id,
-                    //         online: 'false',
-                    //         status: "idle"
-                    //     };
-                    // }
-                    
+                    friendList[user.user_nickname] = {
+                        name: user.user_nickname,
+                        userId: user.user_id,
+                        avatarId: user.icon_id,
+                        online: 'false',
+                        status: "idle"
+                    };
                     errCb();
                 })
             }, function(err) {
@@ -80,7 +67,6 @@ exports.findFriendListByUserId = function(userId, callback) {
         });
     });
 }
-
 
 //用户修改信息
 exports.updateNickname= function(data,callback){

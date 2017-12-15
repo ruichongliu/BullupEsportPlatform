@@ -39,7 +39,6 @@ exports.addUser = function (user) {
         this.users[user.userId].status = "inbattle";
         //加入room
         socketService.userJoin(user.userId, environment.room.roomName);
-        socketService.userJoin(user.userId, environment.team.roomName);
         socketService.userJoin(user.userId, environment.battle.battleName);
         //获取socket
         var socket = socketService.mapUserIdToSocket(user.userId);
@@ -455,11 +454,11 @@ exports.handleUserInviteResult = function (io, socket) {
 
                 // 更新teamList中team信息, 添加该参与者
                 teamService.addParticipantToTeam(teamName, participant);
-                socketService.joinRoom(socket, teamName);
+                socketService.userJoin(userId, teamName);
                 //    socket.emit('teamInfoUpdate', teamService.mapTeamNameToUnformedTeam(teamName));
 
                 // 向房间内的所有用户广播当前队伍信息
-                socketService.stableSocketsEmit(io.sockets.in(teamName), teamName, 'teamInfoUpdate', teamService.mapTeamNameToUnformedTeam(teamName));
+                socketService.stableSocketsEmit(teamName, 'teamInfoUpdate', teamService.mapTeamNameToUnformedTeam(teamName));
             } else if (feedback.errorCode == 1 && roomMember.indexOf(participant.userId) == -1) {
                 // 用户拒绝邀请
                 var hostId = feedback.extension.hostId;
@@ -829,7 +828,8 @@ exports.handleDisconnect = function(socket){
             var userEnvironment = exports.users[userId].environment;
             if(userStatus == "idle"){
                 //暂时 什么都不用做
-                
+                //删除用户登录信息
+                delete exports.users[userId];
             }else{
                 if(userStatus == "inroom"){
                     //在房间里
@@ -858,5 +858,54 @@ exports.handleDisconnect = function(socket){
         }
         //logUtil.levelMsgLog(0, 'User ' + socket.id + ' disconnected!');
         //socketService.remove(socket);
+    });
+}
+
+exports.getFriend = function(socket){
+    socket.on('getFriend',function(data){
+        baseInfoDao.findFriendListByUserId(data.userId,function(res){
+            if(!res){
+                socketService.stableSocketEmit(socket, 'feedback',{
+                    errorCode:1,
+                    text:'获取失败',
+                    type:'GETFRIENDRESULT',
+                    extension:null
+                });
+            }else{
+                //判断用户是否在users
+                for(var key in res){
+                    if(exports.users[res[key].userId]!=undefined){
+                        if(exports.users[res[key].userId].status=='idle'){
+                            res[key].online = 'true';
+                        }else if(exports.users[res[key].userId].status=='inroom'){
+                            res[key].online = 'inroom';
+                        }else if(exports.users[res[key].userId].status=='inteam'){
+                            res[key].online = 'inteam';
+                        }else if(exports.users[res[key].userId].status=='inbattle'){
+                            res[key].online = 'inbattle';
+                        }
+                    }
+                }
+                //定义一个空数组，用来保存根据状态排序后的信息
+                var arr = new Array();
+                for(obj in res){
+                    arr.push(res[obj]);
+                }
+                arr.sort(function(x,y){
+                    return x.online < y.online ? 1 : -1;
+                });
+                // console.log(JSON.stringify(arr));
+                // console.log('-------------------');
+                // console.log('this is users{}:',exports.users);
+                socketService.stableSocketEmit(socket, 'feedback',{
+                    errorCode:0,
+                    text:'获取成功',
+                    type:'GETFRIENDRESULT',
+                    extension:{
+                        data:arr
+                    }
+                });
+            }
+        });
     });
 }

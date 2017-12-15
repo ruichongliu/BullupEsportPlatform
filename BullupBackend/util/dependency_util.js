@@ -29,6 +29,8 @@ exports.init = function(rootPath){
     this.global.service.socketService = require(pathUtil.paths.servicePaths.socketServicePath);
     this.global.service.stripeService = require(pathUtil.paths.servicePaths.stripeServicePath);
     this.global.service.teamService = require(pathUtil.paths.servicePaths.teamServicePath);
+    this.global.service.testService = require(pathUtil.paths.servicePaths.testServicePath);
+    
 
     this.global.utils.databaseUtil = require(pathUtil.paths.utilPaths.databaseUtilPath);
     this.global.utils.pathUtil = pathUtil;
