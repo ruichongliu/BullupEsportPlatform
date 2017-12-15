@@ -40,10 +40,10 @@ exports.handleRoomEstablish = function(socket) {
             var userId = room.participants[index].userId;
             userService.changeUserStatus(userId, 'inroom');
             userService.setEnvironment(userId, 'room', room);
+            socketService.userJoin(userId, room.roomName);
         }
 
         //将该socket放入teamname命名的room中
-        socketService.joinRoom(socket, room.roomName);
         // 返回回馈信息
         socketService.stableSocketEmit(socket, 'feedback', {
             errorCode: 0,
@@ -147,8 +147,7 @@ exports.handleTeamEstablish = function (io, socket) {
                 }
             };
             // 告诉该队伍中的所有用户队伍已经形成
-            var sockets = io.sockets;
-            socketService.stableSocketsEmit(sockets, teamInfo.roomName, 'feedback', feedback);
+            socketService.stableSocketsEmit(teamInfo.roomName, 'feedback', feedback);
         }else if(teamInfo.gameMode == 'match'){
             //匹配
             //把队伍加入调度池
@@ -266,7 +265,7 @@ exports.cancelMatch = function(io,socket){
             text: '匹配已取消',
             extension: null
         };
-        socketService.stableSocketsEmit(io.sockets, roomInfo.roomName, 'feedback', feedback);
+        socketService.stableSocketsEmit(roomInfo.roomName, 'feedback', feedback);
     });
 }
 

@@ -14,6 +14,7 @@ var chatService = dependencyUtil.global.service.chatService;
 var adminService = dependencyUtil.global.service.administratorService;
 var stripeService = dependencyUtil.global.service.stripeService;
 var lolKeyService = dependencyUtil.global.service.lolKeyService;
+var testService = dependencyUtil.global.service.testService;
 
 var rankInfoDao = dependencyUtil.global.dao.rankInfoDao;
 
@@ -125,6 +126,9 @@ io.on('connection', function(socket) {
     //LOLkey
     lolKeyService.handleLOLKeyUpdate(socket);
     lolKeyService.handleLOLKeyRequest(socket);
+
+    //测试
+    testService.handleTest(socket);
     
 });
 

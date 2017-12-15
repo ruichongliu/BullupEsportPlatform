@@ -23,7 +23,7 @@ exports.createConnection = function(callback){
             console.error('error connecting: ' + err.stack);
             throw err;
         }
-        console.log('Mysql connected as id ' + connection.threadId);
+        //console.log('Mysql connected as id ' + connection.threadId);
         callback(connection);
     }); 
 }

@@ -7,7 +7,7 @@ var request = require("request");
 $(document).ready(function(){
 
     $("#router_test_page").click(function(e){
-        
+        socket.emit("test");
         // child_process.exec('C:/Users/Public/Bullup/auto_program/node C:/Users/Public/Bullup/auto_program/sync_user.js', function(error, stdout, stderr){
         //     if(error){
         //         throw error;
