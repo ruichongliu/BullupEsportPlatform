@@ -29,10 +29,11 @@ $(document).ready(function(){
                         //alert('游戏开始后的90分钟倒计时',battleInfo.afterFlipClock);
                     }
                 }
-                //回到对战页面
+                //回到对战页面               
                 var battleRoomHtml = bullup.loadSwigView("./swig_fight.html", {
                     blueSide: battleInfo.blueSide,
                     redSide: battleInfo.redSide,
+                    lolRoom: battleInfo.lolRoom,
                 });
                 $('#main-view').html(battleRoomHtml);
                 $('#waiting-modal').css('display', 'none');    

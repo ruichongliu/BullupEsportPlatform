@@ -78,8 +78,20 @@ exports.handleBattleInviteResult = function (io, socket) {
             // 状态改变的队伍不再需要在对战大厅中显示，所以不再广播类表中
             teamService.removeBroadcastTeam(challengerTeam.roomName);
             teamService.removeBroadcastTeam(hostTeam.roomName);
+            var $battleName = challengerTeam.captain.name + hostTeam.captain.name + (new Date).valueOf();
+            initFlipClocks($battleName);
+            afterStartClocks({
+                battleName:$battleName,
+            });
+            var lolRoom = {
+                roomName: 'BULLUP' + String((new Date).valueOf()).substr(6),
+                password: Math.floor(Math.random() * 1000), // 4位随机数
+                creatorId: challengerTeam.captain.userId,
+                time: flipClocks[$battleName].time,
+                afterStartTime: battleFlipClocks[$battleName].time
+            };
             var battle = {
-                battleName: challengerTeam.captain.name + hostTeam.captain.name + (new Date).valueOf(),
+                battleName: $battleName,
                 blueSide: challengerTeam,
                 redSide: hostTeam,
                 status: 'unready',
@@ -87,7 +99,8 @@ exports.handleBattleInviteResult = function (io, socket) {
                     unready: currentTime,
                     ready: null,
                     start: null
-                }
+                },
+                lolRoom:lolRoom,
             };
             exports.battles[battle.battleName] = battle;
             // 将挑战队伍的所有用户加入到新的socket room
@@ -106,19 +119,17 @@ exports.handleBattleInviteResult = function (io, socket) {
             }
             //teamService.printfAllTeamsInfo();
             //为该次对战创建倒计时
-            initFlipClocks(battle.battleName);
-            afterStartClocks({
-                battleName:battle.battleName,
-            });
+            
             // 向该对局中所有的用户广播对局信息
             socketService.stableSocketsEmit(battle.battleName, 'battleInfo', battle);
-            socketService.stableSocketsEmit(battle.battleName, 'lolRoomEstablish', {
-                roomName: 'BULLUP' + String((new Date).valueOf()).substr(6),
-                password: Math.floor(Math.random() * 1000), // 4位随机数
-                creatorId: challengerTeam.captain.userId,
-                time: flipClocks[battle.battleName].time,
-                afterStartTime: battleFlipClocks[battle.battleName].time
-            });
+            // socketService.stableSocketsEmit(battle.battleName, 'lolRoomEstablish', {
+            //     roomName: 'BULLUP' + String((new Date).valueOf()).substr(6),
+            //     password: Math.floor(Math.random() * 1000), // 4位随机数
+            //     creatorId: challengerTeam.captain.userId,
+            //     time: flipClocks[battle.battleName].time,
+            //     afterStartTime: battleFlipClocks[battle.battleName].time
+            // });
+            socketService.stableSocketsEmit(battle.battleName, 'lolRoomEstablish', lolRoom);
         } else if (feedback.errorCode == 1) {
             var dstSocket = socketService.mapUserIdToSocket(feedback.extension.userId);
             socketService.stableSocketEmit(dstSocket, 'feedback', feedback);
@@ -722,6 +733,11 @@ function broadCastMatchResult(firstTeam, secondTeam){
     var challengerTeam = firstTeam;
     var hostTeam = secondTeam;
     var currentTime = require('moment')().format('YYYYMMDDHHmmss');
+    var lolRoom = {
+        roomName: 'BULLUP' + String((new Date).valueOf()).substr(6),
+        password: Math.floor(Math.random() * 1000), // 4位随机数
+        creatorId: challengerTeam.captain.userId
+    };
     var battle = {
         battleName: challengerTeam.captain.name + hostTeam.captain.name + (new Date).valueOf(),
         blueSide: challengerTeam,
@@ -731,7 +747,8 @@ function broadCastMatchResult(firstTeam, secondTeam){
             unready: currentTime,
             ready: null,
             start: null
-        }
+        },
+        lolRoom:lolRoom,
     };
     exports.battles[battle.battleName] = battle;
     // 将挑战队伍的所有用户加入到新的socket room
@@ -745,11 +762,7 @@ function broadCastMatchResult(firstTeam, secondTeam){
     //teamService.printfAllTeamsInfo();
     // 向该对局中所有的用户广播对局信息
     socketService.stableSocketsEmit(battle.battleName, 'battleInfo', battle);
-    socketService.stableSocketsEmit(battle.battleName, 'lolRoomEstablish', {
-        roomName: 'BULLUP' + String((new Date).valueOf()).substr(6),
-        password: Math.floor(Math.random() * 1000), // 4位随机数
-        creatorId: challengerTeam.captain.userId
-    });
+    socketService.stableSocketsEmit(battle.battleName, 'lolRoomEstablish',lolRoom);
 }
 
 exports.handleMatch = function(io){
