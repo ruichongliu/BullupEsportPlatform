@@ -33,7 +33,7 @@
 
 .show_game_start{
     margin-top: 5px;
-    background: #455a64;
+    background: #212121;
     width: 405px;
     height: 110px;
     text-align: center;
@@ -43,4 +43,5 @@
     position: fixed;
     top: 185px;
     left: 438px;
+    color: #ccc;
 }

@@ -20,36 +20,51 @@
 		<label class="friend-status friend-status--offline">
         	在线
 		</label>
+		<p class="invitebox right">
+			<input type="checkbox" id="friend_{{ loop.index }}_check_box" class="filled-in"  value="{{ friend.name }}">
+			<label for="friend_{{ loop.index }}_check_box"></label>			  
+		</p>
 		{% elseif friend.online=='inroom' %}
-		<div class="color-dot color-dot-green">
+		<div class="color-dot color-dot-yellow">
 		</div>
 		<label class="friend-status friend-status--offline">
 			建房中
 		</label>
+		<p class="invitebox right">
+			<input type="checkbox" id="friend_{{ loop.index }}_check_box" class="filled-in"  value="{{ friend.name }}">
+            <label for="friend_{{ loop.index }}_check_box"></label>					  
+		</p>
 		{% elseif friend.online=='inteam' %}
-		<div class="color-dot color-dot-green">
+		<div class="color-dot color-dot-yellow">
 		</div>
 		<label class="friend-status friend-status--offline">
 			组队中
 		</label>
+		<p class="invitebox right">
+			<input type="checkbox" id="friend_{{ loop.index }}_check_box" class="filled-in" disabled="disabled" value="{{ friend.name }}">
+			<label for="friend_{{ loop.index }}_check_box"></label>			  
+		</p>
 		{% elseif friend.online=='inbattle' %}
-		<div class="color-dot color-dot-green">
+		<div class="color-dot color-dot-yellow">
 		</div>
 		<label class="friend-status friend-status--offline">
 			游戏中
 		</label>
+		<p class="invitebox right">
+			<input type="checkbox" id="friend_{{ loop.index }}_check_box" class="filled-in" disabled="disabled" value="{{ friend.name }}">
+			<label for="friend_{{ loop.index }}_check_box"></label>					  
+		</p>
 		{% else %}
 		<div class="color-dot color-dot-red">
 		</div>
 		<label class="friend-status friend-status--offline">
           	离线
 		</label>
-		{% endif %}
 		<p class="invitebox right">
-          <input type="checkbox" id="friend_{{ loop.index }}_check_box" class="filled-in" value="{{ friend.name }}">
-					<label for="friend_{{ loop.index }}_check_box"></label>
-					
+			<input type="checkbox" id="friend_{{ loop.index }}_check_box" class="filled-in" disabled="disabled" value="{{ friend.name }}">
+			<label for="friend_{{ loop.index }}_check_box"></label>	  
 		</p>
+		{% endif %}
       </div>
 	</li><!-- 朋友信息 -->
 
