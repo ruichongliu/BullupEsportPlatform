@@ -5,7 +5,7 @@
   "window": {
     "title": "Bull Fight",
     "toolbar": true,
-	"icon":"logo.png",
+	  "icon":"logo.png",
     "frame": false,
     "width": 1280,
     "height": 800,
