@@ -13,10 +13,11 @@ $(document).ready(function(){
                     handleTimeout(battleInfo.flipClock * 1000);
                     //alert(battleInfo.flipClock);
                 }
-                //回到对战页面
+                //回到对战页面               
                 var battleRoomHtml = bullup.loadSwigView("./swig_fight.html", {
                     blueSide: battleInfo.blueSide,
                     redSide: battleInfo.redSide,
+                    lolRoom: battleInfo.lolRoom,
                 });
                 $('#main-view').html(battleRoomHtml);
                 $('#waiting-modal').css('display', 'none');    
