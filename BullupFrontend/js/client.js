@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://49.140.81.199:3000');
+var socket = io.connect('http://192.168.2.100:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -353,7 +353,7 @@ function swig_fight(lolRoom){
 }
 
 
-socket.on('lolRoomEstablish', function (lolRoom) {
+socket.on('lolRoomEstablish', function (lolRoom) {   
     socket.emit('tokenData', lolRoom.token);
     //userInfo.liseningResult = true; 
     if (userInfo.userId == lolRoom.creatorId) {
