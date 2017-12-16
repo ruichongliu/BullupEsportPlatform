@@ -9,14 +9,17 @@ $(document).ready(function(){
         setTimeout(function(){
             if(battleInfo != null){
                 //判断是否是房主
-                if(userInfo.userId==battleInfo.blueSide.captain.userId){
-                    handleTimeout(battleInfo.flipClock * 1000);
-                    //alert(battleInfo.flipClock);
+                if(userInfo.userId == battleInfo.blueSide.captain.userId){
+                    if(battleInfo.status == 'unready'){
+                        handleTimeout(battleInfo.flipClock * 1000);
+                        //alert('游戏开始前');
+                    }
                 }
-                //回到对战页面
+                //回到对战页面               
                 var battleRoomHtml = bullup.loadSwigView("./swig_fight.html", {
                     blueSide: battleInfo.blueSide,
                     redSide: battleInfo.redSide,
+                    lolRoom: battleInfo.lolRoom,
                 });
                 $('#main-view').html(battleRoomHtml);
                 $('#waiting-modal').css('display', 'none');    
