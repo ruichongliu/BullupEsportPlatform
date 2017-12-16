@@ -345,6 +345,7 @@ function swig_fight(lolRoom){
         blueSide: battleInfo.blueSide,
         redSide: battleInfo.redSide,
         lolRoom: lolRoom,
+        userId:userInfo.userId,
     });
     $('#main-view').html(battleRoomHtml);
     $('#waiting-modal').css('display', 'none');    
@@ -359,7 +360,6 @@ socket.on('lolRoomEstablish', function (lolRoom) {
     if (userInfo.userId == lolRoom.creatorId) {
         //开始抓包
         //if( userInfo.creatingRoom){
-        lolRoom.createUser = true;
         lolRoom.team = "blue";
         swig_fight(lolRoom);
         //userInfo.creatingRoom = false;
