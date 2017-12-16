@@ -122,13 +122,6 @@ exports.handleBattleInviteResult = function (io, socket) {
             
             // 向该对局中所有的用户广播对局信息
             socketService.stableSocketsEmit(battle.battleName, 'battleInfo', battle);
-            // socketService.stableSocketsEmit(battle.battleName, 'lolRoomEstablish', {
-            //     roomName: 'BULLUP' + String((new Date).valueOf()).substr(6),
-            //     password: Math.floor(Math.random() * 1000), // 4位随机数
-            //     creatorId: challengerTeam.captain.userId,
-            //     time: flipClocks[battle.battleName].time,
-            //     afterStartTime: battleFlipClocks[battle.battleName].time
-            // });
             socketService.stableSocketsEmit(battle.battleName, 'lolRoomEstablish', lolRoom);
         } else if (feedback.errorCode == 1) {
             var dstSocket = socketService.mapUserIdToSocket(feedback.extension.userId);
