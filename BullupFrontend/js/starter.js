@@ -51,6 +51,16 @@ $(document).ready(function(){
         this.close(true);
     });
     $('.g_bi').click(function () {
+        if(roomInfo!=null){
+            if(roomInfo.gameMode != 'gameMode'){//匹配
+                if(roomInfo.captain.userId == userInfo.userId){
+                    //是房主
+                    socket.emit('cancelMatch',{
+                        $roomInfo:roomInfo
+                    });
+                }
+            }
+        }
         socket.disconnect();
         win.close(); 
     });
