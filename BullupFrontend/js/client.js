@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://49.140.81.199:3000');
+var socket = io.connect('http://192.168.2.100:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -345,6 +345,7 @@ function swig_fight(lolRoom){
         blueSide: battleInfo.blueSide,
         redSide: battleInfo.redSide,
         lolRoom: lolRoom,
+        userId:userInfo.userId,
     });
     $('#main-view').html(battleRoomHtml);
     $('#waiting-modal').css('display', 'none');    
@@ -353,13 +354,12 @@ function swig_fight(lolRoom){
 }
 
 
-socket.on('lolRoomEstablish', function (lolRoom) {
+socket.on('lolRoomEstablish', function (lolRoom) {   
     socket.emit('tokenData', lolRoom.token);
     //userInfo.liseningResult = true; 
     if (userInfo.userId == lolRoom.creatorId) {
         //开始抓包
         //if( userInfo.creatingRoom){
-        lolRoom.createUser = true;
         lolRoom.team = "blue";
         swig_fight(lolRoom);
         //userInfo.creatingRoom = false;
