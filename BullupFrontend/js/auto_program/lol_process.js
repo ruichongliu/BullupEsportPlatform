@@ -4,29 +4,35 @@ var fs = require("fs");
 
 exports.grabLOLData = function(type, socket){
     //杀掉所有BullupService进程
-	switch (type){
-		case "login": {
-			syncLogin(function(jsonStr){
-				socket.emit('lolLoginResult', jsonStr);
-			});
-			break;
-		}
-		case "room": {
-			syncRoom(function(jsonStr){
-				socket.emit('lolRoomEstablished', jsonStr);
-			});
-			break;
-		}
-		case "result": {
-			syncResult(function(jsonStr){
-				socket.emit('lolBattleResult', jsonStr);
-			});
-			break;
+    process.execFile('killBS.bat',null,{cwd:'./js/auto_program/'},function(error, stdout, stderr){
+        if(error){
+            console.log(error);
         }
-        case 'killProcess':{
-            killBullupService();
+        switch (type){
+            case "login": {
+                syncLogin(function(jsonStr){
+                    socket.emit('lolLoginResult', jsonStr);
+                });
+                break;
+            }
+            case "room": {
+                syncRoom(function(jsonStr){
+                    socket.emit('lolRoomEstablished', jsonStr);
+                });
+                break;
+            }
+            case "result": {
+                syncResult(function(jsonStr){
+                    socket.emit('lolBattleResult', jsonStr);
+                });
+                break;
+            }
+            case 'killProcess':{
+                killBullupService();
+                break;
+            }
         }
-	}
+    });
 }
 
 function killBullupService(){
