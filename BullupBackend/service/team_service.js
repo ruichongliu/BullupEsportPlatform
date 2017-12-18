@@ -265,6 +265,10 @@ exports.cancelMatch = function(io,socket){
             text: '匹配已取消',
             extension: null
         };
+        //重新加入unformed team
+        //roomInfo.status = 'ESTABLISHING';
+        //exports.unformedTeams[roomInfo.roomName] = roomInfo;
+
         socketService.stableSocketsEmit(roomInfo.roomName, 'feedback', feedback);
     });
 }
@@ -382,7 +386,7 @@ exports.exitTeamAndMatch = function(userId, room){
     var feedback = {
         errorCode: 0,
         type: 'CANCELMATCHRESULT',
-        text: '匹配已取消',
+        text: '有隊員退出了隊伍',
         extension: null
     };
     socketService.stableSocketsEmit(roomInfo.roomName, 'feedback', feedback);
@@ -409,7 +413,7 @@ exports.exitTeamAndMatch = function(userId, room){
             //更新socket room
         }
         //重新加入创建中的房间
-        exports.unformedTeams[roomName] = room;
+        exports.unformedTeams[room.roomName] = room;
     }else{
         //是队长 房间删除  通知所有成员
         var participants = room.participants;
