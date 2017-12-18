@@ -739,6 +739,7 @@ socket.on('updateRoomMember', function(updatedParticipants){
             //console.log(roomInfo);
             if(roomInfo.gameMode == 'match'){
                 //bullup.alert("匹配中，请等待！");
+                teamInfo = roomInfo;
                 bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                     'participants': roomInfo.participants
                 }, 'main-view');
