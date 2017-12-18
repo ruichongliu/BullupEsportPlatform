@@ -386,8 +386,8 @@ exports.exitTeamAndMatch = function(userId, room){
     var feedback = {
         errorCode: 0,
         type: 'CANCELMATCHRESULT',
-        text: '有隊員退出了隊伍',
-        extension: null
+        text: '有队员退出了队伍',
+        extension: roomInfo
     };
     socketService.stableSocketsEmit(roomInfo.roomName, 'feedback', feedback);
 
@@ -413,7 +413,7 @@ exports.exitTeamAndMatch = function(userId, room){
             //更新socket room
         }
         //重新加入创建中的房间
-    uexports.unformedTeams[room.roomName] = room;
+    exports.unformedTeams[room.roomName] = room;
     }else{
         //是队长 房间删除  通知所有成员
         var participants = room.participants;
