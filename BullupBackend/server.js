@@ -84,8 +84,10 @@ io.on('connection', function(socket) {
     battleService.handleMatch(io);
     //KDA入库
     battleService.updateKDA(socket);
-    //倒计时
+    //游戏开始前倒计时
     battleService.getFlipClock(socket);
+    //游戏开始后倒计时
+    battleService.getAfterStartClock(socket);
 
     paymentService.handlePayment(socket);
     paymentService.handleBankInfo(socket);
