@@ -74,3 +74,8 @@
 .friend-status--online {
     color:currentColor;
 }
+
+.color-dot-yellow {
+    background-color: rgb(180, 180, 39);
+    margin-left: 5px;
+}

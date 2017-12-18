@@ -741,11 +741,17 @@ function broadCastMatchResult(firstTeam, secondTeam){
     // 将挑战队伍的所有用户加入到新的socket room
     for (var i in challengerTeam.participants) {
         socketService.userJoin(challengerTeam.participants[i].userId, battle.battleName);
+        userService.changeUserStatus(challengerTeam.participants[i].userId, 'inbattle');
+        userService.setEnvironment(challengerTeam.participants[i].userId, 'battle', battle);
     }
     // 将受挑战队伍的所有用户加入到新的socket room
     for (var i in hostTeam.participants) {
         socketService.userJoin(hostTeam.participants[i].userId, battle.battleName);
+        userService.changeUserStatus(hostTeam.participants[i].userId, 'inbattle');
+        userService.setEnvironment(hostTeam.participants[i].userId, 'battle', battle);
     }
+
+    console.log(JSON.stringify(userService.users));
     //teamService.printfAllTeamsInfo();
     // 向该对局中所有的用户广播对局信息
     socketService.stableSocketsEmit(battle.battleName, 'battleInfo', battle);
