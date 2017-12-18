@@ -188,6 +188,9 @@ socket.on('feedback', function (feedback) {
         case 'GETFRIENDRESULT':
             handleGetFriend(feedback);
             break;
+        //游戏开始后的倒计时
+        case 'GETAFTERFLIPCLOCKRESULT':
+            handleGetAfterFlipClock(feedback);
         }
 });
 
@@ -471,6 +474,12 @@ function handleGetFlipClock(feedback){
     battleInfo.flipClock = $time; 
 }
 
+function handleGetAfterFlipClock(feedback){
+    var $time = feedback.extension.time;
+    battleInfo.afterFlipClock = $time;
+    //console.log('this is afc:',JSON.stringify(battleInfo),battleInfo.afterFlipClock);
+}
+
 var timeControl;
 function handleTimeout(num){
     var pointInfo = {
@@ -502,11 +511,25 @@ socket.on('lolRoomEstablished', function (data) {
     $("#show_game_start").css("display","inline-block");
     bullup.alert('游戏已开始');     
     clearTimeout(timeControl);
-    handleTimeout2();             
+    if(userInfo.userId == battleInfo.blueSide.captain.userId){
+        handleTimeout2(1000*60*90);
+        isGameStart();
+    }       
     //userInfo.liseningResult = false;
     //}
     //userInfo.creatingRoom = false;
 });
+
+function isGameStart(){
+    var clock = $('.countdown-clock').FlipClock(5400, {
+        clockFace: 'MinuteCounter',
+        countdown: true
+    });
+    socket.emit('afterStartClock',{
+        battleName:battleInfo.battleName,
+        firstTime: true
+    });
+}
 
 function handleCancelMatch(feedback){
     $('#router_starter').click();
@@ -538,7 +561,7 @@ socket.on('chatMsg', function(msg){
 });
     
 var timeControl2;
-function handleTimeout2(){
+function handleTimeout2(num){
     var pointInfo = {
         battleName:battleInfo.battleName,
         blueRoomName:battleInfo.blueSide.roomName,
@@ -546,7 +569,7 @@ function handleTimeout2(){
     };
     timeControl2 = setTimeout(function(){
         socket.emit('isTimeout',pointInfo);
-    },1000*60*90);
+    },num);
 }
 
 socket.on('battleResult', function(resultPacket){

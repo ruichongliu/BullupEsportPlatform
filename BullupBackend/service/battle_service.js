@@ -78,14 +78,20 @@ exports.handleBattleInviteResult = function (io, socket) {
             // 状态改变的队伍不再需要在对战大厅中显示，所以不再广播类表中
             teamService.removeBroadcastTeam(challengerTeam.roomName);
             teamService.removeBroadcastTeam(hostTeam.roomName);
+            var $battleName = challengerTeam.captain.name + hostTeam.captain.name + (new Date).valueOf();
+            initFlipClocks($battleName);
+            afterStartClocks({
+                battleName:$battleName,
+            });
             var lolRoom = {
                 roomName: 'BULLUP' + String((new Date).valueOf()).substr(6),
                 password: Math.floor(Math.random() * 1000), // 4位随机数
                 creatorId: challengerTeam.captain.userId,
-                time: 180,
+                time: flipClocks[$battleName].time,
+                afterStartTime: battleFlipClocks[$battleName].time
             };
             var battle = {
-                battleName: challengerTeam.captain.name + hostTeam.captain.name + (new Date).valueOf(),
+                battleName: $battleName,
                 blueSide: challengerTeam,
                 redSide: hostTeam,
                 status: 'unready',
@@ -113,7 +119,7 @@ exports.handleBattleInviteResult = function (io, socket) {
             }
             //teamService.printfAllTeamsInfo();
             //为该次对战创建倒计时
-            initFlipClocks(battle.battleName);
+            
             // 向该对局中所有的用户广播对局信息
             socketService.stableSocketsEmit(battle.battleName, 'battleInfo', battle);
             socketService.stableSocketsEmit(battle.battleName, 'lolRoomEstablish', lolRoom);
@@ -887,6 +893,7 @@ exports.updateKDA = function(socket){
     });
 }
 
+//游戏开始前
 var flipClocks = {};
 function initFlipClocks(data){
     if(!flipClocks[data]){
@@ -926,6 +933,60 @@ exports.getFlipClock = function(socket){
             type: 'GETFLIPCLOCKRESULT',
             extension: {
                 time:flipClocks[battleName].time
+            }
+        });
+    });
+}
+
+//游戏开始后
+var battleFlipClocks = {};
+function afterStartClocks(data){
+    var battleName = data.battleName;
+    if(!battleFlipClocks[battleName]){
+        var obj = {
+            curTime:new Date(),
+            time:5400
+        };
+        battleFlipClocks[battleName] = obj;
+        console.log('this is 3:',JSON.stringify(battleFlipClocks));
+    }else{
+        if(data.firstTime == null && data.firstTime == undefined){
+            var t1 = battleFlipClocks[battleName].curTime;
+            var ti = t1.getTime();
+            var t2 = new Date();
+            var ti2 = t2.getTime();
+            var point = ti2-ti;
+            var res = Math.round(point / 1000);
+            var $time = battleFlipClocks[battleName].time - res;
+            if($time<0){
+                $time=0;
+            }
+            var obj = {
+                curTime:t2,
+                time:$time
+            };
+            battleFlipClocks[battleName] = obj;
+        }else{
+            var obj = {
+                curTime:new Date(),
+                time:5400
+            };
+            battleFlipClocks[battleName] = obj;
+        }
+        //console.log('this is 4:',JSON.stringify(battleFlipClocks));
+    }
+}
+
+exports.getAfterStartClock = function(socket){
+    socket.on('afterStartClock',function(data){
+        var battleName = data.battleName;
+        afterStartClocks(data);
+        socketService.stableSocketEmit(socket,'feedback', {
+            errorCode: 0,
+            text: '获取倒计时成功',
+            type: 'GETAFTERFLIPCLOCKRESULT',
+            extension: {
+                time:battleFlipClocks[battleName].time
             }
         });
     });
