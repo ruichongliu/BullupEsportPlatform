@@ -15,17 +15,28 @@ $(document).ready(function(){
                         //alert('游戏开始前');
                     }
                 }
-                //回到对战页面               
+                //回到对战页面
+                var bluePts = battleInfo.blueSide.participants;
+                var redPts = battleInfo.redSide.participants;              
+                for(key in redPts){
+                    if(redPts[key].name==userInfo.name){
+                        //判断是否是红队,提示进入红队
+                        battleInfo.lolRoom.team = "red";
+                    }
+                }     
                 var battleRoomHtml = bullup.loadSwigView("./swig_fight.html", {
                     blueSide: battleInfo.blueSide,
                     redSide: battleInfo.redSide,
                     lolRoom: battleInfo.lolRoom,
+                    userId:userInfo.userId,
                 });
                 $('#main-view').html(battleRoomHtml);
                 $('#waiting-modal').css('display', 'none');    
                 $('#team-detail-modal').css('display', 'none');    
                 $('.modal-overlay').remove();
-    
+                if(battleInfo.status == "ready"){
+                    $("#show_game_start").css("display","inline-block");
+                } 
                 var bluePts = battleInfo.blueSide.participants;
                 var redPts = battleInfo.redSide.participants;
                 var own;

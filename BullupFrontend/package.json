@@ -1,10 +1,11 @@
 {
-  "name": "BullupEsport",
+  "name": "Bullup",
   "version": "0.0.1",
   "main": "swig_home.html",
   "window": {
     "title": "Bull Fight",
     "toolbar": true,
+	  "icon":"logo.png",
     "frame": false,
     "width": 1280,
     "height": 800,
