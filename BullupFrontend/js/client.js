@@ -354,7 +354,11 @@ function swig_fight(lolRoom){
 }
 
 
-socket.on('lolRoomEstablish', function (lolRoom) {   
+socket.on('lolRoomEstablish', function (lolRoom) {
+    if(match_timer != null){
+       //清除自由匹配中的计时函数
+       window.clearInterval(timer123);       
+    }
     socket.emit('tokenData', lolRoom.token);
     //userInfo.liseningResult = true; 
     if (userInfo.userId == lolRoom.creatorId) {
@@ -1373,10 +1377,10 @@ process.on('uncaughtException', function(err) {
 });
 
 //30秒获取一次好友在线状态
-setInterval(()=>{
-    if(userInfo!=null){
-        socket.emit('getFriend',{
-            userId:userInfo.userId
-        });
-    }
-},1000*30);
+// setInterval(()=>{
+//     if(userInfo!=null){
+//         socket.emit('getFriend',{
+//             userId:userInfo.userId
+//         });
+//     }
+// },1000*30);
