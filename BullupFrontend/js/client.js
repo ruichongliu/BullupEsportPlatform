@@ -1379,4 +1379,4 @@ setInterval(()=>{
             userId:userInfo.userId
         });
     }
-},1000*30);
+},1000*8);

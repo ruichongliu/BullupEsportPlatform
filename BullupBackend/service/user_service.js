@@ -847,6 +847,8 @@ exports.handleDisconnect = function(socket){
                     if(environment.room.gameMode == 'battle'){
                         teamService.exitTeam(userId, roomName);
                         //删除用户登录信息
+                    }else{
+                        teamService.exitTeamAndMatch(userId, environment.room);
                     }
                     delete exports.users[userId];
                 }else if(userStatus == "inbattle"){
