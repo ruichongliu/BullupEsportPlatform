@@ -1,11 +1,15 @@
+// import { userInfo } from "os";
+
 $().ready(function(){
     
         $('.funding').on('click', function(e){
             e.preventDefault();
             var $userId = userInfo.userId;
+            var $userNickname=userInfo.name;
             //alert($userId);
             socket.emit('cashFlow',{
-                userId:$userId
+                userId:$userId,
+                userNickname:$userNickname
             });
             //bullup.loadTemplateIntoTarget('swig_basic_table.html', {}, 'main-view');       
         });
