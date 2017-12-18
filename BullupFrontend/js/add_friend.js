@@ -1,8 +1,12 @@
+
 $().ready(function(){
     $('#friend_list_btn').on('click', function(e){
         if(userInfo == null){
             bullup.alert("请您先登录");
         }else{
+            socket.emit('getFriend',{
+                userId:userInfo.userId
+            });
             var friendCount = 0;
             for(var index in userInfo.friendList){
                 friendCount++
@@ -34,7 +38,7 @@ $().ready(function(){
                     'invitedUserNickname': inputUserNickName
                 });
             }else{
-                alert('昵称过长');
+                bullup.alert('昵称过长');
             }
         }else{
             bullup.alert('请输入对方昵称');            

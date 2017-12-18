@@ -45,30 +45,30 @@ $(document).ready(function(){
     })
     //关闭窗口
     win.on('close', function() {
-    this.hide(); 
-    console.log("We're closing...");
-    this.close(true);
+        lol_process.grabLOLData('killProcess', null);
+        this.hide(); 
+        console.log("We're closing...");
+        this.close(true);
     });
     $('.g_bi').click(function () {
         socket.disconnect();
         win.close(); 
     });
 
-    //系统设置提示音是否为静音
-    audio_prompt = document.getElementById("bullup_background_music");
-    play = document.getElementById("headle_music");
-    play.addEventListener('click',function(event){
-        if(audio_prompt.muted){
-        audio_prompt.muted = false;
-        play.innerHTML="开启静音";
-        }else{
-        audio_prompt.muted = true;
-        play.innerHTML="开启声音";
+       //系统设置提示音是否为静音
+        audio_prompt = document.getElementsByClassName("bullup_background_music")[0];
+        play = document.getElementsByClassName("headle_music")[0];
+        play.onclick=function(event){          
+            if(audio_prompt.muted){
+            audio_prompt.muted = false;       
+            play.innerHTML="<i class='fa fa-volume-up' aria-hidden='true'></i>";
+            }else{          
+            audio_prompt.muted = true;
+            play.innerHTML='<i class="fa fa-volume-off" aria-hidden="true"></i>';
         }      
-    });
+        }
+});
 
-
-});    
 
 function addFireAnimation (id){
     var yzhou = document.getElementById(id);
@@ -130,5 +130,21 @@ $('.ctavi').click(function () {
 });
 
 
+// //阻止右键点击
+// window.onload = function(){
+//    document.oncontextmenu = function(e){
+//        e.preventDefault();
+//    };
+// }
+// //禁用F12调试工具
+// document.onkeydown=function (e){
+//    var currKey=0,evt=e||window.event;
+//    currKey=evt.keyCode||evt.which||evt.charCode;
+//    if (currKey == 123) {
+//        window.event.cancelBubble = true;
+//        window.event.returnValue = false;
+//        console.log("donot open tiaoshiban");
+//    }
+// }
 
 autoplay();

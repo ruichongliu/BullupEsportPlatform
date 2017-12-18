@@ -10,13 +10,13 @@
 					</div>
 					<div class="collapsible-body" style="padding: 10px 0 10px 10px">
 					<span>
-						 <a style="color:#FFC125;display:inline-block;width:92px;margin-right:20px;" >战力:{{ player.strength.score }}</a>
-						 <a style="color:#E0FFFF;display:inline-block;width:92px;margin-right:20px;" >KDA {{ player.strength.kda }}</a>
-						 <a style="color:#FFC125;display:inline-block;width:92px;margin-right:20px;" >伤害 {{ player.strength.averageDamage }}</a>
+						 <a style="color:#FFC125;display:inline-block;width:100px;margin-right:20px;" >战力:{{ player.strength.score }}</a>
+						 <a style="color:#E0FFFF;display:inline-block;width:100px;margin-right:20px;" >KDA {{ player.strength.kda }}</a>
+						 <a style="color:#FFC125;display:inline-block;width:100px;margin-right:20px;" >伤害 {{ player.strength.averageDamage }}</a>
 						 <br/>
-						 <a style="color:#E0FFFF;display:inline-block;width:92px;margin-right:20px;" >承受伤害 {{ player.strength.averageDamageTaken }}</a>
-						 <a style="color:#FFC125;display:inline-block;width:92px;margin-right:20px;" >金钱 {{ player.strength.averageGoldEarned }}</a>
-						 <a style="color:#E0FFFF;display:inline-block;width:92px;margin-right:20px;" >推塔 {{ player.strength.averageTurretsKilled }}</a>
+						 <a style="color:#E0FFFF;display:inline-block;width:110px;margin-right:10px;" >承受伤害 {{ player.strength.averageDamageTaken }}</a>
+						 <a style="color:#FFC125;display:inline-block;width:100px;margin-right:20px;" >金钱 {{ player.strength.averageGoldEarned }}</a>
+						 <a style="color:#E0FFFF;display:inline-block;width:100px;margin-right:20px;" >推塔 {{ player.strength.averageTurretsKilled }}</a>
 					</span>
 					</div>
 				</li>
@@ -26,30 +26,35 @@
 	</div>
 
 	<div class="col s12 m4 center-info">
+		<div class="countdown-name"></div>
+		<div class="countdown-clock"></div>
+
 		{% if lolRoom %}
-		<div style="color:#FFC125;position:absolute;z-index:100;width:405px;font-size:20px;">请  您  在规定的时间内 
-			{% if lolRoom.createUser == true %} 
-			<b style="color:blue">创 建</b>
+		<div style="color:#ccc;position:absolute;z-index:100;width:405px;font-size:16px;background:#212121;padding: 17px 0 17px 0;">请 您 在规定的时间之内 
+			{% if lolRoom.creatorId == userId  %}
+			<b style="color:#0a0aa0">创建</b>
 			{% else %}
-			<b style="color:red">加 入</b>
+				{% if lolRoom.team == "red" %}
+				<b style="color:red"> 加入</b>
+				{% else %}
+				<b style="color:#0a0aa0"> 加入</b>
+				{% endif %}
 			{% endif %}
-			 房间 ，	
-			<br/>房间名：{{ lolRoom.roomName }} 密码：{{lolRoom.password}}
+			 房间
+			<br/>房间名:{{ lolRoom.roomName }} 密码:{{lolRoom.password}}
 			<br/>请在LOL加入
-			{% if lolRoom.team == "red" %} 
-			<span style="color:red"> 红方 </span>
+			{% if lolRoom.team == "red" %}
+			<b style="color:red"> 红方 </b>
 			{% else %}
-			<span style="color:blue"> 蓝方 </span>
+			<b style="color:#0a0aa0"> 蓝方 </b>
 			{% endif %}
 			 战队
 			 <br/>
 			 <span id="show_game_start" class="show_game_start" > 游戏已开始 </span>			 
 			</div>
-		{% endif %}	
-		<div class="countdown-name" style="padding:50px;"></div>
-		<div class="countdown-clock"></div>
+		{% endif %}
 		
-		<canvas id="teams-radar-chart"></canvas>
+		<canvas id="teams-radar-chart" style="margin-top:125px;"></canvas>
 	</div>
 	
 	<div class="col s12 m4">
@@ -62,13 +67,13 @@
 					</div>
 					<div class="collapsible-body" style="padding: 10px 0 10px 10px">
 					<span>
-						 <a style="color:#FFC125;display:inline-block;width:92px;margin-right:20px;" >战力:{{ player.strength.score }}</a>
-						 <a style="color:#E0FFFF;display:inline-block;width:92px;margin-right:20px;" >KDA {{ player.strength.kda }}</a>
-						 <a style="color:#FFC125;display:inline-block;width:92px;margin-right:20px;" >伤害 {{ player.strength.averageDamage }}</a>
+						 <a style="color:#FFC125;display:inline-block;width:100px;margin-right:20px;" >战力:{{ player.strength.score }}</a>
+						 <a style="color:#E0FFFF;display:inline-block;width:100px;margin-right:20px;" >KDA {{ player.strength.kda }}</a>
+						 <a style="color:#FFC125;display:inline-block;width:100px;margin-right:20px;" >伤害 {{ player.strength.averageDamage }}</a>
 						 <br/>
-						 <a style="color:#E0FFFF;display:inline-block;width:92px;margin-right:20px;" >承受伤害 {{ player.strength.averageDamageTaken }}</a>
-						 <a style="color:#FFC125;display:inline-block;width:92px;margin-right:20px;" >金钱 {{ player.strength.averageGoldEarned }}</a>
-						 <a style="color:#E0FFFF;display:inline-block;width:92px;margin-right:20px;" >推塔 {{ player.strength.averageTurretsKilled }}</a>
+						 <a style="color:#E0FFFF;display:inline-block;width:110px;margin-right:10px;" >承受伤害 {{ player.strength.averageDamageTaken }}</a>
+						 <a style="color:#FFC125;display:inline-block;width:100px;margin-right:20px;" >金钱 {{ player.strength.averageGoldEarned }}</a>
+						 <a style="color:#E0FFFF;display:inline-block;width:100px;margin-right:20px;" >推塔 {{ player.strength.averageTurretsKilled }}</a>
 					</span>
 					</div>
 				</li>

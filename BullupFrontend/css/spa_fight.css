@@ -32,11 +32,16 @@
 }
 
 .show_game_start{
-    background: #455a64;
-    width: 350px;
-    height: 120px;
+    margin-top: 5px;
+    background: #212121;
+    width: 405px;
+    height: 110px;
     text-align: center;
-    line-height: 120px;
+    line-height: 110px;
     font-size: 35px;
-    display:none;    
+    display:none;
+    position: fixed;
+    top: 185px;
+    left: 438px;
+    color: #ccc;
 }

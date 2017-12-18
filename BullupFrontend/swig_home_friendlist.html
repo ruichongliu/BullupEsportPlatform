@@ -27,9 +27,33 @@
                 {% if friend.online=='true' %}
                 <div class="color-dot color-dot-green">
                 </div>
+                <label class="friend-status friend-status--offline">
+                    在线
+                </label>
+                {% elseif friend.online=='inroom' %}
+                <div class="color-dot color-dot-red">
+                </div>
+                <label class="friend-status friend-status--offline">
+                    建房中
+                </label>
+                {% elseif friend.online=='inteam' %}
+                <div class="color-dot color-dot-red">
+                </div>
+                <label class="friend-status friend-status--offline">
+                    组队中
+                </label>
+                {% elseif friend.online=='inbattle' %}
+                <div class="color-dot color-dot-red">
+                </div>
+                <label class="friend-status friend-status--offline">
+                    游戏中
+                </label>
                 {% else %}
                 <div class="color-dot color-dot-red">
                 </div>
+                <label class="friend-status friend-status--offline">
+                    离线
+                </label>
                 {% endif %}
             </div>
         </div>
