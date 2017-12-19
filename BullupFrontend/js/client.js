@@ -361,7 +361,7 @@ function swig_fight(lolRoom){
 socket.on('lolRoomEstablish', function (lolRoom) {
     if(match_timer != null){
        //清除自由匹配中的计时函数
-       window.clearInterval(timer123);       
+       window.clearInterval(match_timer);       
     }
     socket.emit('tokenData', lolRoom.token);
     //userInfo.liseningResult = true; 
