@@ -391,8 +391,8 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         var e = getRadarData(enemy);
         
         var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
-        var dataArray1 = e;
-        var dataArray2 = o;
+        var dataArray1 = o;
+        var dataArray2 = e;
         //-------------------我方---------敌方------
         bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
         handleTimeout(1000*60*3);
@@ -518,8 +518,8 @@ socket.on('lolRoomEstablished', function (data) {
     clearTimeout(timeControl);
     if(userInfo.userId == battleInfo.blueSide.captain.userId){
         handleTimeout2(1000*60*90);
-        isGameStart();
-    }       
+    }
+    isGameStart();       
     //userInfo.liseningResult = false;
     //}
     //userInfo.creatingRoom = false;
@@ -530,10 +530,12 @@ function isGameStart(){
         clockFace: 'MinuteCounter',
         countdown: true
     });
-    socket.emit('afterStartClock',{
-        battleName:battleInfo.battleName,
-        firstTime: true
-    });
+    if(userInfo.userId == battleInfo.blueSide.captain.userId){
+        socket.emit('afterStartClock',{
+            battleName:battleInfo.battleName,
+            firstTime: true
+        });
+    }
 }
 
 function handleCancelMatch(feedback){
