@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://192.168.2.100:3000');
+var socket = io.connect('http://49.140.81.199:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -188,6 +188,9 @@ socket.on('feedback', function (feedback) {
         case 'GETFRIENDRESULT':
             handleGetFriend(feedback);
             break;
+        //游戏开始后的倒计时
+        case 'GETAFTERFLIPCLOCKRESULT':
+            handleGetAfterFlipClock(feedback);
         }
 });
 
@@ -289,6 +292,7 @@ socket.on('teamInfoUpdate', function (data) {
             //console.log(roomInfo);
             if(roomInfo.gameMode == 'match'){
                 //bullup.alert("匹配中，请等待！");
+                teamInfo = roomInfo;
                 bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                     'participants': roomInfo.participants
                 }, 'main-view');
@@ -475,6 +479,12 @@ function handleGetFlipClock(feedback){
     battleInfo.flipClock = $time; 
 }
 
+function handleGetAfterFlipClock(feedback){
+    var $time = feedback.extension.time;
+    battleInfo.afterFlipClock = $time;
+    //console.log('this is afc:',JSON.stringify(battleInfo),battleInfo.afterFlipClock);
+}
+
 var timeControl;
 function handleTimeout(num){
     var pointInfo = {
@@ -506,16 +516,30 @@ socket.on('lolRoomEstablished', function (data) {
     $("#show_game_start").css("display","inline-block");
     bullup.alert('游戏已开始');     
     clearTimeout(timeControl);
-    handleTimeout2();             
+    if(userInfo.userId == battleInfo.blueSide.captain.userId){
+        handleTimeout2(1000*60*90);
+        isGameStart();
+    }       
     //userInfo.liseningResult = false;
     //}
     //userInfo.creatingRoom = false;
 });
 
+function isGameStart(){
+    var clock = $('.countdown-clock').FlipClock(5400, {
+        clockFace: 'MinuteCounter',
+        countdown: true
+    });
+    socket.emit('afterStartClock',{
+        battleName:battleInfo.battleName,
+        firstTime: true
+    });
+}
+
 function handleCancelMatch(feedback){
     $('#router_starter').click();
     bullup.alert(feedback.text);
-    roomInfo = null;
+    roomInfo = feedback.extension;
     teamInfo = null;
     battleInfo = null;
 }
@@ -542,7 +566,7 @@ socket.on('chatMsg', function(msg){
 });
     
 var timeControl2;
-function handleTimeout2(){
+function handleTimeout2(num){
     var pointInfo = {
         battleName:battleInfo.battleName,
         blueRoomName:battleInfo.blueSide.roomName,
@@ -550,7 +574,7 @@ function handleTimeout2(){
     };
     timeControl2 = setTimeout(function(){
         socket.emit('isTimeout',pointInfo);
-    },1000*60*90);
+    },num);
 }
 
 socket.on('battleResult', function(resultPacket){
@@ -720,6 +744,7 @@ socket.on('updateRoomMember', function(updatedParticipants){
             //console.log(roomInfo);
             if(roomInfo.gameMode == 'match'){
                 //bullup.alert("匹配中，请等待！");
+                teamInfo = roomInfo;
                 bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                     'participants': roomInfo.participants
                 }, 'main-view');
@@ -787,6 +812,7 @@ socket.on('updateTeamMember', function(updatedParticipants){
             //console.log(roomInfo);
             if(roomInfo.gameMode == 'match'){
                 //bullup.alert("匹配中，请等待！");
+                teamInfo = roomInfo;
                 bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                     'participants': roomInfo.participants
                 }, 'main-view');
@@ -1195,6 +1221,7 @@ function handleRoomEstablishmentResult(feedback){
         //console.log(roomInfo);
         if(roomInfo.gameMode == 'match'){
             //bullup.alert("匹配中，请等待！");
+            teamInfo = roomInfo;
             bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                 'participants': roomInfo.participants
             }, 'main-view');
@@ -1377,10 +1404,11 @@ process.on('uncaughtException', function(err) {
 });
 
 //30秒获取一次好友在线状态
-// setInterval(()=>{
-//     if(userInfo!=null){
-//         socket.emit('getFriend',{
-//             userId:userInfo.userId
-//         });
-//     }
-// },1000*30);
+
+setInterval(()=>{
+    if(userInfo!=null){
+        socket.emit('getFriend',{
+            userId:userInfo.userId
+        });
+    }
+},1000*8);
