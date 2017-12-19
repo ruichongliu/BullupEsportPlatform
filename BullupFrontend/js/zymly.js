@@ -24,7 +24,12 @@ $().ready(function(){
         $('#personal_recharge_btn').on('click', function(e){
             window.location.href = "#recharge";
         });
-        
+
+        $(".myscircle").on('click',function(event){
+            setTimeout(function(){
+               $("#modal1").css("z-index",1002);             
+            },10);
+        });
     });
        
     
