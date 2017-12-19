@@ -844,8 +844,12 @@ exports.handleDisconnect = function(socket){
                     //退出队伍  通知其他队友
                     var environment = exports.users[userId].environment;
                     var roomName = environment.room.roomName;
-                    teamService.exitTeam(userId, roomName);
-                    //删除用户登录信息
+                    if(environment.room.gameMode == 'battle'){
+                        teamService.exitTeam(userId, roomName);
+                        //删除用户登录信息
+                    }else{
+                        teamService.exitTeamAndMatch(userId, environment.room);
+                    }
                     delete exports.users[userId];
                 }else if(userStatus == "inbattle"){
                     //在对战中

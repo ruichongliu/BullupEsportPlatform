@@ -3264,3 +3264,8 @@ div#graph1, div#graph4, div#graph5, div#graph6, div#graph7, div#graph8, div#grap
 
 }
 }
+#modal1 .moda li:hover{
+    box-shadow:0px 0px 12px 3px #26a69a;
+    border:1px solid #26a69a;
+    
+}

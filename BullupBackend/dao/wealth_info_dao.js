@@ -97,6 +97,14 @@ exports.searchCashFlow = function(data,callback){
                     callback(null,tempInfo);
                 });
             },
+            function(tempInfo,callback){
+                //var tempInfo = {};
+                dbUtil.query(connection, 'select bullup_battle_name,bullup_battle_bet,bullup_battle_time,bullup_battle_result,bullup_battle_participants_red,bullup_battle_participants_blue  from bullup_battle_record where bullup_battle_name like ?',['%'+data.userNickname+'%'],function(err,result){
+                    if (err) throw err;
+                    tempInfo.battleInfo = result;
+                    callback(null,tempInfo);
+                });
+            },
         ],function(err,res){
             if(err) throw err;
             dbUtil.closeConnection(connection);
@@ -120,7 +128,7 @@ exports.userRecharge = function(data, callback) {
                 });
             },
             function(done){
-                dbUtil.query(connection, 'insert into bullup_payment_history(user_id, bullup_payment_account_id, bullup_bill_value,bullup_bill_type) values (?,?,?,?)', [data.userId, 0, data.money, data.currency], function (err, results){
+                dbUtil.query(connection, 'insert into bullup_payment_history(user_id, bullup_payment_account_id, bullup_bill_value,bullup_bill_type,bullup_bill_state) values (?,?,?,?,?)', [data.userId, 0, data.money, data.currency,data.state], function (err, results){
                     if (err) throw err;
                     done(err,results);
                 });
