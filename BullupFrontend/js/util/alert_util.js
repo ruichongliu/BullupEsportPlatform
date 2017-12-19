@@ -21,7 +21,7 @@ function bullup_modal(options){
     }
     function close(){
         $this.css({
-            //  "display":"none",
+             "display":"none",
              "opacity": 0,
              "transform": "scaleX(0.7)",
              "top": "4%",

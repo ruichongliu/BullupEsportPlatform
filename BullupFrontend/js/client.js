@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://192.168.2.100:3000');
+var socket = io.connect('http://49.140.81.199:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -292,6 +292,7 @@ socket.on('teamInfoUpdate', function (data) {
             //console.log(roomInfo);
             if(roomInfo.gameMode == 'match'){
                 //bullup.alert("匹配中，请等待！");
+                teamInfo = roomInfo;
                 bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                     'participants': roomInfo.participants
                 }, 'main-view');
@@ -357,7 +358,11 @@ function swig_fight(lolRoom){
 }
 
 
-socket.on('lolRoomEstablish', function (lolRoom) {   
+socket.on('lolRoomEstablish', function (lolRoom) {
+    if(match_timer != null){
+       //清除自由匹配中的计时函数
+       window.clearInterval(match_timer);       
+    }
     socket.emit('tokenData', lolRoom.token);
     //userInfo.liseningResult = true; 
     if (userInfo.userId == lolRoom.creatorId) {
@@ -536,7 +541,7 @@ function isGameStart(){
 function handleCancelMatch(feedback){
     $('#router_starter').click();
     bullup.alert(feedback.text);
-    roomInfo = null;
+    roomInfo = feedback.extension;
     teamInfo = null;
     battleInfo = null;
 }
@@ -741,6 +746,7 @@ socket.on('updateRoomMember', function(updatedParticipants){
             //console.log(roomInfo);
             if(roomInfo.gameMode == 'match'){
                 //bullup.alert("匹配中，请等待！");
+                teamInfo = roomInfo;
                 bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                     'participants': roomInfo.participants
                 }, 'main-view');
@@ -808,6 +814,7 @@ socket.on('updateTeamMember', function(updatedParticipants){
             //console.log(roomInfo);
             if(roomInfo.gameMode == 'match'){
                 //bullup.alert("匹配中，请等待！");
+                teamInfo = roomInfo;
                 bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                     'participants': roomInfo.participants
                 }, 'main-view');
@@ -1216,6 +1223,7 @@ function handleRoomEstablishmentResult(feedback){
         //console.log(roomInfo);
         if(roomInfo.gameMode == 'match'){
             //bullup.alert("匹配中，请等待！");
+            teamInfo = roomInfo;
             bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                 'participants': roomInfo.participants
             }, 'main-view');
@@ -1398,10 +1406,11 @@ process.on('uncaughtException', function(err) {
 });
 
 //30秒获取一次好友在线状态
+
 setInterval(()=>{
     if(userInfo!=null){
         socket.emit('getFriend',{
             userId:userInfo.userId
         });
     }
-},1000*30);
+},1000*8);
