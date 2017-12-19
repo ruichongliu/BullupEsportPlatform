@@ -40,10 +40,10 @@ exports.handleRoomEstablish = function(socket) {
             var userId = room.participants[index].userId;
             userService.changeUserStatus(userId, 'inroom');
             userService.setEnvironment(userId, 'room', room);
+            socketService.userJoin(userId, room.roomName);
         }
 
         //将该socket放入teamname命名的room中
-        socketService.joinRoom(socket, room.roomName);
         // 返回回馈信息
         socketService.stableSocketEmit(socket, 'feedback', {
             errorCode: 0,
@@ -147,8 +147,7 @@ exports.handleTeamEstablish = function (io, socket) {
                 }
             };
             // 告诉该队伍中的所有用户队伍已经形成
-            var sockets = io.sockets;
-            socketService.stableSocketsEmit(sockets, teamInfo.roomName, 'feedback', feedback);
+            socketService.stableSocketsEmit(teamInfo.roomName, 'feedback', feedback);
         }else if(teamInfo.gameMode == 'match'){
             //匹配
             //把队伍加入调度池
@@ -266,7 +265,11 @@ exports.cancelMatch = function(io,socket){
             text: '匹配已取消',
             extension: null
         };
-        socketService.stableSocketsEmit(io.sockets, roomInfo.roomName, 'feedback', feedback);
+        //重新加入unformed team
+        //roomInfo.status = 'ESTABLISHING';
+        //exports.unformedTeams[roomInfo.roomName] = roomInfo;
+
+        socketService.stableSocketsEmit(roomInfo.roomName, 'feedback', feedback);
     });
 }
 
@@ -361,4 +364,75 @@ exports.exitTeam = function(userId, roomName){
         }
     }
     delete exports.formedTeams[roomName];
+}
+
+exports.exitTeamAndMatch = function(userId, room){
+    //刪除匹配池中的信息
+    var roomInfo = room;
+    var sumScore = 0;
+    for(var index in roomInfo.participants){
+        var score = roomInfo.participants[index].strength.score;
+        sumScore += score;
+    }
+    var level = String(parseInt(sumScore / roomInfo.participants.length / 50) * 50);
+    var tempQueue = exports.matchPools[String(roomInfo.teamParticipantsNum - 1)][level].queue;
+    //console.log('this is tempQueue:',JSON.stringify(tempQueue));
+    for(var key in tempQueue){
+        if(tempQueue[key].roomName == roomInfo.roomName){
+            delete exports.matchPools[String(roomInfo.teamParticipantsNum - 1)][level].queue[key];
+            break;
+        }
+    }
+    var feedback = {
+        errorCode: 0,
+        type: 'CANCELMATCHRESULT',
+        text: '有队员退出了队伍',
+        extension: roomInfo
+    };
+    socketService.stableSocketsEmit(roomInfo.roomName, 'feedback', feedback);
+
+
+    if(room.captain.userId != userId){
+        //不是队长 从队员列表删除 并且通知房间中其他人
+        var participants = room.participants;
+        for(var participantIndex in participants){
+            if(participants[participantIndex].userId == userId){
+                delete participants[participantIndex];
+                room.participants.length -= 1;
+                room.status = 'ESTABLISHING';
+                break;
+            }
+        }
+        for(var participantIndex in participants){
+            var participantUserId = participants[participantIndex].userId;
+            var socket = socketService.mapUserIdToSocket(participantUserId);
+            socketService.stableSocketEmit(socket, "updateTeamMember", room);
+            //更新每个人的状态
+            userService.changeUserStatus(participantUserId, "inroom");
+            delete userService.users[participantUserId].environment.team;
+            //更新socket room
+        }
+        //重新加入创建中的房间
+    exports.unformedTeams[room.roomName] = room;
+    }else{
+        //是队长 房间删除  通知所有成员
+        var participants = room.participants;
+        for(var participantIndex in participants){
+            if(participants[participantIndex].userId == userId){
+                delete participants[participantIndex];
+                break;
+            }
+        }
+        for(var participantIndex in participants){
+            var participantUserId = participants[participantIndex].userId;
+            var socket = socketService.mapUserIdToSocket(participantUserId);
+            socketService.stableSocketEmit(socket, "teamCanceled", {});
+            //更新每个人的状态
+            userService.changeUserStatus(participantUserId, "idle");
+            delete userService.users[participantUserId].environment.room;
+            delete userService.users[participantUserId].environment.team;
+            //更新socket room
+        }
+    }
+
 }

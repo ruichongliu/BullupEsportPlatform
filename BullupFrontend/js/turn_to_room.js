@@ -1,28 +1,59 @@
 $(document).ready(function(){
     $("#turn_to_room_btn").click(function(){
-        if(battleInfo != null){
-            socket.emit('getFlipClock',{
-                battleName:battleInfo.battleName
-            });
+        if(battleInfo != null && battleInfo != undefined){
+            if(battleInfo.status == 'unready'){
+                socket.emit('getFlipClock',{
+                    battleName:battleInfo.battleName
+                });
+                //alert('游戏开始前的3分钟倒计时');
+            }else if(battleInfo.status == 'ready'){
+                socket.emit('afterStartClock',{
+                    battleName:battleInfo.battleName
+                });
+                //alert('游戏开始后的90分钟倒计时');
+            }
         }
         console.log('this is battleInfo:',JSON.stringify(battleInfo));
         setTimeout(function(){
             if(battleInfo != null){
                 //判断是否是房主
-                if(userInfo.userId==battleInfo.blueSide.captain.userId){
-                    handleTimeout(battleInfo.flipClock * 1000);
-                    //alert(battleInfo.flipClock);
+                var seconds = 0;
+                if(battleInfo.status == 'unready'){
+                    if(userInfo.userId == battleInfo.blueSide.captain.userId){
+                        handleTimeout(battleInfo.flipClock * 1000);
+                    }
+                    seconds = battleInfo.flipClock;
+                    //alert('游戏开始前的3分钟倒计时',battleInfo.flipClock);
+                }else if(battleInfo.status == 'ready'){
+                    if(userInfo.userId == battleInfo.blueSide.captain.userId){
+                        handleTimeout2(battleInfo.afterFlipClock * 1000);
+                    }
+                    seconds = battleInfo.afterFlipClock;
+                    //alert('游戏开始后的90分钟倒计时',battleInfo.afterFlipClock);
                 }
+                
                 //回到对战页面
+                var bluePts = battleInfo.blueSide.participants;
+                var redPts = battleInfo.redSide.participants;              
+                for(key in redPts){
+                    if(redPts[key].name==userInfo.name){
+                        //判断是否是红队,提示进入红队
+                        battleInfo.lolRoom.team = "red";
+                    }
+                }     
                 var battleRoomHtml = bullup.loadSwigView("./swig_fight.html", {
                     blueSide: battleInfo.blueSide,
                     redSide: battleInfo.redSide,
+                    lolRoom: battleInfo.lolRoom,
+                    userId:userInfo.userId,
                 });
                 $('#main-view').html(battleRoomHtml);
                 $('#waiting-modal').css('display', 'none');    
                 $('#team-detail-modal').css('display', 'none');    
                 $('.modal-overlay').remove();
-    
+                if(battleInfo.status == "ready"){
+                    $("#show_game_start").css("display","inline-block");
+                } 
                 var bluePts = battleInfo.blueSide.participants;
                 var redPts = battleInfo.redSide.participants;
                 var own;
@@ -43,7 +74,7 @@ $(document).ready(function(){
                 var dataArray1 = e;
                 var dataArray2 = o;
                 bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
-                var clock = $('.countdown-clock').FlipClock(battleInfo.flipClock, {
+                var clock = $('.countdown-clock').FlipClock(seconds, {
                     clockFace: 'MinuteCounter',
                     countdown: true
                 });

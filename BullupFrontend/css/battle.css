@@ -46,3 +46,15 @@
 .battle-details {
 	font-size: 8px;
 }
+
+.battle-select{
+	width: 90px;
+    height: 36px;
+    background-color: #26a69a;
+    color: #fff;
+    margin-right: 2px;
+    border: none;
+    -webkit-appearance: none;
+    background: url('../../media/imgs/down.png') no-repeat scroll 72px 11px #26a69a;
+    padding-left: 12px;
+}
