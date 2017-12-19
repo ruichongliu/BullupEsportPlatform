@@ -32,21 +32,21 @@
 		{% if lolRoom %}
 		<div style="color:#ccc;position:absolute;z-index:100;width:405px;font-size:16px;background:#212121;padding: 17px 0 17px 0;">请 您 在规定的时间之内 
 			{% if lolRoom.creatorId == userId  %}
-			<b style="color:#0a0aa0">创建</b>
+			    <b style="color:#3939e4">创建</b>
 			{% else %}
 				{% if lolRoom.team == "red" %}
-				<b style="color:red"> 加入</b>
+				    <b style="color:red"> 加入</b>
 				{% else %}
-				<b style="color:#0a0aa0"> 加入</b>
+			    	<b style="color:#3939e4"> 加入</b>
 				{% endif %}
 			{% endif %}
-			 房间
+			房间
 			<br/>房间名:{{ lolRoom.roomName }} 密码:{{lolRoom.password}}
 			<br/>请在LOL加入
 			{% if lolRoom.team == "red" %}
-			<b style="color:red"> 红方 </b>
+		    	<b style="color:red"> 红方 </b>
 			{% else %}
-			<b style="color:#0a0aa0"> 蓝方 </b>
+		    	<b style="color:#3939e4"> 蓝方 </b>
 			{% endif %}
 			 战队
 			 <br/>
