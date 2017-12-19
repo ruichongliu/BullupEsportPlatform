@@ -18,17 +18,20 @@ $(document).ready(function(){
             if(battleInfo != null){
                 //判断是否是房主
                 var seconds = 0;
-                if(userInfo.userId == battleInfo.blueSide.captain.userId){
-                    if(battleInfo.status == 'unready'){
+                if(battleInfo.status == 'unready'){
+                    if(userInfo.userId == battleInfo.blueSide.captain.userId){
                         handleTimeout(battleInfo.flipClock * 1000);
-                        seconds = battleInfo.flipClock;
-                        //alert('游戏开始前的3分钟倒计时',battleInfo.flipClock);
-                    }else if(battleInfo.status == 'ready'){
-                        handleTimeout2(battleInfo.afterFlipClock * 1000);
-                        seconds = battleInfo.afterFlipClock;
-                        //alert('游戏开始后的90分钟倒计时',battleInfo.afterFlipClock);
                     }
+                    seconds = battleInfo.flipClock;
+                    //alert('游戏开始前的3分钟倒计时',battleInfo.flipClock);
+                }else if(battleInfo.status == 'ready'){
+                    if(userInfo.userId == battleInfo.blueSide.captain.userId){
+                        handleTimeout2(battleInfo.afterFlipClock * 1000);
+                    }
+                    seconds = battleInfo.afterFlipClock;
+                    //alert('游戏开始后的90分钟倒计时',battleInfo.afterFlipClock);
                 }
+                
                 //回到对战页面
                 var bluePts = battleInfo.blueSide.participants;
                 var redPts = battleInfo.redSide.participants;              

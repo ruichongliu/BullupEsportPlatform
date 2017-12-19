@@ -79,6 +79,7 @@ exports.handleBattleInviteResult = function (io, socket) {
             teamService.removeBroadcastTeam(challengerTeam.roomName);
             teamService.removeBroadcastTeam(hostTeam.roomName);
             var $battleName = challengerTeam.captain.name + hostTeam.captain.name + (new Date).valueOf();
+            //为该次对战创建倒计时
             initFlipClocks($battleName);
             afterStartClocks({
                 battleName:$battleName,
@@ -118,8 +119,6 @@ exports.handleBattleInviteResult = function (io, socket) {
                 userService.setEnvironment(userId, 'battle', battle);
             }
             //teamService.printfAllTeamsInfo();
-            //为该次对战创建倒计时
-            
             // 向该对局中所有的用户广播对局信息
             socketService.stableSocketsEmit(battle.battleName, 'battleInfo', battle);
             socketService.stableSocketsEmit(battle.battleName, 'lolRoomEstablish', lolRoom);
@@ -726,13 +725,21 @@ function broadCastMatchResult(firstTeam, secondTeam){
     var challengerTeam = firstTeam;
     var hostTeam = secondTeam;
     var currentTime = require('moment')().format('YYYYMMDDHHmmss');
+    var $battleName = challengerTeam.captain.name + hostTeam.captain.name + (new Date).valueOf();
+    //为该次对战创建倒计时
+    initFlipClocks($battleName);
+    afterStartClocks({
+        battleName:$battleName,
+    });
     var lolRoom = {
         roomName: 'BULLUP' + String((new Date).valueOf()).substr(6),
         password: Math.floor(Math.random() * 1000), // 4位随机数
-        creatorId: challengerTeam.captain.userId
+        creatorId: challengerTeam.captain.userId,
+        time: flipClocks[$battleName].time,
+        afterStartTime: battleFlipClocks[$battleName].time
     };
     var battle = {
-        battleName: challengerTeam.captain.name + hostTeam.captain.name + (new Date).valueOf(),
+        battleName: $battleName,
         blueSide: challengerTeam,
         redSide: hostTeam,
         status: 'unready',

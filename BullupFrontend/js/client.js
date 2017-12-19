@@ -1,6 +1,10 @@
 var io = require('socket.io-client');
 
+<<<<<<< HEAD
+var socket = io.connect('http://192.168.2.163:3000');
+=======
 var socket = io.connect('http://49.140.81.199:3000');
+>>>>>>> ce03cc104ef48a5e5533a10f9fc04d055db3328d
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -391,8 +395,8 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         var e = getRadarData(enemy);
         
         var labelArray = ['击杀', '死亡', '助攻','治疗', '造成伤害', '承受伤害'];
-        var dataArray1 = e;
-        var dataArray2 = o;
+        var dataArray1 = o;
+        var dataArray2 = e;
         //-------------------我方---------敌方------
         bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
         handleTimeout(1000*60*3);
@@ -518,8 +522,8 @@ socket.on('lolRoomEstablished', function (data) {
     clearTimeout(timeControl);
     if(userInfo.userId == battleInfo.blueSide.captain.userId){
         handleTimeout2(1000*60*90);
-        isGameStart();
-    }       
+    }
+    isGameStart();       
     //userInfo.liseningResult = false;
     //}
     //userInfo.creatingRoom = false;
@@ -530,10 +534,12 @@ function isGameStart(){
         clockFace: 'MinuteCounter',
         countdown: true
     });
-    socket.emit('afterStartClock',{
-        battleName:battleInfo.battleName,
-        firstTime: true
-    });
+    if(userInfo.userId == battleInfo.blueSide.captain.userId){
+        socket.emit('afterStartClock',{
+            battleName:battleInfo.battleName,
+            firstTime: true
+        });
+    }
 }
 
 function handleCancelMatch(feedback){
@@ -1046,7 +1052,7 @@ function handleGetBalanceResult(feedback){
         });
     $('#main-view').html(balanceHtml);
     $.getScript('/js/zymly.js');
-    $.getScript('/js/payment.js');
+    //$.getScript('/js/payment.js');
 }
 
 //处理查到的资金流动记录
