@@ -47,9 +47,6 @@ io.on('connection', function(socket) {
     userService.handleAddFriendRequest(socket);
     userService.handleAddFriendResult(socket);
     userService.handleDisconnect(socket);
-    //好友状态
-    userService.getFriend(socket);
-
     //余额
     userService.handleGetBalance(socket);
     //登录时间

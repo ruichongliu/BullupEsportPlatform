@@ -110,6 +110,8 @@ exports.handleBattleInviteResult = function (io, socket) {
                 socketService.userJoin(userId, battle.battleName);
                 userService.changeUserStatus(userId, 'inbattle');
                 userService.setEnvironment(userId, 'battle', battle);
+                //更新好友状态
+                userService.friendStatus(userId,'inbattle','true');
             }
             // 将受挑战队伍的所有用户加入到新的socket room
             for (var i in hostTeam.participants) {
@@ -117,6 +119,8 @@ exports.handleBattleInviteResult = function (io, socket) {
                 socketService.userJoin(userId, battle.battleName);
                 userService.changeUserStatus(userId, 'inbattle');
                 userService.setEnvironment(userId, 'battle', battle);
+                //更新好友状态
+                userService.friendStatus(userId,'inbattle','true');
             }
             //teamService.printfAllTeamsInfo();
             // 向该对局中所有的用户广播对局信息
@@ -350,6 +354,8 @@ exports.handleBattleResult = function (io, socket){
                     userService.deleteEnvironment(player.userId, 'room');
                     userService.deleteEnvironment(player.userId, 'team');
                     userService.deleteEnvironment(player.userId, 'battle');
+                    //更新好友状态
+                    userService.friendStatus(userId,'idle','true');
                 }
                 for(var index in loseTeam){
                     var player = loseTeam[index];
@@ -357,6 +363,8 @@ exports.handleBattleResult = function (io, socket){
                     userService.deleteEnvironment(player.userId, 'room');
                     userService.deleteEnvironment(player.userId, 'team');
                     userService.deleteEnvironment(player.userId, 'battle');
+                    //更新好友状态
+                    userService.friendStatus(userId,'true','true');
                 }
 
                 //广播结果数据包
@@ -813,14 +821,48 @@ exports.handleBattleTimeout = function(io,socket){
         delete teamService.formedTeams[data.redRoomName];
         teamService.removeBroadcastTeam(data.blueRoomName);
         teamService.removeBroadcastTeam(data.redRoomName);
-        var feedback = {
-            errorCode:0,
-            type:'BATTLEISTIMEOUT',
-            text:'长时间未检测到游戏已开始,请重新创建对局',
-            extension:{
-                formedTeams:teamService.formedTeams
+        var feedback = {};
+        switch(data.type){
+            case 'beforeStart':{
+                feedback = {
+                    errorCode:0,
+                    type:'BATTLEISTIMEOUT',
+                    text:'长时间未检测到游戏已开始,请重新创建对局',
+                    extension:{
+                        formedTeams:teamService.formedTeams
+                    }
+                };
+                console.log('这是1');
+                break;
             }
-        };
+            case 'afterStart':{
+                feedback = {
+                    errorCode:0,
+                    type:'BATTLEISTIMEOUT',
+                    text:'游戏时间过长，此次对战失效',
+                    extension:{
+                        formedTeams:teamService.formedTeams
+                    }
+                };
+                console.log('这是2');
+                break;
+            }
+            
+        }
+        console.log(feedback || JSON.stringify(feedback));
+        var bluePts = data.battleInfo.blueSide.participants;
+        var redPts = data.battleInfo.redSide.participants;
+        console.log(JSON.stringify(bluePts),JSON.stringify(redPts));
+        for(var key in bluePts){
+            var userId = bluePts[key].userId;
+            //更新好友状态
+            userService.friendStatus(userId,'true','true');
+        }
+        for(var key in redPts){
+            var userId = redPts[key].userId;
+            //更新好友状态
+            userService.friendStatus(userId,'true','true');
+        }
         socketService.stableSocketsEmit(data.battleName, 'feedback', feedback);
     });
 }
