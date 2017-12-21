@@ -832,7 +832,7 @@ exports.handleBattleTimeout = function(io,socket){
                         formedTeams:teamService.formedTeams
                     }
                 };
-                console.log('这是1');
+                //console.log('这是1');
                 break;
             }
             case 'afterStart':{
@@ -844,15 +844,15 @@ exports.handleBattleTimeout = function(io,socket){
                         formedTeams:teamService.formedTeams
                     }
                 };
-                console.log('这是2');
+                //console.log('这是2');
                 break;
             }
             
         }
-        console.log(feedback || JSON.stringify(feedback));
+        //console.log(feedback || JSON.stringify(feedback));
         var bluePts = data.battleInfo.blueSide.participants;
         var redPts = data.battleInfo.redSide.participants;
-        console.log(JSON.stringify(bluePts),JSON.stringify(redPts));
+        //console.log(JSON.stringify(bluePts),JSON.stringify(redPts));
         for(var key in bluePts){
             var userId = bluePts[key].userId;
             //更新好友状态
