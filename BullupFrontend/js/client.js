@@ -189,23 +189,45 @@ socket.on('feedback', function (feedback) {
             handleGetFlipClock(feedback);
             break;
         //好友状态
-        case 'GETFRIENDRESULT':
-            handleGetFriend(feedback);
+        case 'UPDATEFRIENDSTATUS':
+            handleUpdateFriendStatus(feedback);
             break;
         //游戏开始后的倒计时
         case 'GETAFTERFLIPCLOCKRESULT':
             handleGetAfterFlipClock(feedback);
+            break;
         }
 });
 
-function handleGetFriend(feedback){
-    var friendList = feedback.extension.data;
-    //alert(JSON.stringify(friendList));
+//刷新好友状态
+function handleUpdateFriendStatus(feedback){
+    var friendInfo = feedback;
+    //alert(JSON.stringify(friendInfo));
+    var tempList = userInfo.friendList;
+    for(var key in tempList){
+        if(tempList[key].name == feedback.name){
+            tempList[key].online = feedback.online;
+            tempList[key].status = feedback.status;
+            break;
+        }
+    }
+    //定义一个空数组，用来保存根据状态排序后的信息
+    var arr = new Array();
+    for(obj in tempList){
+        arr.push(tempList[obj]);
+    }
+    arr.sort(function(x,y){
+        return x.online < y.online ? 1 : -1;
+    });
+    console.log('this is arr:',arr);
+
+    userInfo.friendList = arr;
+    console.log(JSON.stringify(userInfo.friendList));
+
     var friendCount = 0;
-    for(var index in friendList){
+    for(var index in arr){
         friendCount++
     }
-    userInfo.friendList = friendList;
     bullup.loadTemplateIntoTarget('swig_home_friendlist.html', {
         'userInfo': userInfo,
         'friendListLength': friendCount
@@ -361,7 +383,7 @@ function swig_fight(lolRoom){
     $('.modal-overlay').remove();
 }
 
-
+match_timer = null;
 socket.on('lolRoomEstablish', function (lolRoom) {
     if(match_timer != null){
        //清除自由匹配中的计时函数
@@ -399,6 +421,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         var dataArray2 = e;
         //-------------------我方---------敌方------
         bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
+        //handleTimeout(1000*60*3);
         handleTimeout(1000*60*3);
         var clock = $('.countdown-clock').FlipClock(lolRoom.time, {
             clockFace: 'MinuteCounter',
@@ -492,9 +515,11 @@ function handleGetAfterFlipClock(feedback){
 var timeControl;
 function handleTimeout(num){
     var pointInfo = {
+        battleInfo: battleInfo,
         battleName:battleInfo.battleName,
         blueRoomName:battleInfo.blueSide.roomName,
-        redRoomName:battleInfo.redSide.roomName
+        redRoomName:battleInfo.redSide.roomName,
+        type:'beforeStart'
     };
     timeControl = setTimeout(function(){
         socket.emit('isTimeout',pointInfo);
@@ -574,9 +599,11 @@ socket.on('chatMsg', function(msg){
 var timeControl2;
 function handleTimeout2(num){
     var pointInfo = {
+        battleInfo: battleInfo,
         battleName:battleInfo.battleName,
         blueRoomName:battleInfo.blueSide.roomName,
-        redRoomName:battleInfo.redSide.roomName
+        redRoomName:battleInfo.redSide.roomName,
+        type:'afterStart'
     };
     timeControl2 = setTimeout(function(){
         socket.emit('isTimeout',pointInfo);
@@ -1408,13 +1435,3 @@ process.on('uncaughtException', function(err) {
     //alert("召唤师不存在或设置的时间段过长！");
     console.log(String(err));
 });
-
-//30秒获取一次好友在线状态
-
-setInterval(()=>{
-    if(userInfo!=null){
-        socket.emit('getFriend',{
-            userId:userInfo.userId
-        });
-    }
-},1000*8);
