@@ -89,11 +89,11 @@ $(document).ready(function(){
                 $('#component_collapsible').collapsible('open', 3);
                 $('#component_collapsible').collapsible('open', 4);
     
-            }else if(teamInfo != null){
+            }else if(teamInfo != null && userInfo != null){
                 formedTeams[thisRoomInfo.roomName] = thisRoomInfo;
                 page(formedTeams, 1); //此函数在initial_pagination.js             
                 delete formedTeams[thisRoomInfo.roomName];     
-            }else if(roomInfo != null){
+            }else if(roomInfo != null && userInfo != null){
                 //回到房间页面
                 //处理空值
                 for(var index in roomInfo.participants){
