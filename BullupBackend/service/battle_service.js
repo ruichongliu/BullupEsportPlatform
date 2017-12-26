@@ -343,7 +343,7 @@ exports.handleBattleResult = function (io, socket){
                 }
                 for(var index in loseTeam){
                     var player = loseTeam[index];
-                    battleRecordDao.updateStrengthAndWealth(player.userId, player.strength.score + loseScoreUpdateValue, -1 * resultPacket.rewardAmount);
+                    battleRecordDao.updateStrengthAndWealth(player.userId, player.strength.score + loseScoreUpdateValue, -0.8 * resultPacket.rewardAmount);
                 }
                 //写记录
                 battleRecordDao.writeBattleRecord(finishedBattle);
