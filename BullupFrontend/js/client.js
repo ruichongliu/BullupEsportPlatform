@@ -1,10 +1,6 @@
 var io = require('socket.io-client');
 
-<<<<<<< HEAD
-var socket = io.connect('http://192.168.2.163:3000');
-=======
-var socket = io.connect('http://49.140.81.199:3000');
->>>>>>> ce03cc104ef48a5e5533a10f9fc04d055db3328d
+var socket = io.connect('http://localhost:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -17,6 +13,8 @@ var versusLobbyInfo = null;
 var battleInfo = null;
 var formedTeams = null;
 var messageInfo = [];
+
+var thisRoomInfo = null;
 
 var lastSocketStatus = null;
 var lastSocketId = null;
@@ -1287,8 +1285,9 @@ function handleTeamEstablishResult(feedback){
         bullup.alert(feedback.text);
         teamInfo = feedback.extension.teamInfo;
         formedTeams = feedback.extension.formedTeams;
-        delete formedTeams[teamInfo.roomName];
         page(formedTeams,1);//此函数在initial_pagination.js
+        thisRoomInfo = formedTeams[teamInfo.roomName];        
+        delete formedTeams[teamInfo.roomName];
     }else{
         bullup.alert(feedback.text);
     }
@@ -1297,8 +1296,9 @@ function handleTeamEstablishResult(feedback){
 function handleRefreshFormedBattleRoomResult(feedback){
     if(feedback.errorCode == 0){
         formedTeams = feedback.extension.formedTeams;
-        delete formedTeams[teamInfo.roomName];
         page(formedTeams,1);//此函数在initial_pagination.js
+        thisRoomInfo = formedTeams[teamInfo.roomName];
+        delete formedTeams[teamInfo.roomName];        
     }else{
         bullup.alert(feedback.text);
     }   

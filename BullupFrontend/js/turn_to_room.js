@@ -90,7 +90,9 @@ $(document).ready(function(){
                 $('#component_collapsible').collapsible('open', 4);
     
             }else if(teamInfo != null){
-                page(formedTeams,1);//此函数在initial_pagination.js
+                formedTeams[thisRoomInfo.roomName] = thisRoomInfo;
+                page(formedTeams, 1); //此函数在initial_pagination.js             
+                delete formedTeams[thisRoomInfo.roomName];     
             }else if(roomInfo != null){
                 //回到房间页面
                 //处理空值
@@ -128,7 +130,8 @@ $(document).ready(function(){
             
                 $("#confirm_create_team_btn").click(function(){
                     if( roomInfo != null){
-                            alert("您已经创建队伍,不能重复创建队伍");
+                        console.log(roomInfo);
+                        alert("您已经创建队伍,不能重复创建队伍");
                     }else{
                         
                         console.log(roomInfo);
