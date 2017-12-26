@@ -14,8 +14,6 @@ var battleInfo = null;
 var formedTeams = null;
 var messageInfo = [];
 
-var thisRoomInfo = null;
-
 var lastSocketStatus = null;
 var lastSocketId = null;
 
@@ -1286,9 +1284,8 @@ function handleTeamEstablishResult(feedback){
         roomInfo.status = "PUBLISHING"; // 更改本地房间状态
         teamInfo = feedback.extension.teamInfo;
         formedTeams = feedback.extension.formedTeams;
+        delete formedTeams[teamInfo.roomName];        
         page(formedTeams,1);//此函数在initial_pagination.js
-        thisRoomInfo = formedTeams[teamInfo.roomName];        
-        delete formedTeams[teamInfo.roomName];
     }else{
         bullup.alert(feedback.text);
     }
@@ -1297,9 +1294,8 @@ function handleTeamEstablishResult(feedback){
 function handleRefreshFormedBattleRoomResult(feedback){
     if(feedback.errorCode == 0){
         formedTeams = feedback.extension.formedTeams;
+        delete formedTeams[teamInfo.roomName];                
         page(formedTeams,1);//此函数在initial_pagination.js
-        thisRoomInfo = formedTeams[teamInfo.roomName];
-        delete formedTeams[teamInfo.roomName];        
     }else{
         bullup.alert(feedback.text);
     }   
