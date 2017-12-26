@@ -640,6 +640,7 @@ socket.on('battleResult', function(resultPacket){
         battleResultData.win = 1;
         battleResultData.gameLength = resultPacket.gameLength;
         battleResultData.rival_team = resultPacket.loseTeam;
+        battleResultData.wealth_change = 0.8 * resultPacket.rewardAmount;        
        
     }else{
         //输了
@@ -661,9 +662,9 @@ socket.on('battleResult', function(resultPacket){
         battleResultData.win = 0;
         battleResultData.gameLength = resultPacket.gameLength;
         battleResultData.rival_team = resultPacket.winTeam;
-       
+        battleResultData.wealth_change = resultPacket.rewardAmount;
+        
     }
-    battleResultData.wealth_change = resultPacket.rewardAmount;
     // console.log(JSON.stringify(battleResultData));
     socket.emit('updateKDA',{
         userId:userInfo.userId,
