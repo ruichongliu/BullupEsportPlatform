@@ -31,24 +31,24 @@
                     在线
                 </label>
                 {% elseif friend.online=='inroom' %}
-                <div class="color-dot color-dot-red">
+                <div class="color-dot color-dot-yellow">
                 </div>
                 <label class="friend-status friend-status--offline">
                     建房中
                 </label>
                 {% elseif friend.online=='inteam' %}
-                <div class="color-dot color-dot-red">
+                <div class="color-dot color-dot-yellow">
                 </div>
                 <label class="friend-status friend-status--offline">
                     组队中
                 </label>
                 {% elseif friend.online=='inbattle' %}
-                <div class="color-dot color-dot-red">
+                <div class="color-dot color-dot-yellow">
                 </div>
                 <label class="friend-status friend-status--offline">
                     游戏中
                 </label>
-                {% else %}
+                {% elseif friend.online=='false' %}
                 <div class="color-dot color-dot-red">
                 </div>
                 <label class="friend-status friend-status--offline">

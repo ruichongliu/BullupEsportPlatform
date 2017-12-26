@@ -48,6 +48,7 @@ exports.addUser = function (user) {
         socketService.stableSocketEmit(socket, "EnvironmentRecover", environment);
         //删除服务器存留的环境信息
         delete this.environment[user.userId];
+        exports.friendStatus(user.userId,'inbattle','true');
     }
 
 }
@@ -88,6 +89,7 @@ exports.handleLogin = function (socket) {
                 }
                 // 登陆成功
                 socketService.add(user.user_id, socket);
+                exports.friendStatus(user.user_id,'true','true');
                 async.waterfall([
                     function(callback){
                         baseInfoDao.findUserIconById(user.user_id, function(iconId){
@@ -99,18 +101,33 @@ exports.handleLogin = function (socket) {
                         });
                     },
                     function(userInfo, callback){
-                        baseInfoDao.findFriendListByUserId(userInfo.userId, function (friendList) {
-                            //定义一个空数组，用来保存根据状态排序后的信息
-                            var arr = new Array();
-                            for(obj in friendList){
-                                arr.push(friendList[obj]);
+                        baseInfoDao.findFriendListByUserId(userInfo.userId, function (res) {
+                            if(res){
+                                //判断用户是否在users
+                                for(var key in res){
+                                    if(exports.users[res[key].userId]!=undefined){
+                                        if(exports.users[res[key].userId].status=='idle'){
+                                            res[key].online = 'true';
+                                        }else if(exports.users[res[key].userId].status=='inroom'){
+                                             res[key].online = 'inroom';
+                                        }else if(exports.users[res[key].userId].status=='inteam'){
+                                            res[key].online = 'inteam';
+                                        }else if(exports.users[res[key].userId].status=='inbattle'){
+                                            res[key].online = 'inbattle';
+                                        }
+                                    }
+                                }
+                                //定义一个空数组，用来保存根据状态排序后的信息
+                                var arr = new Array();
+                                for(obj in res){
+                                    arr.push(res[obj]);
+                                }
+                                arr.sort(function(x,y){
+                                    return x.online < y.online ? 1 : -1;
+                                });
+                                userInfo.friendList = arr;
+                                callback(null, userInfo);   
                             }
-                            arr.sort(function(x,y){
-                                return x.online < y.online ? 1 : -1;
-                            });
-                            //console.log(arr);
-                            userInfo.friendList = arr;
-                            callback(null, userInfo);
                         });
                     },
                     function(userInfo, callback){
@@ -451,7 +468,7 @@ exports.handleUserInviteResult = function (io, socket) {
                 var userId = participant.userId;
                 userService.changeUserStatus(userId, 'inroom');
                 userService.setEnvironment(userId, 'room', room);
-
+                exports.friendStatus(userId,'inroom','true');
                 // 更新teamList中team信息, 添加该参与者
                 teamService.addParticipantToTeam(teamName, participant);
                 socketService.userJoin(userId, teamName);
@@ -830,6 +847,7 @@ exports.handleDisconnect = function(socket){
                 //暂时 什么都不用做
                 //删除用户登录信息
                 delete exports.users[userId];
+                exports.friendStatus(userId,'false','false');
             }else{
                 if(userStatus == "inroom"){
                     //在房间里
@@ -839,6 +857,7 @@ exports.handleDisconnect = function(socket){
                     teamService.exitRoom(userId, roomName);
                     //删除用户登录信息
                     delete exports.users[userId];
+                    exports.friendStatus(userId,'false','false');
                 }else if(userStatus == "inteam"){
                     //在队伍里
                     //退出队伍  通知其他队友
@@ -851,11 +870,12 @@ exports.handleDisconnect = function(socket){
                         teamService.exitTeamAndMatch(userId, environment.room);
                     }
                     delete exports.users[userId];
+                    exports.friendStatus(userId,'false','false');
                 }else if(userStatus == "inbattle"){
                     //在对战中
                     //保存环境信息
                     exports.environment[userId] = exports.users[userId].environment;
-                    
+                    exports.friendStatus(userId,'false','false');
                 }
             }
         
@@ -865,51 +885,31 @@ exports.handleDisconnect = function(socket){
     });
 }
 
-exports.getFriend = function(socket){
-    socket.on('getFriend',function(data){
-        baseInfoDao.findFriendListByUserId(data.userId,function(res){
-            if(!res){
-                socketService.stableSocketEmit(socket, 'feedback',{
-                    errorCode:1,
-                    text:'获取失败',
-                    type:'GETFRIENDRESULT',
-                    extension:null
-                });
-            }else{
-                //判断用户是否在users
-                for(var key in res){
-                    if(exports.users[res[key].userId]!=undefined){
-                        if(exports.users[res[key].userId].status=='idle'){
-                            res[key].online = 'true';
-                        }else if(exports.users[res[key].userId].status=='inroom'){
-                            res[key].online = 'inroom';
-                        }else if(exports.users[res[key].userId].status=='inteam'){
-                            res[key].online = 'inteam';
-                        }else if(exports.users[res[key].userId].status=='inbattle'){
-                            res[key].online = 'inbattle';
-                        }
+exports.friendStatus = function(userId,online,status){
+    var baseData;
+    baseInfoDao.findUserById(userId,function(res){
+        baseData = res;
+    });
+    baseInfoDao.findFriendListByUserId(userId,function(res){
+        if(!res){
+            console.log('查找出错或好友为空!');
+        }else{
+            //找出目前在线的好友
+            for(var key in res){
+                if(exports.users[res[key].userId]!=undefined){
+                    var socket = socketService.mapUserIdToSocket(res[key].userId);
+                    var package = {
+                        "type": "UPDATEFRIENDSTATUS",
+                        "name": baseData.user_nickname,
+                        "userId": userId,
+                        "avatarId": baseData.icon_id,
+                        "online": online,
+                        "status": status
                     }
+                    socketService.stableSocketEmit(socket,'feedback',package);
                 }
-                //定义一个空数组，用来保存根据状态排序后的信息
-                var arr = new Array();
-                for(obj in res){
-                    arr.push(res[obj]);
-                }
-                arr.sort(function(x,y){
-                    return x.online < y.online ? 1 : -1;
-                });
-                // console.log(JSON.stringify(arr));
-                // console.log('-------------------');
-                // console.log('this is users{}:',exports.users);
-                socketService.stableSocketEmit(socket, 'feedback',{
-                    errorCode:0,
-                    text:'获取成功',
-                    type:'GETFRIENDRESULT',
-                    extension:{
-                        data:arr
-                    }
-                });
             }
-        });
+            // console.log(JSON.stringify(arr));
+        }
     });
 }

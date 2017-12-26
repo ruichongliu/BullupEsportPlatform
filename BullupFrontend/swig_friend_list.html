@@ -54,7 +54,7 @@
 			<input type="checkbox" id="friend_{{ loop.index }}_check_box" class="filled-in" disabled="disabled" value="{{ friend.name }}">
 			<label for="friend_{{ loop.index }}_check_box"></label>					  
 		</p>
-		{% else %}
+		{% elseif friend.online=='false' %}
 		<div class="color-dot color-dot-red">
 		</div>
 		<label class="friend-status friend-status--offline">

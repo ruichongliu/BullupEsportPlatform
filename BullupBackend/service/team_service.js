@@ -41,6 +41,8 @@ exports.handleRoomEstablish = function(socket) {
             userService.changeUserStatus(userId, 'inroom');
             userService.setEnvironment(userId, 'room', room);
             socketService.userJoin(userId, room.roomName);
+            //更新好友状态
+            userService.friendStatus(userId,'inroom','true');
         }
 
         //将该socket放入teamname命名的room中
@@ -117,6 +119,8 @@ exports.handleTeamEstablish = function (io, socket) {
             var userId = teamInfo.participants[index].userId;
             userService.changeUserStatus(userId, 'inteam');
             userService.setEnvironment(userId, 'team', teamInfo);
+            //更新好友状态
+            userService.friendStatus(userId,'inteam','true');
         }
 
         if(teamInfo.gameMode == 'battle'){
@@ -243,7 +247,7 @@ exports.match = function(){
 exports.cancelMatch = function(io,socket){
     socket.on('cancelMatch',function(data){
         logUtil.listenerLog('battleIsTimeout');
-        //console.log('this is cancel room:',JSON.stringify(roomInfo));
+        console.log('this is cancel room:',JSON.stringify(data));
         var roomInfo = data.$roomInfo;
         var sumScore = 0;
         for(var index in roomInfo.participants){
@@ -268,7 +272,11 @@ exports.cancelMatch = function(io,socket){
         //重新加入unformed team
         //roomInfo.status = 'ESTABLISHING';
         //exports.unformedTeams[roomInfo.roomName] = roomInfo;
-
+        for(var key in roomInfo.participants){
+            var userId = roomInfo.participants[key].userId;
+            //更新好友状态
+            userService.friendStatus(userId,'true','true');
+        }
         socketService.stableSocketsEmit(roomInfo.roomName, 'feedback', feedback);
     });
 }
