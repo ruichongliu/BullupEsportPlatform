@@ -129,9 +129,9 @@ $(document).ready(function(){
                 });
             
                 $("#confirm_create_team_btn").click(function(){
-                    if( roomInfo != null){
+                    if (roomInfo.status != "ESTABLISHING") {
                         console.log(roomInfo);
-                        alert("您已经创建队伍,不能重复创建队伍");
+                        bullup.alert("您已经创建队伍,不能重复创建队伍");
                     }else{
                         
                         console.log(roomInfo);

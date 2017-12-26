@@ -1283,6 +1283,7 @@ function handleTeamEstablishResult(feedback){
     socket.emit('tokenData', feedback.token);
     if(feedback.errorCode == 0){
         bullup.alert(feedback.text);
+        roomInfo.status = "PUBLISHING"; // 更改本地房间状态
         teamInfo = feedback.extension.teamInfo;
         formedTeams = feedback.extension.formedTeams;
         page(formedTeams,1);//此函数在initial_pagination.js
