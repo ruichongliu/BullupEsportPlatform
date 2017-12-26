@@ -4,9 +4,6 @@ $().ready(function(){
         if(userInfo == null){
             bullup.alert("请您先登录");
         }else{
-            socket.emit('getFriend',{
-                userId:userInfo.userId
-            });
             var friendCount = 0;
             for(var index in userInfo.friendList){
                 friendCount++
