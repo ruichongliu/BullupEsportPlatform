@@ -14,6 +14,9 @@ var battleInfo = null;
 var formedTeams = null;
 var messageInfo = [];
 
+// 记录本次客户端已登陆用户，以及房间、队伍所在状态
+var prevInfo = [];
+
 var lastSocketStatus = null;
 var lastSocketId = null;
 
@@ -36,7 +39,8 @@ socket.on('feedback', function (feedback) {
             handleLoginResult(feedback);
             break;
         case 'REGISTERRESULT':
-            userInfo = handleRegistResult(feedback);
+            //userInfo = handleRegistResult(feedback);
+            handleRegistResult(feedback);
             break;
 
         case 'ESTABLISHROOMRESULT':
@@ -917,6 +921,13 @@ function handleLoginResult(feedback) {
         //bullup.alert(feedback.text);
         bullup.alert("登录成功!");
         userInfo = feedback.extension;
+        if (prevInfo[userInfo.userId] != undefined) {
+            roomInfo = prevInfo[userInfo.userId][0];
+            teamInfo = prevInfo[userInfo.userId][1];
+        } else {
+            roomInfo = null;
+            teamInfo = null;
+        }
         // console.log("User info");
         // console.log(userInfo);
         //bullup.alert(userInfo.userRole);
@@ -932,6 +943,7 @@ function handleLoginResult(feedback) {
             bullup.alert('登出成功!');
             $('#log_modal').modal('close');
             e.preventDefault();
+            prevInfo[userInfo.userId] = [roomInfo, teamInfo];
             userInfo = null;
             var temp = bullup.loadSwigView("./swig_menu.html", null);
             // 打开
