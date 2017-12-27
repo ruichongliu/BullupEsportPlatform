@@ -14,6 +14,8 @@ var battleInfo = null;
 var formedTeams = null;
 var messageInfo = [];
 
+var match_timer = null;
+
 // 记录本次客户端已登陆用户，以及房间、队伍所在状态
 var prevInfo = [];
 
@@ -318,6 +320,7 @@ socket.on('teamInfoUpdate', function (data) {
             //console.log(roomInfo);
             if(roomInfo.gameMode == 'match'){
                 //bullup.alert("匹配中，请等待！");
+                roomInfo.status = "MATCHING";
                 teamInfo = roomInfo;
                 bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                     'participants': roomInfo.participants
@@ -778,6 +781,7 @@ socket.on('updateRoomMember', function(updatedParticipants){
             //console.log(roomInfo);
             if(roomInfo.gameMode == 'match'){
                 //bullup.alert("匹配中，请等待！");
+                roomInfo.status = "MATCHING";                
                 teamInfo = roomInfo;
                 bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                     'participants': roomInfo.participants
@@ -846,6 +850,7 @@ socket.on('updateTeamMember', function(updatedParticipants){
             //console.log(roomInfo);
             if(roomInfo.gameMode == 'match'){
                 //bullup.alert("匹配中，请等待！");
+                roomInfo.status = "MATCHING";                
                 teamInfo = roomInfo;
                 bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                     'participants': roomInfo.participants
@@ -1262,7 +1267,8 @@ function handleRoomEstablishmentResult(feedback){
     $("#confirm_create_team_btn").click(function(){
         //console.log(roomInfo);
         if(roomInfo.gameMode == 'match'){
-            //bullup.alert("匹配中，请等待！");
+            //bullup.alert("匹配中，请等待！");\
+            roomInfo.status = "MATCHING";            
             teamInfo = roomInfo;
             bullup.loadTemplateIntoTarget('swig_fightfor.html', {
                 'participants': roomInfo.participants
