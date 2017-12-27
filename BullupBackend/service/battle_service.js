@@ -764,12 +764,16 @@ function broadCastMatchResult(firstTeam, secondTeam){
         socketService.userJoin(challengerTeam.participants[i].userId, battle.battleName);
         userService.changeUserStatus(challengerTeam.participants[i].userId, 'inbattle');
         userService.setEnvironment(challengerTeam.participants[i].userId, 'battle', battle);
+        //更新好友状态
+        userService.friendStatus(challengerTeam.participants[i].userId,'inbattle','true');
     }
     // 将受挑战队伍的所有用户加入到新的socket room
     for (var i in hostTeam.participants) {
         socketService.userJoin(hostTeam.participants[i].userId, battle.battleName);
         userService.changeUserStatus(hostTeam.participants[i].userId, 'inbattle');
         userService.setEnvironment(hostTeam.participants[i].userId, 'battle', battle);
+        //更新好友状态
+        userService.friendStatus(hostTeam.participants[i].userId,'inbattle','true');
     }
 
     console.log(JSON.stringify(userService.users));
