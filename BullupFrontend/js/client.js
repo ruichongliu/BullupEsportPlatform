@@ -551,7 +551,8 @@ socket.on('lolRoomEstablished', function (data) {
     if(userInfo.userId == battleInfo.blueSide.captain.userId){
         handleTimeout2(1000*60*90);
     }
-    isGameStart();       
+    isGameStart();
+    battleInfo.status = 'ready';       
     //userInfo.liseningResult = false;
     //}
     //userInfo.creatingRoom = false;
