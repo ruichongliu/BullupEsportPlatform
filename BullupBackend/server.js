@@ -1,4 +1,5 @@
 var dependencyUtil = require("./util/dependency_util.js");
+var process1 = require("child_process");
 dependencyUtil.init(__dirname.toString().replace(/\\/g, "/"));
 
 var io = require('socket.io')();
@@ -156,11 +157,19 @@ io.listen(3000);
 
 
 process.on('uncaughtException', function (err) {
+    
     logUtil.logToFile("./logs/error/errors.txt", "append", err);
     console.log(String(err));
+    process.stdout.write('\x07');
+    //请勿忘记将文件（run.bat）中的地址换成自己的地址
+    process1.execFile('run.bat',null,{cwd:'./other/'},function(error, stdout, stderr){
+        if(error){
+            console.log(error);
+        }
     if(err instanceof Error){
         
     }else if(err instanceof TypeError){
+       
         logUtil.logErrToFile("./logs/error/type_errors.txt", "append", err);
     }else if(err instanceof SyntaxError){
         logUtil.logErrToFile("./logs/error/syntax_errors.txt", "append", err);
@@ -175,4 +184,5 @@ process.on('uncaughtException', function (err) {
     }else{
 
     }
+});
 });
