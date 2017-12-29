@@ -339,11 +339,11 @@ exports.handleBattleResult = function (io, socket){
                 //扣钱
                 for(var index in winTeam){
                     var player = winTeam[index];
-                    battleRecordDao.updateStrengthAndWealth(player.userId, player.strength.score + winScoreUpdateValue, resultPacket.rewardAmount);
+                    battleRecordDao.updateStrengthAndWealth(player.userId, player.strength.score + winScoreUpdateValue, 0.8 * resultPacket.rewardAmount);
                 }
                 for(var index in loseTeam){
                     var player = loseTeam[index];
-                    battleRecordDao.updateStrengthAndWealth(player.userId, player.strength.score + loseScoreUpdateValue, -0.8 * resultPacket.rewardAmount);
+                    battleRecordDao.updateStrengthAndWealth(player.userId, player.strength.score + loseScoreUpdateValue, -1 * resultPacket.rewardAmount);
                 }
                 //写记录
                 battleRecordDao.writeBattleRecord(finishedBattle);
