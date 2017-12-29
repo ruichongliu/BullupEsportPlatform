@@ -8,6 +8,7 @@ var baseInfoDao = dependencyUtil.global.dao.baseInfoDao;
 var wealthInfoDao = dependencyUtil.global.dao.wealthInfoDao;
 var battleRecordDao = dependencyUtil.global.dao.battleRecordDao;
 var administratorDao = dependencyUtil.global.dao.administratorDao;
+var bullupWebDao = dependencyUtil.global.dao.bullupWebDao;
 
 exports.init = function () {
 
@@ -398,6 +399,37 @@ exports.handleInvitedCode = function (socket) {
                     errorCode: 0,
                     text: '查询成功,请刷新页面',
                     type: 'INVITEDCODERESULT',
+                    extension: {
+                        data:res
+                    }
+                });
+            }
+        });
+    });
+}
+
+//----------------------------查看官网统计--------------------------------
+/**
+ * 查询官网的pv,uv,ip
+ * @param socket
+*/
+exports.bullupWeb = function (socket) {
+    socket.on('getBullupWeb', function () {
+        bullupWebDao.findBullupWeb(function(res){
+            //console.log("resResult"+JSON.stringify(res));
+            console.log("123",res);
+            if (!res) {
+                socket.emit('feedback', {
+                    errorCode: 1,
+                    text: '查询失败，请稍后重试',
+                    type: 'BULLUPWEBRESULT',
+                    extension: null
+                });
+            } else {
+                 socket.emit('feedback', {
+                    errorCode: 0,
+                    text: '查询成功',
+                    type: 'BULLUPWEBRESULT',
                     extension: {
                         data:res
                     }
