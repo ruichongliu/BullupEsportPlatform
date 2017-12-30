@@ -921,6 +921,10 @@ socket.on('EnvironmentRecover', function(environment){
     }
 });
 
+socket.on('adminBroadcast', function(text){
+    bullup.alert(text.text);
+});
+
 /**
  * 处理用户登录
  * @param {*} feedback 
