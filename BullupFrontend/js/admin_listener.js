@@ -51,3 +51,10 @@ $('#admin_invitedCode').on('click', function(e){
     bullup.loadTemplateIntoTarget('swig_admin_invitedCode.html',{}, 'main-view');
     socket.emit('getInvitedCodeData');
 });
+
+//官网主页访问量统计
+$('#admin_bullupWeb').on('click', function(e){
+    e.preventDefault();
+    bullup.loadTemplateIntoTarget('swig_admin_bullupWeb.html',{}, 'main-view');
+    socket.emit('getBullupWeb');
+});
