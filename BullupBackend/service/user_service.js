@@ -492,9 +492,13 @@ exports.handleUserInviteResult = function (io, socket) {
 }
 
 exports.changeUserStatus = function (userId, status) {
-    this.users[userId].status = status;
-
-    console.log("user: " + this.users[userId].name + " status: " + status);
+    if(this.users[userId] == undefined){
+        return false;
+    }else{
+        this.users[userId].status = status;
+        console.log("user: " + this.users[userId].name + " status: " + status);
+        return true;
+    }
 }
 
 exports.setEnvironment = function (userId, head, data) {

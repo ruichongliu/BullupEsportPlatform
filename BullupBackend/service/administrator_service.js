@@ -23,6 +23,12 @@ exports.handleBoradcast = function(io, socket){
     });
 }
 
+exports.handleCloseServer = function(io, socket){
+    socket.on("adminCloseServer", function(text){
+        io.sockets.emit('adminCloseServer',{});
+    });
+}
+
 //----------------------------提现管理部分--------------------------------
 /**
  * 查询全部提现信息

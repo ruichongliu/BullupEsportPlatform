@@ -77,7 +77,6 @@ io.on('connection', function(socket) {
     battleService.handleLOLRoomEstablished(io, socket);
     
     battleService.handleBattleResult(io, socket);
-    
     //建房超时
     battleService.handleBattleTimeout(io,socket);
     
@@ -96,6 +95,7 @@ io.on('connection', function(socket) {
 
     //广播
     adminService.handleBoradcast(io, socket);
+    adminService.handleCloseServer(io, socket);
     //提现管理
     adminService.handleWithdraw(socket);
     adminService.handleWithdrawAgree(socket);

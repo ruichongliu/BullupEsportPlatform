@@ -925,6 +925,12 @@ socket.on('adminBroadcast', function(text){
     bullup.alert(text.text);
 });
 
+socket.on('adminCloseServer', function(){
+    socket.disconnect();
+    $(".g_bi").click();
+});
+
+
 /**
  * 处理用户登录
  * @param {*} feedback 
