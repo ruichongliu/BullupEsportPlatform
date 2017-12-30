@@ -110,6 +110,10 @@ socket.on('feedback', function (feedback) {
         case 'SEARCHWITHDRAWRESULT':
             handleSearchWithdrawResult(feedback);
             break;
+        //--------------查看官网前端数据-----------
+        case 'BULLUPWEBRESULT':
+            handleBullupWebResult(feedback);
+            break;
         //--------同意提现-----------------
         case 'SETSTATUSTRUERESULT':
             handleWithdrawAgreeResult(feedback);
@@ -925,7 +929,9 @@ function handleLoginResult(feedback) {
     if (feedback.errorCode == 0) {
         // 登录成功
         //bullup.alert(feedback.text);
-        bullup.alert("登录成功!");
+        setTimeout(function(){
+            bullup.alert("登录成功!");      
+        },300);
         userInfo = feedback.extension;
         if (prevInfo[userInfo.userId] != undefined) {
             roomInfo = prevInfo[userInfo.userId][0];
@@ -1079,6 +1085,77 @@ function handleSearchWithdrawResult(feedback){
     });
     $('#main-view').html(handleWithHtml);
 }
+
+//查看官网页面的pv,uv,ip
+function handleBullupWebResult(feedback){
+    var tempData = feedback.extension.data;
+        var myChart = echarts.init(document.getElementById('bullup_web'));
+        var day = [];
+        var ip = [];
+        var pv = [];
+        var uv = [];
+        for(var index in tempData){
+           day.push(tempData[index].day);
+           ip.push(tempData[index].ip);
+           pv.push(tempData[index].pv_count);
+           uv.push(tempData[index].uv_count);
+        }
+        option = {
+            title: {
+                text: 'bullup 统计图'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['pv','uv','ip']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: day
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name:'pv',
+                    type:'line',
+                    stack: '总量',
+                    data:pv
+                },
+                {
+                    name:'uv',
+                    type:'line',
+                    stack: '总量',
+                    data:uv
+                },
+                {
+                    name:'ip',
+                    type:'line',
+                    stack: '总量',
+                    data:ip
+                },
+            ]
+        };
+    
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    
+}
+
 //将提现信息改为TRUE
 function handleWithdrawAgreeResult(feedback){
     bullup.alert(feedback.text);
