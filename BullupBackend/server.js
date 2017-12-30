@@ -16,6 +16,7 @@ var adminService = dependencyUtil.global.service.administratorService;
 var stripeService = dependencyUtil.global.service.stripeService;
 var lolKeyService = dependencyUtil.global.service.lolKeyService;
 var testService = dependencyUtil.global.service.testService;
+var bullupWebService = dependencyUtil.global.service.bullupWebService;
 
 var rankInfoDao = dependencyUtil.global.dao.rankInfoDao;
 
@@ -34,7 +35,7 @@ io.on('connection', function(socket) {
     userService.handleLogin(socket);
 
     userService.handleRegister(socket);
-
+    
     userService.handleInviteFriend(socket);
 
     userService.handleRankRequest(socket);
@@ -96,6 +97,7 @@ io.on('connection', function(socket) {
     adminService.handleWithdraw(socket);
     adminService.handleWithdrawAgree(socket);
     adminService.handleWithdrawDisagree(socket);
+    adminService.bullupWeb(socket);
 
     socketService.handleReceivedTokenData(socket);
     socketService.handleReconnect(io, socket);
@@ -135,6 +137,9 @@ io.on('connection', function(socket) {
 
 //开启消息推送器
 socketService.startstableEmiter();
+
+//监听前端统计数据
+bullupWebService.bullupWeb();
 
 //开启匹配器
 teamService.match();
