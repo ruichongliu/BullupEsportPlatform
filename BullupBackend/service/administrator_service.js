@@ -431,8 +431,6 @@ exports.handleInvitedCode = function (socket) {
 exports.bullupWeb = function (socket) {
     socket.on('getBullupWeb', function () {
         bullupWebDao.findBullupWeb(function(res){
-            //console.log("resResult"+JSON.stringify(res));
-            console.log("123",res);
             if (!res) {
                 socket.emit('feedback', {
                     errorCode: 1,
