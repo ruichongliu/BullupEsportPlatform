@@ -31,10 +31,13 @@ exports.addUser = function (user) {
 
     if(this.environment[user.userId] != undefined){
         var environment = JSON.parse(JSON.stringify(this.environment[user.userId]));
-        if(battleService.battles[environment.battle.battleName] == undefined){
+        // if(battleService.battles[environment.battle.battleName] == undefined){
+        //     return;
+        // }
+        var $temp = JSON.stringify(environment);
+        if($temp == '{}'){
             return;
         }
-
         this.users[user.userId].environment = this.environment[user.userId];
         this.users[user.userId].status = "inbattle";
         //加入room

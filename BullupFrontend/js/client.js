@@ -952,17 +952,21 @@ function handleLoginResult(feedback) {
         $('#log_modal').modal('close');
         $('.modal-overlay').remove();
         $("#log_out_button").on('click', function(e){
-            bullup.alert('登出成功!');
-            $('#log_modal').modal('close');
-            e.preventDefault();
-            prevInfo[userInfo.userId] = [roomInfo, teamInfo];
-            userInfo = null;
-            var temp = bullup.loadSwigView("./swig_menu.html", null);
-            // 打开
-            $("#log_modal").css("display", "block");
-            $('#system_menu').html(temp);
-          
-            $('#router_starter').click();
+            lol_process.grabLOLData('killProcess', null);
+            chrome.runtime.reload();
+            // bullup.alert('登出成功!');
+            // $('#log_modal').modal('close');
+            // e.preventDefault();
+            // prevInfo[userInfo.userId] = [roomInfo, teamInfo];
+            // userInfo = null;
+            
+            // //socket.disconnect();
+            // var temp = bullup.loadSwigView("./swig_menu.html", null);
+            // // 打开
+            // $("#log_modal").css("display", "block");
+            // $('#system_menu').html(temp);
+
+            // $('#router_starter').click();
         });
         //回到对局
         if(battleInfo != null){
