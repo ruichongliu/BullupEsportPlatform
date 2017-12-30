@@ -14,6 +14,15 @@ exports.init = function () {
 
 }
 
+
+exports.handleBoradcast = function(io, socket){
+    socket.on("adminBroadcast", function(text){
+        io.sockets.emit('adminBroadcast',{
+            text: text
+        });
+    });
+}
+
 //----------------------------提现管理部分--------------------------------
 /**
  * 查询全部提现信息

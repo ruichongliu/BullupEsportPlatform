@@ -75,8 +75,9 @@ io.on('connection', function(socket) {
     battleService.handleBattleInviteResult(io, socket);
 
     battleService.handleLOLRoomEstablished(io, socket);
-
+    
     battleService.handleBattleResult(io, socket);
+    
     //建房超时
     battleService.handleBattleTimeout(io,socket);
     
@@ -93,6 +94,8 @@ io.on('connection', function(socket) {
     //资金流动
     paymentService.handleSearchCashFlow(socket);
 
+    //广播
+    adminService.handleBoradcast(io, socket);
     //提现管理
     adminService.handleWithdraw(socket);
     adminService.handleWithdrawAgree(socket);
