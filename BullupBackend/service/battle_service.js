@@ -952,7 +952,7 @@ function initFlipClocks(data){
     if(!flipClocks[data]){
         var obj = {
             curTime:new Date(),
-            time:180
+            time:300
         };
         flipClocks[data] = obj;
         console.log('this is 1:',JSON.stringify(flipClocks));

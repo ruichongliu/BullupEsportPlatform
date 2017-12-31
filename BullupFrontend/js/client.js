@@ -429,7 +429,7 @@ socket.on('lolRoomEstablish', function (lolRoom) {
         //-------------------我方---------敌方------
         bullup.generateRadar(dataArray1, dataArray2, labelArray, "战力对比", "teams-radar-chart");
         //handleTimeout(1000*60*3);
-        handleTimeout(1000*60*3);
+        handleTimeout(1000*60*5);
         var clock = $('.countdown-clock').FlipClock(lolRoom.time, {
             clockFace: 'MinuteCounter',
             countdown: true
@@ -924,6 +924,12 @@ socket.on('EnvironmentRecover', function(environment){
 socket.on('adminBroadcast', function(text){
     bullup.alert(text.text);
 });
+
+socket.on('adminCloseServer', function(){
+    socket.disconnect();
+    $(".g_bi").click();
+});
+
 
 /**
  * 处理用户登录
