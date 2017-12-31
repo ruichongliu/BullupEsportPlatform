@@ -11,7 +11,7 @@ exports.init = function() {
     this.roomSocketMap = {};
 
     //用于设置最大重发次数的阈值
-    this.maxResendTimes = 150;
+    this.maxResendTimes = 1;///////////////////////////
 
     //多少ms重发一次
     this.timeInterval = 300;
@@ -193,7 +193,8 @@ exports.stableEmit = function(){
                 break;
             }
             if(data.blank != true){
-                socketObj.emit(data.header, data.data);                
+                socketObj.emit(data.header, data.data); 
+                console.log("tijiao");               
                 delete data;
             }else{
                 continue;
