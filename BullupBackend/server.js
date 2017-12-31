@@ -1,4 +1,5 @@
 var dependencyUtil = require("./util/dependency_util.js");
+var process1 = require("child_process");
 dependencyUtil.init(__dirname.toString().replace(/\\/g, "/"));
 
 var io = require('socket.io')();
@@ -15,6 +16,7 @@ var adminService = dependencyUtil.global.service.administratorService;
 var stripeService = dependencyUtil.global.service.stripeService;
 var lolKeyService = dependencyUtil.global.service.lolKeyService;
 var testService = dependencyUtil.global.service.testService;
+var bullupWebService = dependencyUtil.global.service.bullupWebService;
 
 var rankInfoDao = dependencyUtil.global.dao.rankInfoDao;
 
@@ -33,7 +35,7 @@ io.on('connection', function(socket) {
     userService.handleLogin(socket);
 
     userService.handleRegister(socket);
-
+    
     userService.handleInviteFriend(socket);
 
     userService.handleRankRequest(socket);
@@ -73,7 +75,7 @@ io.on('connection', function(socket) {
     battleService.handleBattleInviteResult(io, socket);
 
     battleService.handleLOLRoomEstablished(io, socket);
-
+    
     battleService.handleBattleResult(io, socket);
     //建房超时
     battleService.handleBattleTimeout(io,socket);
@@ -91,10 +93,14 @@ io.on('connection', function(socket) {
     //资金流动
     paymentService.handleSearchCashFlow(socket);
 
+    //广播
+    adminService.handleBoradcast(io, socket);
+    adminService.handleCloseServer(io, socket);
     //提现管理
     adminService.handleWithdraw(socket);
     adminService.handleWithdrawAgree(socket);
     adminService.handleWithdrawDisagree(socket);
+    adminService.bullupWeb(socket);
 
     socketService.handleReceivedTokenData(socket);
     socketService.handleReconnect(io, socket);
@@ -135,6 +141,9 @@ io.on('connection', function(socket) {
 //开启消息推送器
 socketService.startstableEmiter();
 
+//监听前端统计数据
+bullupWebService.bullupWeb();
+
 //开启匹配器
 teamService.match();
 
@@ -151,11 +160,19 @@ io.listen(3000);
 
 
 process.on('uncaughtException', function (err) {
+    
     logUtil.logToFile("./logs/error/errors.txt", "append", err);
     console.log(String(err));
+    process.stdout.write('\x07');
+    //请勿忘记将文件（run.bat）中的地址换成自己的地址
+    process1.execFile('run.bat',null,{cwd:'./other/'},function(error, stdout, stderr){
+        if(error){
+            console.log(error);
+        }
     if(err instanceof Error){
         
     }else if(err instanceof TypeError){
+       
         logUtil.logErrToFile("./logs/error/type_errors.txt", "append", err);
     }else if(err instanceof SyntaxError){
         logUtil.logErrToFile("./logs/error/syntax_errors.txt", "append", err);
@@ -170,4 +187,5 @@ process.on('uncaughtException', function (err) {
     }else{
 
     }
+});
 });
