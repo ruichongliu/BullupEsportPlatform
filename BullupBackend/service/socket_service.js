@@ -193,7 +193,6 @@ exports.stableEmit = function(){
                 break;
             }
             if(data.blank != true){
-<<<<<<< HEAD
                 if(data.lastSendTime == 0 || data.lastSendTime == undefined){
                     data.lastSendTime = new Date().getTime();  
                 }else{
@@ -202,8 +201,6 @@ exports.stableEmit = function(){
                     }
                 }
                 
-=======
->>>>>>> c697f77e590152456e56c9c37c10525cd89959bb
                 socketObj.emit(data.header, data.data); 
                 console.log("tijiao");               
                 delete data;
