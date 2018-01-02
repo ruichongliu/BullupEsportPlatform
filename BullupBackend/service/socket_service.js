@@ -199,10 +199,10 @@ exports.stableEmit = function(){
                 break;
             }
             if(data.blank != true){
-                if(data.lastSendTime == 0){
-                    data.lastSendTime = systemTime;  
+                if(data.lastSendTime == 0 || data.lastSendTime == undefined){
+                    data.lastSendTime = new Date().getTime();  
                 }else{
-                    if(systemTime - data.lastSendTime <= exports.timeDelay){
+                    if((new Date().getTime()) - data.lastSendTime <= exports.timeDelay){
                         continue;
                     }
                 }
