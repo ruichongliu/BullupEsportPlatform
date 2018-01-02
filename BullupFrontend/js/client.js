@@ -1,6 +1,6 @@
 var io = require('socket.io-client');
 
-var socket = io.connect('http://127.0.0.1:3000');
+var socket = io.connect('http://52.15.124.26:3000');
 //var auto_script = require('./js/auto_program/lol_auto_script');
 var lol_process = require('./js/auto_program/lol_process.js');
 var lolUtil = require('./js/util/lol_util.js');
@@ -551,7 +551,7 @@ socket.on('lolRoomEstablished', function (data) {
     lol_process.grabLOLData('result', socket);      
     $("#show_game_start").css("display","inline-block");
     bullup.alert('游戏已开始');     
-    clearTimeout(timeControl);      
+    clearTimeout(timeControl);
     if(userInfo.userId == battleInfo.blueSide.captain.userId){
         handleTimeout2(1000*60*90);
     }

@@ -11,12 +11,9 @@ exports.init = function() {
     this.roomSocketMap = {};
 
     //用于设置最大重发次数的阈值
-    this.maxResendTimes = 10;///////////////////////////
+    this.maxResendTimes = 1;///////////////////////////
 
-    //延迟多少 超过这个时间才会重发
-    this.timeDelay = 2000;
-
-    //多少ms发送一次
+    //多少ms重发一次
     this.timeInterval = 300;
 
     //用于存储需要发送到客户端的消息
@@ -114,9 +111,6 @@ exports.stableSocketEmit = function(socket, head, data){
     }   
     var token = Math.random().toString(36).substring(7) + socket.id; 
     data.token = token;
-    ////
-    data.lastSendTime = 0;
-    ///
     if(exports.socketEmitQueue[index] != undefined){
         exports.socketEmitQueue[index].dataQueue[String(token)] = {
             'header': head,
@@ -199,6 +193,7 @@ exports.stableEmit = function(){
                 break;
             }
             if(data.blank != true){
+<<<<<<< HEAD
                 if(data.lastSendTime == 0 || data.lastSendTime == undefined){
                     data.lastSendTime = new Date().getTime();  
                 }else{
@@ -207,6 +202,8 @@ exports.stableEmit = function(){
                     }
                 }
                 
+=======
+>>>>>>> c697f77e590152456e56c9c37c10525cd89959bb
                 socketObj.emit(data.header, data.data); 
                 console.log("tijiao");               
                 delete data;
